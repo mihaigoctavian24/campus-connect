@@ -137,3 +137,16 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+
+# Credentials (keep docs but exclude credentials)
+.docs/credentials.md
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Vercel
+.vercel
