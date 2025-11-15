@@ -150,3 +150,8 @@ vite.config.ts.timestamp-*
 
 # Vercel
 .vercel
+
+
+#ale mele
+figma_template/
+.docs/
