@@ -1,12 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react'
 
 export function SignUpForm() {
-  const router = useRouter()
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -82,8 +80,9 @@ export function SignUpForm() {
       }
 
       setSuccess(true)
-    } catch (err: any) {
-      setError(err.message || 'An error occurred during signup')
+    } catch (err) {
+      const error = err as { message?: string }
+      setError(error.message || 'An error occurred during signup')
     } finally {
       setLoading(false)
     }
@@ -98,11 +97,11 @@ export function SignUpForm() {
           <div>
             <h3 className="font-medium text-green-900">Check your email</h3>
             <p className="mt-2 text-sm text-green-700">
-              We've sent a confirmation link to <strong>{formData.email}</strong>. Please check
+              We&apos;ve sent a confirmation link to <strong>{formData.email}</strong>. Please check
               your inbox and click the link to verify your account.
             </p>
             <p className="mt-4 text-xs text-green-600">
-              Don't see the email? Check your spam folder or{' '}
+              Don&apos;t see the email? Check your spam folder or{' '}
               <button
                 onClick={() => setSuccess(false)}
                 className="font-medium underline hover:no-underline"

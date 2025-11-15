@@ -47,13 +47,14 @@ export function LoginForm() {
       // Redirect to home or profile page
       router.push('/profile')
       router.refresh()
-    } catch (err: any) {
-      if (err.message?.includes('Invalid login credentials')) {
+    } catch (err) {
+      const error = err as { message?: string }
+      if (error.message?.includes('Invalid login credentials')) {
         setError('Invalid email or password')
-      } else if (err.message?.includes('Email not confirmed')) {
+      } else if (error.message?.includes('Email not confirmed')) {
         setError('Please verify your email address before logging in')
       } else {
-        setError(err.message || 'An error occurred during login')
+        setError(error.message || 'An error occurred during login')
       }
     } finally {
       setLoading(false)

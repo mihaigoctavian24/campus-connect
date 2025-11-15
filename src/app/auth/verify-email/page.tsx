@@ -33,7 +33,7 @@ export default function VerifyEmailPage() {
 
             {/* Description */}
             <p className="mb-6 text-gray-600">
-              We've sent a verification link to your email address. Please check your inbox and
+              We&apos;ve sent a verification link to your email address. Please check your inbox and
               click the link to verify your account and complete registration.
             </p>
 
@@ -71,7 +71,7 @@ export default function VerifyEmailPage() {
                 href="/auth/signup"
                 className="text-sm text-gray-600 hover:text-[#001f3f]"
               >
-                Didn't receive the email? Try signing up again
+                Didn&apos;t receive the email? Try signing up again
               </Link>
             </div>
           </div>

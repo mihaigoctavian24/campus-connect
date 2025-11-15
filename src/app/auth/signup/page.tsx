@@ -49,7 +49,7 @@ export default function SignUpPage() {
             <h2 className="mb-6 text-4xl font-normal">Your Module of Impact Starts Here</h2>
             <p className="mb-12 text-lg text-white/90">
               Connect with meaningful volunteer opportunities that complement your academic journey
-              and build the leadership skills that define tomorrow's changemakers.
+              and build the leadership skills that define tomorrow&apos;s changemakers.
             </p>
 
             {/* Stats */}

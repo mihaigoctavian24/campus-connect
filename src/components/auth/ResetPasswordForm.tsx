@@ -64,8 +64,9 @@ export function ResetPasswordForm() {
       setTimeout(() => {
         router.push('/auth/login')
       }, 2000)
-    } catch (err: any) {
-      setError(err.message || 'An error occurred while resetting your password')
+    } catch (err) {
+      const error = err as { message?: string }
+      setError(error.message || 'An error occurred while resetting your password')
     } finally {
       setLoading(false)
     }

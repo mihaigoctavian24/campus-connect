@@ -27,8 +27,9 @@ export function ForgotPasswordForm() {
       }
 
       setSuccess(true)
-    } catch (err: any) {
-      setError(err.message || 'An error occurred. Please try again.')
+    } catch (err) {
+      const error = err as { message?: string }
+      setError(error.message || 'An error occurred. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -43,11 +44,11 @@ export function ForgotPasswordForm() {
           <div>
             <h3 className="font-medium text-green-900">Check your email</h3>
             <p className="mt-2 text-sm text-green-700">
-              We've sent a password reset link to <strong>{email}</strong>. Please check your inbox
+              We&apos;ve sent a password reset link to <strong>{email}</strong>. Please check your inbox
               and follow the instructions to reset your password.
             </p>
             <p className="mt-4 text-xs text-green-600">
-              Don't see the email? Check your spam folder or{' '}
+              Don&apos;t see the email? Check your spam folder or{' '}
               <button
                 onClick={() => {
                   setSuccess(false)
