@@ -3,24 +3,16 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Separator } from '@/components/ui/separator';
 import { WelcomeHeader } from '@/components/dashboard/WelcomeHeader';
 import { StatsCards } from '@/components/dashboard/StatsCards';
-import { getStudentStats, type StudentStats } from '@/lib/services/student-stats.service';
-import { createClient } from '@/lib/supabase/client';
 import {
-  Calendar,
-  Clock,
-  MapPin,
-  QrCode,
-  FileText,
-  Bell,
-  Bookmark,
-  Eye,
-  CheckCircle2,
-} from 'lucide-react';
+  ActiveOpportunities,
+  type ActiveOpportunity,
+} from '@/components/dashboard/ActiveOpportunities';
+import { getStudentStats, type StudentStats } from '@/lib/services/student-stats.service';
+import { getActiveEnrollments } from '@/lib/services/active-enrollments.service';
+import { createClient } from '@/lib/supabase/client';
+import { Clock, MapPin, QrCode, Bell, Bookmark, Eye, CheckCircle2 } from 'lucide-react';
 
 export default function StudentDashboardPage() {
   const [stats, setStats] = useState<StudentStats>({
@@ -28,6 +20,7 @@ export default function StudentDashboardPage() {
     activeOpportunities: 0,
     completedOpportunities: 0,
   });
+  const [activeOpportunities, setActiveOpportunities] = useState<ActiveOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,12 +33,16 @@ export default function StudentDashboardPage() {
       } = await supabase.auth.getUser();
 
       if (user) {
-        // Fetch stats
+        // Fetch stats and active opportunities in parallel
         try {
-          const userStats = await getStudentStats(user.id);
+          const [userStats, enrollments] = await Promise.all([
+            getStudentStats(user.id),
+            getActiveEnrollments(user.id),
+          ]);
           setStats(userStats);
+          setActiveOpportunities(enrollments);
         } catch (error) {
-          console.error('Failed to load stats:', error);
+          console.error('Failed to load data:', error);
         }
       }
 
@@ -54,35 +51,6 @@ export default function StudentDashboardPage() {
 
     loadUserAndStats();
   }, []);
-
-  const activeOpportunities = [
-    {
-      id: '1',
-      title: 'STEM Mentorship Program',
-      department: 'ES',
-      progress: 30,
-      hoursCompleted: 12,
-      totalHours: 40,
-      nextSession: {
-        date: 'Mon, Dec 16',
-        time: '18:00-20:00',
-        location: 'Engineering Building, Room 203',
-      },
-    },
-    {
-      id: '2',
-      title: 'Community Outreach Initiative',
-      department: 'CSIE',
-      progress: 65,
-      hoursCompleted: 26,
-      totalHours: 40,
-      nextSession: {
-        date: 'Wed, Dec 18',
-        time: '14:00-17:00',
-        location: 'Community Center',
-      },
-    },
-  ];
 
   const upcomingSessions = [
     {
@@ -177,64 +145,7 @@ export default function StudentDashboardPage() {
       </Card>
 
       {/* Active Opportunities */}
-      <div className="space-y-4">
-        <h2 className="text-2xl font-semibold">My Active Opportunities</h2>
-        <div className="grid gap-4 md:grid-cols-2">
-          {activeOpportunities.map((opportunity) => (
-            <Card key={opportunity.id}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <CardTitle className="text-xl">{opportunity.title}</CardTitle>
-                  <Badge variant="secondary">{opportunity.department}</Badge>
-                </div>
-                <CardDescription>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Progress value={opportunity.progress} className="h-2 flex-1" />
-                    <span className="text-sm font-medium">
-                      {opportunity.hoursCompleted}/{opportunity.totalHours} hrs (
-                      {opportunity.progress}%)
-                    </span>
-                  </div>
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex items-center text-sm">
-                    <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
-                    <span className="font-medium">Next Session:</span>
-                    <span className="ml-2 text-muted-foreground">
-                      {opportunity.nextSession.date} • {opportunity.nextSession.time}
-                    </span>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">
-                      {opportunity.nextSession.location}
-                    </span>
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
-                    <Eye className="mr-2 h-4 w-4" />
-                    View Details
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <FileText className="mr-2 h-4 w-4" />
-                    Log Hours
-                  </Button>
-                  <Button size="sm">
-                    <QrCode className="mr-2 h-4 w-4" />
-                    Check-in
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
+      <ActiveOpportunities opportunities={activeOpportunities} loading={loading} />
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Upcoming Sessions */}
