@@ -44,8 +44,33 @@ export function LoginForm() {
         throw signInError;
       }
 
-      // Redirect to home or profile page
-      router.push('/profile');
+      // Get user profile to determine role
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        throw new Error('Failed to get user information');
+      }
+
+      // Fetch user profile to get role
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      // Redirect based on role
+      const role = profile?.role || 'STUDENT';
+      if (role === 'STUDENT') {
+        router.push('/dashboard/student');
+      } else if (role === 'PROFESSOR') {
+        router.push('/dashboard/professor');
+      } else if (role === 'ADMIN') {
+        router.push('/dashboard/admin');
+      } else {
+        router.push('/');
+      }
       router.refresh();
     } catch (err) {
       const error = err as { message?: string };
