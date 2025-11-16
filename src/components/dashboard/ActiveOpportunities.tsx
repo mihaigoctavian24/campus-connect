@@ -1,6 +1,7 @@
 'use client';
 
 import { cn } from '@/components/ui/utils';
+import { ActiveOpportunityCard } from './ActiveOpportunityCard';
 
 export interface ActiveOpportunity {
   id: string;
@@ -57,7 +58,11 @@ export function ActiveOpportunities({
   return (
     <div className={cn('space-y-4', className)}>
       <h2 className="text-2xl font-semibold">My Active Opportunities</h2>
-      <div className="grid gap-4 md:grid-cols-2">{/* Opportunity cards will go here */}</div>
+      <div className="grid gap-4 md:grid-cols-2">
+        {opportunities.map((opportunity) => (
+          <ActiveOpportunityCard key={opportunity.id} opportunity={opportunity} />
+        ))}
+      </div>
     </div>
   );
 }
