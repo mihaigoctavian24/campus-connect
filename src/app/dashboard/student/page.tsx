@@ -6,18 +6,17 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { WelcomeHeader } from '@/components/dashboard/WelcomeHeader';
+import { StatsCards } from '@/components/dashboard/StatsCards';
 import {
   Calendar,
   Clock,
   MapPin,
-  TrendingUp,
-  CheckCircle2,
-  GraduationCap,
   QrCode,
   FileText,
   Bell,
   Bookmark,
   Eye,
+  CheckCircle2,
 } from 'lucide-react';
 
 export default function StudentDashboardPage() {
@@ -114,40 +113,7 @@ export default function StudentDashboardPage() {
       <WelcomeHeader userName="Student" role="student" />
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Hours</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalHours} hrs</div>
-            <p className="text-xs text-muted-foreground">Across all activities</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Opportunities</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.activeOpportunities}</div>
-            <p className="text-xs text-muted-foreground">Currently enrolled</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completed</CardTitle>
-            <GraduationCap className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.completedOpportunities}</div>
-            <p className="text-xs text-muted-foreground">Opportunities finished</p>
-          </CardContent>
-        </Card>
-      </div>
+      <StatsCards stats={stats} />
 
       {/* Quick Actions */}
       <Card>
