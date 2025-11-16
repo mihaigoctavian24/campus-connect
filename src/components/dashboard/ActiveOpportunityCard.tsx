@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
-import { Calendar, MapPin } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Calendar, MapPin, Eye, FileText, QrCode } from 'lucide-react';
 import type { ActiveOpportunity } from './ActiveOpportunities';
 
 interface ActiveOpportunityCardProps {
@@ -45,8 +46,21 @@ export function ActiveOpportunityCard({ opportunity }: ActiveOpportunityCardProp
 
         <Separator />
 
-        {/* Action buttons will be added in next issue */}
-        <div className="flex gap-2">{/* Buttons placeholder */}</div>
+        {/* Action buttons */}
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm">
+            <Eye className="mr-2 h-4 w-4" />
+            View Details
+          </Button>
+          <Button variant="outline" size="sm">
+            <FileText className="mr-2 h-4 w-4" />
+            Log Hours
+          </Button>
+          <Button size="sm">
+            <QrCode className="mr-2 h-4 w-4" />
+            Check-in
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
