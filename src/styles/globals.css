@@ -4,48 +4,69 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Campus Connect Brand Colors */
+    --background: 0 0% 98%; /* #fafafa - Light gray background */
+    --foreground: 210 100% 12.5%; /* #001f3f - Navy Blue for text */
+
+    --card: 0 0% 100%; /* White cards */
+    --card-foreground: 210 100% 12.5%; /* Navy Blue text on cards */
+
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --popover-foreground: 210 100% 12.5%;
+
+    /* Primary = Gold (for CTAs and highlights) */
+    --primary: 51 100% 50%; /* gold */
+    --primary-foreground: 210 100% 12.5%; /* Navy Blue text on gold */
+
+    /* Secondary = Navy Blue (for headers, navigation) */
+    --secondary: 210 100% 12.5%; /* #001f3f - Navy Blue */
+    --secondary-foreground: 0 0% 100%; /* White text on navy */
+
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
+    --muted-foreground: 215 16.3% 46.9%; /* Gray 500 */
+
+    /* Accent = Burgundy (for special highlights) */
+    --accent: 345 100% 25%; /* #800020 - Burgundy */
+    --accent-foreground: 0 0% 100%; /* White text on burgundy */
+
+    --destructive: 0 84.2% 60.2%; /* Red for errors */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%; /* Gray 200 */
+    --input: 220 13% 91%;
+    --ring: 51 100% 50%; /* Gold ring/focus */
+    --radius: 0.625rem; /* 10px - matching design system */
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
+    /* Dark mode with Campus Connect brand colors */
+    --background: 210 100% 12.5%; /* Navy Blue background */
+    --foreground: 0 0% 98%; /* Light text */
+
+    --card: 210 100% 15%; /* Slightly lighter navy for cards */
+    --card-foreground: 0 0% 98%;
+
+    --popover: 210 100% 15%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 51 100% 50%; /* Gold stays the same */
+    --primary-foreground: 210 100% 12.5%; /* Navy text on gold */
+
+    --secondary: 345 100% 25%; /* Burgundy for secondary */
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 210 100% 20%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+
+    --accent: 51 100% 50%; /* Gold accent in dark mode */
+    --accent-foreground: 210 100% 12.5%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 210 100% 20%;
+    --input: 210 100% 20%;
+    --ring: 51 100% 50%; /* Gold ring */
   }
 }
 
