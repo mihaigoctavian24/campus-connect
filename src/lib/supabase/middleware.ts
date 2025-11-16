@@ -39,12 +39,11 @@ export async function updateSession(request: NextRequest) {
 
   // Protect routes based on authentication
   const isAuthPage = pathname.startsWith('/auth');
-  const isStudentPage = pathname.startsWith('/student');
-  const isProfessorPage = pathname.startsWith('/professor');
-  const isAdminPage = pathname.startsWith('/admin');
+  const isDashboardPage = pathname.startsWith('/dashboard');
+  const isProfilePage = pathname.startsWith('/profile');
 
   // If user is not logged in and trying to access protected routes
-  if (!user && (isStudentPage || isProfessorPage || isAdminPage)) {
+  if (!user && (isDashboardPage || isProfilePage)) {
     const url = request.nextUrl.clone();
     url.pathname = '/auth/login';
     url.searchParams.set('redirect', pathname);
@@ -52,21 +51,21 @@ export async function updateSession(request: NextRequest) {
   }
 
   // If user is logged in and trying to access auth pages, redirect to dashboard
-  if (user && isAuthPage) {
+  if (user && isAuthPage && pathname !== '/auth/callback') {
     // Get user role from profile
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', user.id)
-      .single();
+      .single<{ role: string }>();
 
     const url = request.nextUrl.clone();
     if (profile?.role === 'ADMIN') {
-      url.pathname = '/admin';
+      url.pathname = '/dashboard/admin';
     } else if (profile?.role === 'PROFESSOR') {
-      url.pathname = '/professor';
+      url.pathname = '/dashboard/professor';
     } else {
-      url.pathname = '/student';
+      url.pathname = '/dashboard/student';
     }
     return NextResponse.redirect(url);
   }
