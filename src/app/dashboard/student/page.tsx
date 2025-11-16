@@ -15,6 +15,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Clock, MapPin, QrCode, Bell, Bookmark, Eye, CheckCircle2 } from 'lucide-react';
 
 export default function StudentDashboardPage() {
+  const [userName, setUserName] = useState('Student');
   const [stats, setStats] = useState<StudentStats>({
     totalHours: 0,
     activeOpportunities: 0,
@@ -33,12 +34,21 @@ export default function StudentDashboardPage() {
       } = await supabase.auth.getUser();
 
       if (user) {
-        // Fetch stats and active opportunities in parallel
+        // Fetch user profile and stats in parallel
         try {
-          const [userStats, enrollments] = await Promise.all([
+          const [profileData, userStats, enrollments] = await Promise.all([
+            supabase
+              .from('profiles')
+              .select('first_name, last_name')
+              .eq('id', user.id)
+              .single<{ first_name: string; last_name: string }>(),
             getStudentStats(user.id),
             getActiveEnrollments(user.id),
           ]);
+
+          if (profileData.data) {
+            setUserName(`${profileData.data.first_name} ${profileData.data.last_name}`);
+          }
           setStats(userStats);
           setActiveOpportunities(enrollments);
         } catch (error) {
@@ -52,55 +62,13 @@ export default function StudentDashboardPage() {
     loadUserAndStats();
   }, []);
 
-  const upcomingSessions = [
-    {
-      id: '1',
-      title: 'STEM Mentorship Program',
-      date: 'Mon, Dec 16',
-      time: '18:00-20:00',
-      location: 'Engineering Building, Room 203',
-    },
-    {
-      id: '2',
-      title: 'Community Outreach Initiative',
-      date: 'Wed, Dec 18',
-      time: '14:00-17:00',
-      location: 'Community Center',
-    },
-    {
-      id: '3',
-      title: 'STEM Mentorship Program',
-      date: 'Mon, Dec 23',
-      time: '18:00-20:00',
-      location: 'Engineering Building, Room 203',
-    },
-  ];
-
-  const notifications = [
-    {
-      id: '1',
-      type: 'accepted',
-      message: 'Your application for "Environmental Awareness" was accepted!',
-      time: '2 hours ago',
-    },
-    {
-      id: '2',
-      type: 'session',
-      message: 'New session added to "STEM Mentorship Program"',
-      time: '5 hours ago',
-    },
-    {
-      id: '3',
-      type: 'reminder',
-      message: 'Reminder: Session tomorrow at 18:00',
-      time: '1 day ago',
-    },
-  ];
-
+  // TODO: Fetch from Supabase in future sprints
+  const upcomingSessions: any[] = [];
+  const notifications: any[] = [];
   const applications = {
-    underReview: 3,
-    accepted: 2,
-    rejected: 1,
+    underReview: 0,
+    accepted: 0,
+    rejected: 0,
   };
 
   if (loading) {
@@ -122,7 +90,7 @@ export default function StudentDashboardPage() {
   return (
     <div className="space-y-8">
       {/* Welcome Section */}
-      <WelcomeHeader userName="Student" role="student" />
+      <WelcomeHeader userName={userName} role="student" />
 
       {/* Stats Cards */}
       <StatsCards stats={stats} />
