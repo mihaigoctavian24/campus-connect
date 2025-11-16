@@ -58,7 +58,7 @@ export function LoginForm() {
         .from('profiles')
         .select('role')
         .eq('id', user.id)
-        .single();
+        .single<{ role: string }>();
 
       // Redirect based on role
       const role = profile?.role || 'STUDENT';
