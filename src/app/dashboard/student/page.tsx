@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,6 +8,8 @@ import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { WelcomeHeader } from '@/components/dashboard/WelcomeHeader';
 import { StatsCards } from '@/components/dashboard/StatsCards';
+import { getStudentStats, type StudentStats } from '@/lib/services/student-stats.service';
+import { createClient } from '@/lib/supabase/client';
 import {
   Calendar,
   Clock,
@@ -20,12 +23,37 @@ import {
 } from 'lucide-react';
 
 export default function StudentDashboardPage() {
-  // Mock data - will be replaced with real data from Supabase
-  const stats = {
-    totalHours: 42,
-    activeOpportunities: 2,
-    completedOpportunities: 5,
-  };
+  const [stats, setStats] = useState<StudentStats>({
+    totalHours: 0,
+    activeOpportunities: 0,
+    completedOpportunities: 0,
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadUserAndStats() {
+      const supabase = createClient();
+
+      // Get current user
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        // Fetch stats
+        try {
+          const userStats = await getStudentStats(user.id);
+          setStats(userStats);
+        } catch (error) {
+          console.error('Failed to load stats:', error);
+        }
+      }
+
+      setLoading(false);
+    }
+
+    loadUserAndStats();
+  }, []);
 
   const activeOpportunities = [
     {
@@ -106,6 +134,22 @@ export default function StudentDashboardPage() {
     accepted: 2,
     rejected: 1,
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/3 mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-32 bg-gray-200 rounded animate-pulse"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
