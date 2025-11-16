@@ -191,7 +191,8 @@ export default function StudentDashboardPage() {
                   <div className="flex items-center gap-2 mt-2">
                     <Progress value={opportunity.progress} className="h-2 flex-1" />
                     <span className="text-sm font-medium">
-                      {opportunity.hoursCompleted}/{opportunity.totalHours} hrs ({opportunity.progress}%)
+                      {opportunity.hoursCompleted}/{opportunity.totalHours} hrs (
+                      {opportunity.progress}%)
                     </span>
                   </div>
                 </CardDescription>
@@ -207,7 +208,9 @@ export default function StudentDashboardPage() {
                   </div>
                   <div className="flex items-center text-sm">
                     <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">{opportunity.nextSession.location}</span>
+                    <span className="text-muted-foreground">
+                      {opportunity.nextSession.location}
+                    </span>
                   </div>
                 </div>
 
@@ -265,7 +268,10 @@ export default function StudentDashboardPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {notifications.map((notification) => (
-              <div key={notification.id} className="flex items-start gap-3 pb-4 border-b last:border-0 last:pb-0">
+              <div
+                key={notification.id}
+                className="flex items-start gap-3 pb-4 border-b last:border-0 last:pb-0"
+              >
                 <Bell className="h-5 w-5 text-muted-foreground mt-0.5" />
                 <div className="flex-1 space-y-1">
                   <p className="text-sm">{notification.message}</p>

@@ -65,7 +65,9 @@ export function validateQRTimeWindow(
     }
   } else {
     if (checkInTime < windowStart) {
-      const tooEarlyMinutes = Math.abs(Math.round((windowStart.getTime() - checkInTime.getTime()) / 60000));
+      const tooEarlyMinutes = Math.abs(
+        Math.round((windowStart.getTime() - checkInTime.getTime()) / 60000)
+      );
       message = `Too early: QR code can be scanned starting ${windowMinutes} minutes before session start (${tooEarlyMinutes} minutes too early)`;
     } else {
       const tooLateMinutes = Math.round((checkInTime.getTime() - windowEnd.getTime()) / 60000);
