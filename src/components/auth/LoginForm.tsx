@@ -1,65 +1,65 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
-import { Eye, EyeOff, AlertCircle } from 'lucide-react'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { createClient } from '@/lib/supabase/client';
+import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 export function LoginForm() {
-  const router = useRouter()
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     rememberMe: false,
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target
+    const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
-    }))
+    }));
     // Clear errors when user starts typing
-    setError(null)
-  }
+    setError(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    setLoading(true)
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
 
     try {
-      const supabase = createClient()
+      const supabase = createClient();
 
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
-      })
+      });
 
       if (signInError) {
-        throw signInError
+        throw signInError;
       }
 
       // Redirect to home or profile page
-      router.push('/profile')
-      router.refresh()
+      router.push('/profile');
+      router.refresh();
     } catch (err) {
-      const error = err as { message?: string }
+      const error = err as { message?: string };
       if (error.message?.includes('Invalid login credentials')) {
-        setError('Invalid email or password')
+        setError('Invalid email or password');
       } else if (error.message?.includes('Email not confirmed')) {
-        setError('Please verify your email address before logging in')
+        setError('Please verify your email address before logging in');
       } else {
-        setError(error.message || 'An error occurred during login')
+        setError(error.message || 'An error occurred during login');
       }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -148,5 +148,5 @@ export function LoginForm() {
         {loading ? 'Logging in...' : 'Log in'}
       </button>
     </form>
-  )
+  );
 }

@@ -1,11 +1,11 @@
-import { Metadata } from 'next'
-import Link from 'next/link'
-import { LoginForm } from '@/components/auth/LoginForm'
+import { Metadata } from 'next';
+import Link from 'next/link';
+import { LoginForm } from '@/components/auth/LoginForm';
 
 export const metadata: Metadata = {
   title: 'Log In | Campus Connect',
   description: 'Log in to your Campus Connect account',
-}
+};
 
 export default function LoginPage() {
   return (
@@ -33,10 +33,7 @@ export default function LoginPage() {
           {/* Sign Up Link */}
           <p className="mt-8 text-center text-sm text-gray-500">
             Don&apos;t have an account?{' '}
-            <Link
-              href="/auth/signup"
-              className="font-medium text-[#001f3f] hover:text-[#800020]"
-            >
+            <Link href="/auth/signup" className="font-medium text-[#001f3f] hover:text-[#800020]">
               Sign up
             </Link>
           </p>
@@ -56,5 +53,5 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

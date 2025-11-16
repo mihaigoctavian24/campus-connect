@@ -1,34 +1,34 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { X, CheckCircle } from 'lucide-react'
+import { useState } from 'react';
+import { X, CheckCircle } from 'lucide-react';
 
 interface ApplyModalProps {
-  opportunityTitle: string
+  opportunityTitle: string;
 }
 
 export function ApplyModal({ opportunityTitle }: ApplyModalProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [step, setStep] = useState<'form' | 'success'>('form')
+  const [isOpen, setIsOpen] = useState(false);
+  const [step, setStep] = useState<'form' | 'success'>('form');
   const [formData, setFormData] = useState({
     motivation: '',
     availability: '',
     experience: '',
-  })
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // Here would be the actual submission logic
-    setStep('success')
-  }
+    setStep('success');
+  };
 
   const handleClose = () => {
-    setIsOpen(false)
+    setIsOpen(false);
     setTimeout(() => {
-      setStep('form')
-      setFormData({ motivation: '', availability: '', experience: '' })
-    }, 300)
-  }
+      setStep('form');
+      setFormData({ motivation: '', availability: '', experience: '' });
+    }, 300);
+  };
 
   if (!isOpen) {
     return (
@@ -38,16 +38,13 @@ export function ApplyModal({ opportunityTitle }: ApplyModalProps) {
       >
         Apply Now →
       </button>
-    )
+    );
   }
 
   return (
     <>
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
-        onClick={handleClose}
-      />
+      <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" onClick={handleClose} />
 
       {/* Modal */}
       <div className="fixed left-1/2 top-1/2 z-50 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded-lg border border-gray-200 bg-white p-8 shadow-2xl">
@@ -71,7 +68,10 @@ export function ApplyModal({ opportunityTitle }: ApplyModalProps) {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Motivation */}
               <div>
-                <label htmlFor="motivation" className="mb-2 block text-sm font-medium text-[#001f3f]">
+                <label
+                  htmlFor="motivation"
+                  className="mb-2 block text-sm font-medium text-[#001f3f]"
+                >
                   Why are you interested in this opportunity? *
                 </label>
                 <textarea
@@ -87,7 +87,10 @@ export function ApplyModal({ opportunityTitle }: ApplyModalProps) {
 
               {/* Availability */}
               <div>
-                <label htmlFor="availability" className="mb-2 block text-sm font-medium text-[#001f3f]">
+                <label
+                  htmlFor="availability"
+                  className="mb-2 block text-sm font-medium text-[#001f3f]"
+                >
                   What is your availability? *
                 </label>
                 <textarea
@@ -103,7 +106,10 @@ export function ApplyModal({ opportunityTitle }: ApplyModalProps) {
 
               {/* Relevant Experience */}
               <div>
-                <label htmlFor="experience" className="mb-2 block text-sm font-medium text-[#001f3f]">
+                <label
+                  htmlFor="experience"
+                  className="mb-2 block text-sm font-medium text-[#001f3f]"
+                >
                   Relevant experience (optional)
                 </label>
                 <textarea
@@ -159,5 +165,5 @@ export function ApplyModal({ opportunityTitle }: ApplyModalProps) {
         )}
       </div>
     </>
-  )
+  );
 }

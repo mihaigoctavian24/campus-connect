@@ -1,21 +1,21 @@
-'use client'
+'use client';
 
-import { Clock, Bookmark } from 'lucide-react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useState } from 'react'
+import { Clock, Bookmark } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
 
 interface OpportunityCardProps {
-  title: string
-  department: string
-  description: string
-  category: string
-  location: string
-  hours: string
-  duration: string
-  featured?: boolean
-  hasImage?: boolean
-  slug?: string
+  title: string;
+  department: string;
+  description: string;
+  category: string;
+  location: string;
+  hours: string;
+  duration: string;
+  featured?: boolean;
+  hasImage?: boolean;
+  slug?: string;
 }
 
 export function OpportunityCard({
@@ -30,14 +30,14 @@ export function OpportunityCard({
   hasImage,
   slug = 'stem-mentorship-program',
 }: OpportunityCardProps) {
-  const [isSaved, setIsSaved] = useState(false)
+  const [isSaved, setIsSaved] = useState(false);
 
   const handleSave = (e: React.MouseEvent) => {
-    e.preventDefault() // Prevent navigation
-    e.stopPropagation()
-    setIsSaved(!isSaved)
+    e.preventDefault(); // Prevent navigation
+    e.stopPropagation();
+    setIsSaved(!isSaved);
     // Here would be the actual save logic to backend
-  }
+  };
 
   return (
     <Link
@@ -47,12 +47,7 @@ export function OpportunityCard({
       {/* Image Placeholder or Real Image */}
       <div className="relative h-48 bg-gradient-to-br from-gray-200 to-gray-300">
         {hasImage && (
-          <Image
-            src="/placeholder-activity.jpg"
-            alt={title}
-            fill
-            className="object-cover"
-          />
+          <Image src="/placeholder-activity.jpg" alt={title} fill className="object-cover" />
         )}
         {/* Top badges */}
         <div className="absolute right-3 top-3 flex gap-2">
@@ -65,9 +60,7 @@ export function OpportunityCard({
           <button
             onClick={handleSave}
             className={`flex items-center justify-center rounded-full p-2 transition ${
-              isSaved
-                ? 'bg-[gold] text-[#001f3f]'
-                : 'bg-white/90 text-gray-600 hover:bg-white'
+              isSaved ? 'bg-[gold] text-[#001f3f]' : 'bg-white/90 text-gray-600 hover:bg-white'
             }`}
             aria-label={isSaved ? 'Unsave opportunity' : 'Save opportunity'}
           >
@@ -119,5 +112,5 @@ export function OpportunityCard({
         </div>
       </div>
     </Link>
-  )
+  );
 }

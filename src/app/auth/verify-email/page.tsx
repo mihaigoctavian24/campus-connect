@@ -1,11 +1,11 @@
-import { Metadata } from 'next'
-import Link from 'next/link'
-import { CheckCircle, Mail } from 'lucide-react'
+import { Metadata } from 'next';
+import Link from 'next/link';
+import { CheckCircle, Mail } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Verify Email | Campus Connect',
   description: 'Verify your email address to complete registration',
-}
+};
 
 export default function VerifyEmailPage() {
   return (
@@ -67,10 +67,7 @@ export default function VerifyEmailPage() {
               >
                 Go to Login
               </Link>
-              <Link
-                href="/auth/signup"
-                className="text-sm text-gray-600 hover:text-[#001f3f]"
-              >
+              <Link href="/auth/signup" className="text-sm text-gray-600 hover:text-[#001f3f]">
                 Didn&apos;t receive the email? Try signing up again
               </Link>
             </div>
@@ -80,11 +77,14 @@ export default function VerifyEmailPage() {
         {/* Help Text */}
         <p className="text-center text-sm text-gray-500">
           Need help?{' '}
-          <a href="mailto:support@campusconnect-scs.work" className="text-[#001f3f] hover:underline">
+          <a
+            href="mailto:support@campusconnect-scs.work"
+            className="text-[#001f3f] hover:underline"
+          >
             Contact support
           </a>
         </p>
       </div>
     </div>
-  )
+  );
 }

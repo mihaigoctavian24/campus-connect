@@ -1,11 +1,11 @@
-import { Metadata } from 'next'
-import Link from 'next/link'
-import { ResetPasswordForm } from '@/components/auth/ResetPasswordForm'
+import { Metadata } from 'next';
+import Link from 'next/link';
+import { ResetPasswordForm } from '@/components/auth/ResetPasswordForm';
 
 export const metadata: Metadata = {
   title: 'Reset Password | Campus Connect',
   description: 'Create a new password for your account',
-}
+};
 
 export default function ResetPasswordPage() {
   return (
@@ -25,9 +25,7 @@ export default function ResetPasswordPage() {
           {/* Heading */}
           <div className="mb-8 text-center">
             <h2 className="text-2xl font-medium text-[#001f3f]">Create new password</h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Enter a new password for your account
-            </p>
+            <p className="mt-2 text-sm text-gray-600">Enter a new password for your account</p>
           </div>
 
           {/* Form */}
@@ -35,5 +33,5 @@ export default function ResetPasswordPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

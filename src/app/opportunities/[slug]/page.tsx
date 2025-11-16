@@ -1,7 +1,7 @@
-import { ArrowLeft, MapPin, Clock, Calendar, CheckCircle2 } from 'lucide-react'
-import Link from 'next/link'
-import { Navigation } from '@/components/Navigation'
-import { ApplyModal } from '@/components/ApplyModal'
+import { ArrowLeft, MapPin, Clock, Calendar, CheckCircle2 } from 'lucide-react';
+import Link from 'next/link';
+import { Navigation } from '@/components/Navigation';
+import { ApplyModal } from '@/components/ApplyModal';
 
 // This would come from database in real implementation
 const opportunityData = {
@@ -10,7 +10,8 @@ const opportunityData = {
   department: 'ES',
   departmentFull: 'Engineering Society',
   heroImage: true,
-  about: "Join our prestigious STEM Mentorship Program where you'll guide first-year engineering students through their academic journey. This is a rewarding opportunity to give back to the community while developing leadership and communication skills.",
+  about:
+    "Join our prestigious STEM Mentorship Program where you'll guide first-year engineering students through their academic journey. This is a rewarding opportunity to give back to the community while developing leadership and communication skills.",
   responsibilities: [
     'Meet with mentees weekly for academic guidance',
     'Organize study sessions and workshops',
@@ -29,7 +30,7 @@ const opportunityData = {
   duration: 'Long-Term',
   deadline: 'November 30, 2025',
   categories: ['STEM', 'Mentorship'],
-}
+};
 
 export default function OpportunityDetailsPage() {
   return (
@@ -180,5 +181,5 @@ export default function OpportunityDetailsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

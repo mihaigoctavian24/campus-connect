@@ -1,5 +1,5 @@
-import { Mail, Phone, Calendar, User, Clock, FolderOpen, CheckCircle } from 'lucide-react'
-import { Navigation } from '@/components/Navigation'
+import { Mail, Phone, Calendar, User, Clock, FolderOpen, CheckCircle } from 'lucide-react';
+import { Navigation } from '@/components/Navigation';
 
 export default function ProfilePage() {
   return (
@@ -111,7 +111,9 @@ export default function ProfilePage() {
                 <div className="rounded-lg border border-gray-200 bg-white p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h3 className="mb-1 font-medium text-[#001f3f]">Community Outreach Coordinator</h3>
+                      <h3 className="mb-1 font-medium text-[#001f3f]">
+                        Community Outreach Coordinator
+                      </h3>
                       <p className="mb-2 text-sm text-gray-500">Student Volunteer Center</p>
                       <p className="text-xs text-gray-400">Applied: 10/15/2025</p>
                     </div>
@@ -135,5 +137,5 @@ export default function ProfilePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

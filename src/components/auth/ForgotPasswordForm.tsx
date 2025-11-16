@@ -1,39 +1,39 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import { AlertCircle, CheckCircle } from 'lucide-react'
+import { useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import { AlertCircle, CheckCircle } from 'lucide-react';
 
 export function ForgotPasswordForm() {
-  const [email, setEmail] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    setLoading(true)
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
 
     try {
-      const supabase = createClient()
+      const supabase = createClient();
 
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/reset-password`,
-      })
+      });
 
       if (resetError) {
-        throw resetError
+        throw resetError;
       }
 
-      setSuccess(true)
+      setSuccess(true);
     } catch (err) {
-      const error = err as { message?: string }
-      setError(error.message || 'An error occurred. Please try again.')
+      const error = err as { message?: string };
+      setError(error.message || 'An error occurred. Please try again.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   // Success State
   if (success) {
@@ -44,15 +44,15 @@ export function ForgotPasswordForm() {
           <div>
             <h3 className="font-medium text-green-900">Check your email</h3>
             <p className="mt-2 text-sm text-green-700">
-              We&apos;ve sent a password reset link to <strong>{email}</strong>. Please check your inbox
-              and follow the instructions to reset your password.
+              We&apos;ve sent a password reset link to <strong>{email}</strong>. Please check your
+              inbox and follow the instructions to reset your password.
             </p>
             <p className="mt-4 text-xs text-green-600">
               Don&apos;t see the email? Check your spam folder or{' '}
               <button
                 onClick={() => {
-                  setSuccess(false)
-                  setEmail('')
+                  setSuccess(false);
+                  setEmail('');
                 }}
                 className="font-medium underline hover:no-underline"
               >
@@ -62,7 +62,7 @@ export function ForgotPasswordForm() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -85,8 +85,8 @@ export function ForgotPasswordForm() {
           id="email"
           value={email}
           onChange={(e) => {
-            setEmail(e.target.value)
-            setError(null)
+            setEmail(e.target.value);
+            setError(null);
           }}
           required
           autoComplete="email"
@@ -104,5 +104,5 @@ export function ForgotPasswordForm() {
         {loading ? 'Sending reset link...' : 'Send reset link'}
       </button>
     </form>
-  )
+  );
 }

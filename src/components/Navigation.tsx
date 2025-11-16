@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export function Navigation() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <nav className="sticky top-0 z-50 bg-[#001f3f] shadow-lg">
@@ -54,5 +54,5 @@ export function Navigation() {
         </div>
       </div>
     </nav>
-  )
+  );
 }

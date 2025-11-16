@@ -1,76 +1,76 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import { Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
+import { Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 
 export function ResetPasswordForm() {
-  const router = useRouter()
+  const router = useRouter();
   const [formData, setFormData] = useState({
     password: '',
     confirmPassword: '',
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const validatePassword = (password: string) => {
-    return password.length >= 8
-  }
+    return password.length >= 8;
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
-    }))
-    setError(null)
-  }
+    }));
+    setError(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    setLoading(true)
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
 
     // Validation
     if (!validatePassword(formData.password)) {
-      setError('Password must be at least 8 characters long')
-      setLoading(false)
-      return
+      setError('Password must be at least 8 characters long');
+      setLoading(false);
+      return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match')
-      setLoading(false)
-      return
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
     }
 
     try {
-      const supabase = createClient()
+      const supabase = createClient();
 
       const { error: updateError } = await supabase.auth.updateUser({
         password: formData.password,
-      })
+      });
 
       if (updateError) {
-        throw updateError
+        throw updateError;
       }
 
-      setSuccess(true)
+      setSuccess(true);
 
       // Redirect to login after 2 seconds
       setTimeout(() => {
-        router.push('/auth/login')
-      }, 2000)
+        router.push('/auth/login');
+      }, 2000);
     } catch (err) {
-      const error = err as { message?: string }
-      setError(error.message || 'An error occurred while resetting your password')
+      const error = err as { message?: string };
+      setError(error.message || 'An error occurred while resetting your password');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   // Success State
   if (success) {
@@ -86,7 +86,7 @@ export function ResetPasswordForm() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -161,5 +161,5 @@ export function ResetPasswordForm() {
         {loading ? 'Resetting password...' : 'Reset password'}
       </button>
     </form>
-  )
+  );
 }

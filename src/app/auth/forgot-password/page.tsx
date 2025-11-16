@@ -1,11 +1,11 @@
-import { Metadata } from 'next'
-import Link from 'next/link'
-import { ForgotPasswordForm } from '@/components/auth/ForgotPasswordForm'
+import { Metadata } from 'next';
+import Link from 'next/link';
+import { ForgotPasswordForm } from '@/components/auth/ForgotPasswordForm';
 
 export const metadata: Metadata = {
   title: 'Reset Password | Campus Connect',
   description: 'Reset your Campus Connect password',
-}
+};
 
 export default function ForgotPasswordPage() {
   return (
@@ -35,15 +35,12 @@ export default function ForgotPasswordPage() {
 
           {/* Back to Login */}
           <div className="mt-6 text-center">
-            <Link
-              href="/auth/login"
-              className="text-sm text-gray-600 hover:text-[#001f3f]"
-            >
+            <Link href="/auth/login" className="text-sm text-gray-600 hover:text-[#001f3f]">
               ← Back to login
             </Link>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

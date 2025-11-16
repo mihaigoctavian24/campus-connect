@@ -1,11 +1,11 @@
-import { Metadata } from 'next'
-import Link from 'next/link'
-import { SignUpForm } from '@/components/auth/SignUpForm'
+import { Metadata } from 'next';
+import Link from 'next/link';
+import { SignUpForm } from '@/components/auth/SignUpForm';
 
 export const metadata: Metadata = {
   title: 'Sign Up | Campus Connect',
   description: 'Create your Campus Connect account and start making an impact',
-}
+};
 
 export default function SignUpPage() {
   return (
@@ -71,5 +71,5 @@ export default function SignUpPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

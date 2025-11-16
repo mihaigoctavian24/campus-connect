@@ -5,20 +5,52 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 import { Calendar } from '@/components/ui/calendar';
 import { useState } from 'react';
 import { Slider } from '@/components/ui/slider';
@@ -28,7 +60,7 @@ import { AlertCircle, Bold, Italic, Underline } from 'lucide-react';
 
 export default function TestComponentsPage() {
   const [date, setDate] = useState<Date | undefined>(new Date());
-  const [progress, setProgress] = useState(60);
+  const [progress] = useState(60);
 
   return (
     <div className="container mx-auto p-8 space-y-12">
@@ -166,15 +198,11 @@ export default function TestComponentsPage() {
         <h2 className="text-2xl font-semibold">Alerts</h2>
         <Alert>
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            This is an alert with some important information.
-          </AlertDescription>
+          <AlertDescription>This is an alert with some important information.</AlertDescription>
         </Alert>
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            This is a destructive alert indicating an error.
-          </AlertDescription>
+          <AlertDescription>This is a destructive alert indicating an error.</AlertDescription>
         </Alert>
       </section>
 
@@ -265,9 +293,7 @@ export default function TestComponentsPage() {
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="item-1">
             <AccordionTrigger>Is it accessible?</AccordionTrigger>
-            <AccordionContent>
-              Yes. It adheres to the WAI-ARIA design pattern.
-            </AccordionContent>
+            <AccordionContent>Yes. It adheres to the WAI-ARIA design pattern.</AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-2">
             <AccordionTrigger>Is it styled?</AccordionTrigger>
@@ -301,19 +327,25 @@ export default function TestComponentsPage() {
           <TableBody>
             <TableRow>
               <TableCell className="font-medium">John Doe</TableCell>
-              <TableCell><Badge>Active</Badge></TableCell>
+              <TableCell>
+                <Badge>Active</Badge>
+              </TableCell>
               <TableCell>Student</TableCell>
               <TableCell className="text-right">12.5</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="font-medium">Jane Smith</TableCell>
-              <TableCell><Badge variant="secondary">Pending</Badge></TableCell>
+              <TableCell>
+                <Badge variant="secondary">Pending</Badge>
+              </TableCell>
               <TableCell>Professor</TableCell>
               <TableCell className="text-right">8.0</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="font-medium">Bob Johnson</TableCell>
-              <TableCell><Badge variant="destructive">Inactive</Badge></TableCell>
+              <TableCell>
+                <Badge variant="destructive">Inactive</Badge>
+              </TableCell>
               <TableCell>Admin</TableCell>
               <TableCell className="text-right">0.0</TableCell>
             </TableRow>
@@ -402,7 +434,8 @@ export default function TestComponentsPage() {
 
       <div className="pt-8 pb-4">
         <p className="text-sm text-muted-foreground">
-          All UI components rendered successfully. This page tests the basic functionality and visual appearance of each component.
+          All UI components rendered successfully. This page tests the basic functionality and
+          visual appearance of each component.
         </p>
       </div>
     </div>

@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import { Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react'
+import { useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import { Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 
 export function SignUpForm() {
   const [formData, setFormData] = useState({
@@ -11,56 +11,56 @@ export function SignUpForm() {
     email: '',
     password: '',
     confirmPassword: '',
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const validateEmail = (email: string) => {
-    return email.endsWith('@stud.rau.ro')
-  }
+    return email.endsWith('@stud.rau.ro');
+  };
 
   const validatePassword = (password: string) => {
-    return password.length >= 8
-  }
+    return password.length >= 8;
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
-    }))
+    }));
     // Clear errors when user starts typing
-    setError(null)
-  }
+    setError(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    setLoading(true)
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
 
     // Validation
     if (!validateEmail(formData.email)) {
-      setError('Please use your @stud.rau.ro email address')
-      setLoading(false)
-      return
+      setError('Please use your @stud.rau.ro email address');
+      setLoading(false);
+      return;
     }
 
     if (!validatePassword(formData.password)) {
-      setError('Password must be at least 8 characters long')
-      setLoading(false)
-      return
+      setError('Password must be at least 8 characters long');
+      setLoading(false);
+      return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match')
-      setLoading(false)
-      return
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
     }
 
     try {
-      const supabase = createClient()
+      const supabase = createClient();
 
       const { error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
@@ -73,20 +73,20 @@ export function SignUpForm() {
           },
           emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
-      })
+      });
 
       if (signUpError) {
-        throw signUpError
+        throw signUpError;
       }
 
-      setSuccess(true)
+      setSuccess(true);
     } catch (err) {
-      const error = err as { message?: string }
-      setError(error.message || 'An error occurred during signup')
+      const error = err as { message?: string };
+      setError(error.message || 'An error occurred during signup');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   // Success State
   if (success) {
@@ -112,7 +112,7 @@ export function SignUpForm() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -251,5 +251,5 @@ export function SignUpForm() {
         </a>
       </p>
     </form>
-  )
+  );
 }

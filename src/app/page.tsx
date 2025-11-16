@@ -1,7 +1,7 @@
-import { ArrowRight, Users, Clock, Building2 } from 'lucide-react'
-import Link from 'next/link'
-import { OpportunityCard } from '@/components/OpportunityCard'
-import { Navigation } from '@/components/Navigation'
+import { ArrowRight, Users, Clock, Building2 } from 'lucide-react';
+import Link from 'next/link';
+import { OpportunityCard } from '@/components/OpportunityCard';
+import { Navigation } from '@/components/Navigation';
 
 export default function HomePage() {
   return (
@@ -91,9 +91,7 @@ export default function HomePage() {
       {/* Mission Statement */}
       <section className="px-8 py-16">
         <div className="mx-auto max-w-7xl rounded-lg border border-gray-200 bg-white px-48 py-12 text-center">
-          <h2 className="mb-4 text-xl font-medium text-[#001f3f]">
-            Empowering Student Leaders
-          </h2>
+          <h2 className="mb-4 text-xl font-medium text-[#001f3f]">Empowering Student Leaders</h2>
           <p className="text-center text-gray-500">
             CampusConnect bridges academic excellence with community engagement. Our platform
             connects ambitious students with volunteer opportunities that align with their field of
@@ -191,6 +189,5 @@ export default function HomePage() {
         </div>
       </section>
     </div>
-  )
+  );
 }
-

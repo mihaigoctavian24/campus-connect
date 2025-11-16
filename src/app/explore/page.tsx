@@ -1,6 +1,6 @@
-import { Search, SlidersHorizontal } from 'lucide-react'
-import { OpportunityCard } from '@/components/OpportunityCard'
-import { Navigation } from '@/components/Navigation'
+import { Search, SlidersHorizontal } from 'lucide-react';
+import { OpportunityCard } from '@/components/OpportunityCard';
+import { Navigation } from '@/components/Navigation';
 
 export default function ExplorePage() {
   return (
@@ -208,5 +208,5 @@ export default function ExplorePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
