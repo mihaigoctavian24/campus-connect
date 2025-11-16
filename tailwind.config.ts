@@ -17,6 +17,12 @@ const config: Config = {
     },
     extend: {
       colors: {
+        // Campus Connect Brand Colors
+        'navy': '#001f3f',
+        'burgundy': '#800020',
+        'gold': 'gold',
+
+        // shadcn/ui semantic colors
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
