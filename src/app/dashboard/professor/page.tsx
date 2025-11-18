@@ -142,54 +142,54 @@ export default function ProfessorDashboardPage() {
         <CardContent className="grid gap-4 md:grid-cols-4">
           <Button
             variant="outline"
-            className="h-auto flex flex-col items-center justify-center p-6 hover:bg-gray-100"
+            className="h-auto flex flex-col items-center justify-center p-6 hover:bg-[#FFD600] transition-colors group"
           >
-            <Plus className="h-8 w-8 mb-2 text-primary" />
-            <span className="font-medium">Creează Oportunitate</span>
-            <span className="text-xs text-muted-foreground text-center mt-1">
+            <Plus className="h-8 w-8 mb-2 text-[#001f3f] group-hover:text-black transition-colors" />
+            <span className="font-medium group-hover:text-black transition-colors">Creează Oportunitate</span>
+            <span className="text-xs text-muted-foreground group-hover:text-black text-center mt-1 transition-colors">
               Configurează o nouă activitate
             </span>
           </Button>
 
           <Button
             variant="outline"
-            className="h-auto flex flex-col items-center justify-center p-6 hover:bg-gray-100 relative"
+            className="h-auto flex flex-col items-center justify-center p-6 hover:bg-[#FFD600] transition-colors group relative"
           >
             {stats.newApplications > 0 && (
               <span className="absolute top-2 right-2 h-6 w-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">
                 {stats.newApplications}
               </span>
             )}
-            <Users className="h-8 w-8 mb-2 text-primary" />
-            <span className="font-medium">Revizuiește Aplicații</span>
-            <span className="text-xs text-muted-foreground text-center mt-1">
+            <Users className="h-8 w-8 mb-2 text-[#001f3f] group-hover:text-black transition-colors" />
+            <span className="font-medium group-hover:text-black transition-colors">Revizuiește Aplicații</span>
+            <span className="text-xs text-muted-foreground group-hover:text-black text-center mt-1 transition-colors">
               Acceptă sau respinge studenți
             </span>
           </Button>
 
           <Button
             variant="outline"
-            className="h-auto flex flex-col items-center justify-center p-6 hover:bg-gray-100 relative"
+            className="h-auto flex flex-col items-center justify-center p-6 hover:bg-[#FFD600] transition-colors group relative"
           >
             {stats.pendingHours > 0 && (
               <span className="absolute top-2 right-2 h-6 w-6 rounded-full bg-yellow-600 text-white text-xs flex items-center justify-center">
                 {stats.pendingHours}
               </span>
             )}
-            <CheckCircle className="h-8 w-8 mb-2 text-primary" />
-            <span className="font-medium">Aprobă Ore</span>
-            <span className="text-xs text-muted-foreground text-center mt-1">
+            <CheckCircle className="h-8 w-8 mb-2 text-[#001f3f] group-hover:text-black transition-colors" />
+            <span className="font-medium group-hover:text-black transition-colors">Aprobă Ore</span>
+            <span className="text-xs text-muted-foreground group-hover:text-black text-center mt-1 transition-colors">
               Validează ore înregistrate
             </span>
           </Button>
 
           <Button
             variant="outline"
-            className="h-auto flex flex-col items-center justify-center p-6 hover:bg-gray-100"
+            className="h-auto flex flex-col items-center justify-center p-6 hover:bg-[#FFD600] transition-colors group"
           >
-            <Clock className="h-8 w-8 mb-2 text-primary" />
-            <span className="font-medium">Gestionează Sesiuni</span>
-            <span className="text-xs text-muted-foreground text-center mt-1">
+            <Clock className="h-8 w-8 mb-2 text-[#001f3f] group-hover:text-black transition-colors" />
+            <span className="font-medium group-hover:text-black transition-colors">Gestionează Sesiuni</span>
+            <span className="text-xs text-muted-foreground group-hover:text-black text-center mt-1 transition-colors">
               Programează și urmărește
             </span>
           </Button>
