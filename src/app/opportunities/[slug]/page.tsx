@@ -2,10 +2,11 @@ import { ArrowLeft, MapPin, Clock, Calendar, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { Navigation } from '@/components/Navigation';
 import { ApplyModal } from '@/components/opportunities/ApplyModal';
+import { SaveButton } from '@/components/opportunities/SaveButton';
 
 // This would come from database in real implementation
 const opportunityData = {
-  id: '00000000-0000-0000-0000-000000000000', // TODO: Replace with real activity ID from database
+  id: '660e8400-e29b-41d4-a716-446655440001', // Real activity ID for STEM Mentorship Program
   slug: 'stem-mentorship-program',
   title: 'STEM Mentorship Program',
   department: 'ES',
@@ -56,14 +57,18 @@ export default function OpportunityDetailsPage() {
 
       {/* Department Badge Section */}
       <section className="border-b border-gray-200 bg-white px-8 py-6">
-        <div className="mx-auto flex max-w-7xl items-center gap-3">
-          <div className="flex size-12 items-center justify-center rounded-full bg-[#001f3f]">
-            <span className="text-sm font-medium text-white">{opportunityData.department}</span>
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex size-12 items-center justify-center rounded-full bg-[#001f3f]">
+              <span className="text-sm font-medium text-white">{opportunityData.department}</span>
+            </div>
+            <div>
+              <h1 className="text-xl font-medium text-[#001f3f]">{opportunityData.title}</h1>
+              <p className="text-sm text-gray-500">{opportunityData.departmentFull}</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-medium text-[#001f3f]">{opportunityData.title}</h1>
-            <p className="text-sm text-gray-500">{opportunityData.departmentFull}</p>
-          </div>
+          {/* Save Button */}
+          <SaveButton activityId={opportunityData.id} size="lg" variant="button" />
         </div>
       </section>
 

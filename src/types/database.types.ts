@@ -9,6 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      saved_opportunities: {
+        Row: {
+          activity_id: string
+          id: string
+          saved_at: string | null
+          user_id: string
+        }
+        Insert: {
+          activity_id: string
+          id?: string
+          saved_at?: string | null
+          user_id: string
+        }
+        Update: {
+          activity_id?: string
+          id?: string
+          saved_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_opportunities_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_opportunities_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       enrollments: {
         Row: {
           activity_id: string
