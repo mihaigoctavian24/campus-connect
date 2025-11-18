@@ -1,10 +1,11 @@
 import { ArrowLeft, MapPin, Clock, Calendar, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { Navigation } from '@/components/Navigation';
-import { ApplyModal } from '@/components/ApplyModal';
+import { ApplyModal } from '@/components/opportunities/ApplyModal';
 
 // This would come from database in real implementation
 const opportunityData = {
+  id: '00000000-0000-0000-0000-000000000000', // TODO: Replace with real activity ID from database
   slug: 'stem-mentorship-program',
   title: 'STEM Mentorship Program',
   department: 'ES',
@@ -170,7 +171,7 @@ export default function OpportunityDetailsPage() {
               </div>
 
               {/* Apply Now Button */}
-              <ApplyModal opportunityTitle={opportunityData.title} />
+              <ApplyModal activityId={opportunityData.id} opportunityTitle={opportunityData.title} />
 
               {/* Review time */}
               <p className="mt-4 text-center text-xs text-gray-400">
