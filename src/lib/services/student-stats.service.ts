@@ -10,7 +10,7 @@ interface EnrollmentWithActivity {
   id: string;
   status: string;
   attendance_status: string | null;
-  activity: {
+  activities: {
     id: string;
     status: string;
     start_time: string;
@@ -25,31 +25,19 @@ interface EnrollmentWithActivity {
 export async function getStudentStats(userId: string): Promise<StudentStats> {
   const supabase = createClient();
 
-  // Fetch all enrollments for the user
-  const { data: enrollments, error } = await supabase
+  // First, fetch enrollments
+  const { data: enrollments, error: enrollError } = await supabase
     .from('enrollments')
-    .select(
-      `
-      id,
-      status,
-      attendance_status,
-      activity:activities (
-        id,
-        status,
-        start_time,
-        end_time
-      )
-    `
-    )
+    .select('id, status, attendance_status, activity_id')
     .eq('user_id', userId)
     .is('deleted_at', null);
 
-  if (error) {
-    console.error('Error fetching student stats:', error);
+  if (enrollError) {
+    console.error('Error fetching enrollments:', enrollError);
     throw new Error('Failed to fetch student statistics');
   }
 
-  if (!enrollments) {
+  if (!enrollments || enrollments.length === 0) {
     return {
       totalHours: 0,
       activeOpportunities: 0,
@@ -57,13 +45,47 @@ export async function getStudentStats(userId: string): Promise<StudentStats> {
     };
   }
 
+  // Then fetch activities
+  const activityIds = enrollments.map((e) => e.activity_id);
+
+  const { data: activities, error: activityError } = await supabase
+    .from('activities')
+    .select('id, status, start_time, end_time')
+    .in('id', activityIds);
+
+  if (activityError) {
+    console.error('Error fetching activities:', activityError);
+    throw new Error('Failed to fetch student statistics');
+  }
+
+  if (!activities) {
+    return {
+      totalHours: 0,
+      activeOpportunities: 0,
+      completedOpportunities: 0,
+    };
+  }
+
+  // Merge data
+  const enrollmentsWithActivities = enrollments
+    .map((enrollment) => {
+      const activity = activities.find((a) => a.id === enrollment.activity_id);
+      if (!activity) return null;
+
+      return {
+        ...enrollment,
+        activities: activity,
+      };
+    })
+    .filter((e) => e !== null) as EnrollmentWithActivity[];
+
   // Calculate stats
   let totalHours = 0;
   let activeCount = 0;
   let completedCount = 0;
 
-  (enrollments as unknown as EnrollmentWithActivity[]).forEach((enrollment) => {
-    const activity = enrollment.activity;
+  enrollmentsWithActivities.forEach((enrollment) => {
+    const activity = enrollment.activities;
 
     if (!activity) return;
 

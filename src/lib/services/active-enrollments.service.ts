@@ -5,10 +5,10 @@ interface EnrollmentWithActivity {
   id: string;
   status: string;
   attendance_status: string | null;
-  activity: {
+  activities: {
     id: string;
     title: string;
-    category: {
+    categories: {
       name: string;
     } | null;
     date: string;
@@ -26,49 +26,70 @@ interface EnrollmentWithActivity {
 export async function getActiveEnrollments(userId: string): Promise<ActiveOpportunity[]> {
   const supabase = createClient();
 
-  const { data: enrollments, error } = await supabase
+  // First, get enrollments
+  const { data: enrollments, error: enrollError } = await supabase
     .from('enrollments')
-    .select(
-      `
-      id,
-      status,
-      attendance_status,
-      activity:activities (
-        id,
-        title,
-        category:categories (
-          name
-        ),
-        date,
-        start_time,
-        end_time,
-        location,
-        status
-      )
-    `
-    )
+    .select('id, status, attendance_status, activity_id')
     .eq('user_id', userId)
     .eq('status', 'CONFIRMED')
-    .in('activity.status', ['OPEN', 'IN_PROGRESS'])
-    .is('deleted_at', null)
-    .order('activity.date', { ascending: true });
+    .is('deleted_at', null);
 
-  if (error) {
-    console.error('Error fetching active enrollments:', error);
+  if (enrollError) {
+    console.error('Error fetching enrollments:', enrollError);
     throw new Error('Failed to fetch active enrollments');
   }
 
-  if (!enrollments) {
+  if (!enrollments || enrollments.length === 0) {
     return [];
   }
 
-  // Transform to ActiveOpportunity format
-  const activeOpportunities: ActiveOpportunity[] = (
-    enrollments as unknown as EnrollmentWithActivity[]
-  )
-    .filter((enrollment) => enrollment.activity !== null)
+  // Then get activities for those enrollments
+  const activityIds = enrollments.map((e) => e.activity_id);
+
+  const { data: activities, error: activityError } = await supabase
+    .from('activities')
+    .select(
+      `
+      id,
+      title,
+      categories (name),
+      date,
+      start_time,
+      end_time,
+      location,
+      status
+    `
+    )
+    .in('id', activityIds)
+    .in('status', ['OPEN', 'IN_PROGRESS']);
+
+  if (activityError) {
+    console.error('Error fetching activities:', activityError);
+    throw new Error('Failed to fetch activities');
+  }
+
+  if (!activities) {
+    return [];
+  }
+
+  // Merge enrollments with activities
+  const enrollmentsWithActivities = enrollments
     .map((enrollment) => {
-      const activity = enrollment.activity!;
+      const activity = activities.find((a) => a.id === enrollment.activity_id);
+      if (!activity) return null;
+
+      return {
+        ...enrollment,
+        activities: activity,
+      };
+    })
+    .filter((e) => e !== null) as EnrollmentWithActivity[];
+
+  // Transform to ActiveOpportunity format
+  const activeOpportunities: ActiveOpportunity[] = enrollmentsWithActivities
+    .filter((enrollment) => enrollment.activities !== null)
+    .map((enrollment) => {
+      const activity = enrollment.activities!;
 
       // Calculate hours completed (mock for now, will be calculated from attendance later)
       const totalHours = calculateHours(activity.start_time, activity.end_time);
@@ -87,7 +108,7 @@ export async function getActiveEnrollments(userId: string): Promise<ActiveOpport
       return {
         id: enrollment.id,
         title: activity.title,
-        department: activity.category?.name || 'General',
+        department: activity.categories?.name || 'General',
         progress,
         hoursCompleted,
         totalHours,

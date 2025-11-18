@@ -34,7 +34,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
 
 function CardDescription({ className, ...props }: React.ComponentProps<'div'>) {
   return (
-    <p data-slot="card-description" className={cn('text-muted-foreground', className)} {...props} />
+    <div data-slot="card-description" className={cn('text-muted-foreground', className)} {...props} />
   );
 }
 

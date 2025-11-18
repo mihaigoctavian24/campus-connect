@@ -1,12 +1,11 @@
 import { ArrowRight, Users, Clock, Building2 } from 'lucide-react';
 import Link from 'next/link';
 import { OpportunityCard } from '@/components/OpportunityCard';
-import { Navigation } from '@/components/Navigation';
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
+      {/* Header is now in root layout */}
 
       {/* Hero Section */}
       <section className="relative bg-gradient-to-b from-[#001f3f] via-[#001f3f] via-50% to-[#800020] py-24">

@@ -2,17 +2,26 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { WelcomeHeader } from '@/components/dashboard/WelcomeHeader';
 import { StatsCards } from '@/components/dashboard/StatsCards';
+import { QuickActions } from '@/components/dashboard/QuickActions';
 import {
   ActiveOpportunities,
   type ActiveOpportunity,
 } from '@/components/dashboard/ActiveOpportunities';
 import { getStudentStats, type StudentStats } from '@/lib/services/student-stats.service';
 import { getActiveEnrollments } from '@/lib/services/active-enrollments.service';
+import { getStudentApplications } from '@/lib/services/applications.service';
+import { getUpcomingSessions } from '@/lib/services/upcoming-sessions.service';
+import { getSavedOpportunities } from '@/lib/services/saved-opportunities.service';
+import { MyApplications, type Application } from '@/components/dashboard/MyApplications';
+import { UpcomingSessions, type UpcomingSession } from '@/components/dashboard/UpcomingSessions';
+import {
+  SavedOpportunities,
+  type SavedOpportunity,
+} from '@/components/dashboard/SavedOpportunities';
 import { createClient } from '@/lib/supabase/client';
-import { Clock, MapPin, QrCode, Bell, Bookmark, Eye, CheckCircle2 } from 'lucide-react';
+import { Bell } from 'lucide-react';
 
 export default function StudentDashboardPage() {
   const [userName, setUserName] = useState('Student');
@@ -22,6 +31,9 @@ export default function StudentDashboardPage() {
     completedOpportunities: 0,
   });
   const [activeOpportunities, setActiveOpportunities] = useState<ActiveOpportunity[]>([]);
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [upcomingSessions, setUpcomingSessions] = useState<UpcomingSession[]>([]);
+  const [savedOpportunities, setSavedOpportunities] = useState<SavedOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -36,21 +48,28 @@ export default function StudentDashboardPage() {
       if (user) {
         // Fetch user profile and stats in parallel
         try {
-          const [profileData, userStats, enrollments] = await Promise.all([
-            supabase
-              .from('profiles')
-              .select('first_name, last_name')
-              .eq('id', user.id)
-              .single<{ first_name: string; last_name: string }>(),
-            getStudentStats(user.id),
-            getActiveEnrollments(user.id),
-          ]);
+          const [profileData, userStats, enrollments, userApplications, sessions, savedOpps] =
+            await Promise.all([
+              supabase
+                .from('profiles')
+                .select('first_name, last_name')
+                .eq('id', user.id)
+                .single<{ first_name: string; last_name: string }>(),
+              getStudentStats(user.id),
+              getActiveEnrollments(user.id),
+              getStudentApplications(user.id),
+              getUpcomingSessions(user.id),
+              getSavedOpportunities(user.id),
+            ]);
 
           if (profileData.data) {
             setUserName(`${profileData.data.first_name} ${profileData.data.last_name}`);
           }
           setStats(userStats);
           setActiveOpportunities(enrollments);
+          setApplications(userApplications);
+          setUpcomingSessions(sessions);
+          setSavedOpportunities(savedOpps);
         } catch (error) {
           console.error('Failed to load data:', error);
         }
@@ -63,13 +82,7 @@ export default function StudentDashboardPage() {
   }, []);
 
   // TODO: Fetch from Supabase in future sprints
-  const upcomingSessions: any[] = [];
   const notifications: any[] = [];
-  const applications = {
-    underReview: 0,
-    accepted: 0,
-    rejected: 0,
-  };
 
   if (loading) {
     return (
@@ -96,48 +109,14 @@ export default function StudentDashboardPage() {
       <StatsCards stats={stats} />
 
       {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent className="flex gap-4">
-          <Button>
-            <Eye className="mr-2 h-4 w-4" />
-            Explore New Opportunities
-          </Button>
-          <Button variant="outline">
-            <QrCode className="mr-2 h-4 w-4" />
-            Check-in Now
-          </Button>
-        </CardContent>
-      </Card>
+      <QuickActions />
 
       {/* Active Opportunities */}
       <ActiveOpportunities opportunities={activeOpportunities} loading={loading} />
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Upcoming Sessions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Upcoming Sessions</CardTitle>
-            <CardDescription>Your next scheduled activities</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {upcomingSessions.map((session) => (
-              <div key={session.id} className="space-y-2 pb-4 border-b last:border-0 last:pb-0">
-                <div className="font-medium">{session.title}</div>
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <Clock className="mr-2 h-4 w-4" />
-                  {session.date} • {session.time}
-                </div>
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <MapPin className="mr-2 h-4 w-4" />
-                  {session.location}
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+        <UpcomingSessions sessions={upcomingSessions} loading={loading} />
 
         {/* Recent Notifications */}
         <Card>
@@ -163,37 +142,10 @@ export default function StudentDashboardPage() {
       </div>
 
       {/* Applications Status */}
-      <Card>
-        <CardHeader>
-          <CardTitle>My Applications</CardTitle>
-          <CardDescription>Track the status of your applications</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="flex items-center justify-between p-4 border rounded-lg">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Under Review</p>
-                <p className="text-2xl font-bold">{applications.underReview}</p>
-              </div>
-              <Clock className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <div className="flex items-center justify-between p-4 border rounded-lg">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Accepted</p>
-                <p className="text-2xl font-bold">{applications.accepted}</p>
-              </div>
-              <CheckCircle2 className="h-8 w-8 text-green-600" />
-            </div>
-            <div className="flex items-center justify-between p-4 border rounded-lg">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Rejected</p>
-                <p className="text-2xl font-bold">{applications.rejected}</p>
-              </div>
-              <Bookmark className="h-8 w-8 text-muted-foreground" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <MyApplications applications={applications} loading={loading} />
+
+      {/* Saved Opportunities */}
+      <SavedOpportunities opportunities={savedOpportunities} loading={loading} />
     </div>
   );
 }
