@@ -27,7 +27,7 @@ export default function ProfilePage() {
         .from('profiles')
         .select('role')
         .eq('id', user.id)
-        .single();
+        .single<{ role: string }>();
 
       if (!profile) {
         console.error('Profile not found');

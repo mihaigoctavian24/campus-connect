@@ -32,7 +32,8 @@ export async function getStudentApplications(userId: string): Promise<Applicatio
     .select('id, status, enrolled_at, cancelled_at, activity_id')
     .eq('user_id', userId)
     .is('deleted_at', null)
-    .order('enrolled_at', { ascending: false });
+    .order('enrolled_at', { ascending: false })
+    .returns<Array<EnrollmentWithActivity>>();
 
   if (enrollError) {
     console.error('Error fetching enrollments:', enrollError);
@@ -49,7 +50,8 @@ export async function getStudentApplications(userId: string): Promise<Applicatio
   const { data: activities, error: activityError } = await supabase
     .from('activities')
     .select('id, title, date, location, categories (name)')
-    .in('id', activityIds);
+    .in('id', activityIds)
+    .returns<Array<ActivityData>>();
 
   if (activityError) {
     console.error('Error fetching activities:', activityError);
@@ -61,21 +63,26 @@ export async function getStudentApplications(userId: string): Promise<Applicatio
   }
 
   // Merge enrollments with activities
-  const applications: Application[] = enrollments
+  const applications = enrollments
     .map((enrollment: EnrollmentWithActivity) => {
       const activity = activities.find((a: ActivityData) => a.id === enrollment.activity_id);
       if (!activity) return null;
 
-      return {
+      const app: Application = {
         id: enrollment.id,
         activityTitle: activity.title,
         activityCategory: activity.categories?.name || 'General',
         status: enrollment.status as Application['status'],
         appliedAt: enrollment.enrolled_at,
-        respondedAt: enrollment.cancelled_at || undefined,
         activityDate: activity.date,
         activityLocation: activity.location,
       };
+
+      if (enrollment.cancelled_at) {
+        app.respondedAt = enrollment.cancelled_at;
+      }
+
+      return app;
     })
     .filter((app): app is Application => app !== null);
 

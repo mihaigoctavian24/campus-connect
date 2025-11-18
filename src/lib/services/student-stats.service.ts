@@ -30,7 +30,8 @@ export async function getStudentStats(userId: string): Promise<StudentStats> {
     .from('enrollments')
     .select('id, status, attendance_status, activity_id')
     .eq('user_id', userId)
-    .is('deleted_at', null);
+    .is('deleted_at', null)
+    .returns<Array<{ id: string; status: string; attendance_status: string | null; activity_id: string }>>();
 
   if (enrollError) {
     console.error('Error fetching enrollments:', enrollError);
@@ -51,7 +52,8 @@ export async function getStudentStats(userId: string): Promise<StudentStats> {
   const { data: activities, error: activityError } = await supabase
     .from('activities')
     .select('id, status, start_time, end_time')
-    .in('id', activityIds);
+    .in('id', activityIds)
+    .returns<Array<{ id: string; status: string; start_time: string; end_time: string }>>();
 
   if (activityError) {
     console.error('Error fetching activities:', activityError);

@@ -31,7 +31,8 @@ export async function getSavedOpportunities(userId: string): Promise<SavedOpport
     .from('saved_opportunities')
     .select('id, activity_id, saved_at')
     .eq('user_id', userId)
-    .order('saved_at', { ascending: false });
+    .order('saved_at', { ascending: false })
+    .returns<Array<SavedOpportunityData>>();
 
   if (savedError) {
     console.error('Error fetching saved opportunities:', savedError);
@@ -49,7 +50,8 @@ export async function getSavedOpportunities(userId: string): Promise<SavedOpport
     .from('activities')
     .select('id, title, date, location, max_participants, current_participants, categories (name)')
     .in('id', activityIds)
-    .is('deleted_at', null);
+    .is('deleted_at', null)
+    .returns<Array<ActivityData>>();
 
   if (activityError) {
     console.error('Error fetching activities:', activityError);

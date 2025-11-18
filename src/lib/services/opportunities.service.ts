@@ -82,7 +82,7 @@ export async function getOpportunities(
       .from('categories')
       .select('id')
       .eq('name', category)
-      .single();
+      .single<{ id: string }>();
 
     if (categoryData) {
       query = query.eq('category_id', categoryData.id);

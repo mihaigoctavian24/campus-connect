@@ -38,7 +38,8 @@ export async function getUpcomingSessions(userId: string): Promise<UpcomingSessi
     .select('id, status, activity_id')
     .eq('user_id', userId)
     .eq('status', 'CONFIRMED')
-    .is('deleted_at', null);
+    .is('deleted_at', null)
+    .returns<Array<EnrollmentData>>();
 
   if (enrollError) {
     console.error('Error fetching enrollments:', enrollError);
@@ -58,7 +59,8 @@ export async function getUpcomingSessions(userId: string): Promise<UpcomingSessi
     .in('id', activityIds)
     .in('status', ['OPEN', 'IN_PROGRESS'])
     .gte('date', todayISO)
-    .order('date', { ascending: true });
+    .order('date', { ascending: true })
+    .returns<Array<ActivityData>>();
 
   if (activityError) {
     console.error('Error fetching activities:', activityError);
