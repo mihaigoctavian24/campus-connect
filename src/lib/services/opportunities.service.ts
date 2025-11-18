@@ -146,5 +146,5 @@ export async function getOpportunities(
  */
 export async function getOpportunityBySlug(slug: string): Promise<Opportunity | null> {
   const opportunities = await getOpportunities({ limit: 1000 });
-  return opportunities.find(opp => opp.slug === slug) || null;
+  return opportunities.find((opp) => opp.slug === slug) || null;
 }

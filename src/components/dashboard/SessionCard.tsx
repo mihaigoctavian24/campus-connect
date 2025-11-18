@@ -42,7 +42,7 @@ export function SessionCard({ session }: SessionCardProps) {
   }
 
   return (
-    <div className="flex items-start gap-3 p-3 border rounded-lg hover:bg-accent/50 transition-colors">
+    <div className="flex items-start gap-3 p-3 border rounded-lg hover:bg-gray-100 transition-colors">
       <Calendar className="h-5 w-5 text-primary mt-0.5" />
       <div className="flex-1 space-y-1">
         <div className="flex items-start justify-between gap-2">

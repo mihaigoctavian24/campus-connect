@@ -31,7 +31,9 @@ export async function getStudentStats(userId: string): Promise<StudentStats> {
     .select('id, status, attendance_status, activity_id')
     .eq('user_id', userId)
     .is('deleted_at', null)
-    .returns<Array<{ id: string; status: string; attendance_status: string | null; activity_id: string }>>();
+    .returns<
+      Array<{ id: string; status: string; attendance_status: string | null; activity_id: string }>
+    >();
 
   if (enrollError) {
     console.error('Error fetching enrollments:', enrollError);

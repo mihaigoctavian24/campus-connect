@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { WelcomeHeader } from '@/components/dashboard/WelcomeHeader';
 import { StatsCards } from '@/components/dashboard/StatsCards';
 import { QuickActions } from '@/components/dashboard/QuickActions';
@@ -20,8 +19,8 @@ import {
   SavedOpportunities,
   type SavedOpportunity,
 } from '@/components/dashboard/SavedOpportunities';
+import { MiniCalendar } from '@/components/dashboard/MiniCalendar';
 import { createClient } from '@/lib/supabase/client';
-import { Bell } from 'lucide-react';
 
 export default function StudentDashboardPage() {
   const [userName, setUserName] = useState('Student');
@@ -81,9 +80,6 @@ export default function StudentDashboardPage() {
     loadUserAndStats();
   }, []);
 
-  // TODO: Fetch from Supabase in future sprints
-  const notifications: any[] = [];
-
   if (loading) {
     return (
       <div className="space-y-8">
@@ -109,7 +105,12 @@ export default function StudentDashboardPage() {
       <StatsCards stats={stats} />
 
       {/* Quick Actions */}
-      <QuickActions />
+      <QuickActions
+        activeActivities={activeOpportunities.map((opp) => ({
+          id: opp.id,
+          title: opp.title,
+        }))}
+      />
 
       {/* Active Opportunities */}
       <ActiveOpportunities opportunities={activeOpportunities} loading={loading} />
@@ -118,27 +119,15 @@ export default function StudentDashboardPage() {
         {/* Upcoming Sessions */}
         <UpcomingSessions sessions={upcomingSessions} loading={loading} />
 
-        {/* Recent Notifications */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Notifications</CardTitle>
-            <CardDescription>Stay updated with your activities</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {notifications.map((notification) => (
-              <div
-                key={notification.id}
-                className="flex items-start gap-3 pb-4 border-b last:border-0 last:pb-0"
-              >
-                <Bell className="h-5 w-5 text-muted-foreground mt-0.5" />
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm">{notification.message}</p>
-                  <p className="text-xs text-muted-foreground">{notification.time}</p>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+        {/* Mini Calendar */}
+        <MiniCalendar
+          sessions={upcomingSessions.map((session) => ({
+            date: new Date(session.date),
+            title: session.activityTitle,
+            time: `${session.startTime} - ${session.endTime}`,
+            location: session.location,
+          }))}
+        />
       </div>
 
       {/* Applications Status */}

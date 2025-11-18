@@ -20,6 +20,7 @@ interface UnifiedHeaderProps {
   userName?: string;
   userEmail?: string;
   userAvatar?: string;
+  userRole?: string; // User role for dashboard routing
   onLogout?: () => void;
 }
 
@@ -28,9 +29,27 @@ export function UnifiedHeader({
   userName = 'Student Name',
   userEmail = 'student@stud.rau.ro',
   userAvatar,
+  userRole,
   onLogout,
 }: UnifiedHeaderProps) {
   const pathname = usePathname();
+
+  // Determine dashboard URL based on role
+  const getDashboardUrl = () => {
+    if (!userRole) return '/dashboard/student';
+
+    switch (userRole.toUpperCase()) {
+      case 'PROFESSOR':
+        return '/dashboard/professor';
+      case 'ADMIN':
+        return '/dashboard/admin';
+      case 'STUDENT':
+      default:
+        return '/dashboard/student';
+    }
+  };
+
+  const dashboardUrl = getDashboardUrl();
 
   // Mock notifications - replace with real data later
   const notifications = [
@@ -105,14 +124,14 @@ export function UnifiedHeader({
               Explore
             </Link>
             <Link
-              href="/profile"
+              href={dashboardUrl}
               className={
-                pathname === '/profile'
+                pathname.startsWith('/dashboard')
                   ? 'font-medium text-[gold]'
                   : 'text-white/80 transition hover:text-white'
               }
             >
-              Profile
+              Dashboard
             </Link>
 
             {/* Auth Elements (Notifications + User) - Only show if authenticated */}

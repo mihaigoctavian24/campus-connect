@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/components/ui/utils';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, Search, Calendar, FileText, Menu, X, User } from 'lucide-react';
+import { LayoutDashboard, Calendar, FileText, Menu, X, User } from 'lucide-react';
 import { useState } from 'react';
 
 interface DashboardLayoutProps {
@@ -20,15 +20,16 @@ export function DashboardLayout({ children, role = 'student' }: DashboardLayoutP
   const navigationItems = {
     student: [
       { href: '/dashboard/student', label: 'Dashboard', icon: LayoutDashboard },
-      { href: '/explore', label: 'Explore', icon: Search },
+      { href: '/profile', label: 'My Profile', icon: User },
       { href: '/dashboard/student/my-activities', label: 'My Activities', icon: Calendar },
       { href: '/dashboard/student/applications', label: 'Applications', icon: FileText },
     ],
     professor: [
-      { href: '/dashboard/professor', label: 'Dashboard', icon: LayoutDashboard },
-      { href: '/dashboard/professor/opportunities', label: 'My Opportunities', icon: Calendar },
-      { href: '/dashboard/professor/applications', label: 'Applications', icon: FileText },
-      { href: '/dashboard/professor/reports', label: 'Reports', icon: FileText },
+      { href: '/dashboard/professor', label: 'Overview', icon: LayoutDashboard },
+      { href: '/dashboard/professor/opportunities', label: 'Oportunități', icon: Calendar },
+      { href: '/dashboard/professor/students', label: 'Studenți', icon: User },
+      { href: '/dashboard/professor/sessions', label: 'Sesiuni', icon: Calendar },
+      { href: '/dashboard/professor/analytics', label: 'Analytics', icon: FileText },
     ],
     admin: [
       { href: '/dashboard/admin', label: 'Dashboard', icon: LayoutDashboard },

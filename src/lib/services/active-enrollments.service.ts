@@ -33,7 +33,9 @@ export async function getActiveEnrollments(userId: string): Promise<ActiveOpport
     .eq('user_id', userId)
     .eq('status', 'CONFIRMED')
     .is('deleted_at', null)
-    .returns<Array<{ id: string; status: string; attendance_status: string | null; activity_id: string }>>();
+    .returns<
+      Array<{ id: string; status: string; attendance_status: string | null; activity_id: string }>
+    >();
 
   if (enrollError) {
     console.error('Error fetching enrollments:', enrollError);
@@ -63,16 +65,18 @@ export async function getActiveEnrollments(userId: string): Promise<ActiveOpport
     )
     .in('id', activityIds)
     .in('status', ['OPEN', 'IN_PROGRESS'])
-    .returns<Array<{
-      id: string;
-      title: string;
-      categories: { name: string } | null;
-      date: string;
-      start_time: string;
-      end_time: string;
-      location: string;
-      status: string;
-    }>>();
+    .returns<
+      Array<{
+        id: string;
+        title: string;
+        categories: { name: string } | null;
+        date: string;
+        start_time: string;
+        end_time: string;
+        location: string;
+        status: string;
+      }>
+    >();
 
   if (activityError) {
     console.error('Error fetching activities:', activityError);
