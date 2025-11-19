@@ -8,10 +8,19 @@ import { getStudentStats } from '@/lib/services/student-stats.service';
 import { getStudentApplications } from '@/lib/services/applications.service';
 import type { Application } from '@/components/dashboard/MyApplications';
 
+interface Profile {
+  id: string;
+  email: string;
+  full_name: string | null;
+  role: string;
+  phone: string | null;
+  created_at: string;
+}
+
 export default function ProfilePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [stats, setStats] = useState({
     totalHours: 0,
     activeOpportunities: 0,
@@ -22,42 +31,26 @@ export default function ProfilePage() {
   useEffect(() => {
     async function loadProfileData() {
       try {
-        console.log('[ProfilePage] Starting loadProfileData');
         const supabase = createClient();
 
-        console.log('[ProfilePage] Getting current user');
         // Get current user
         const {
           data: { user },
         } = await supabase.auth.getUser();
 
-        console.log('[ProfilePage] User:', user?.id);
-
         if (!user) {
-          console.log('[ProfilePage] No user, redirecting to login');
           router.push('/auth/login');
           return;
         }
 
-        console.log('[ProfilePage] Fetching user profile');
         // Fetch user profile
         const { data: userProfile } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
-          .single<{
-            id: string;
-            email: string;
-            full_name: string | null;
-            role: string;
-            phone: string | null;
-            created_at: string;
-          }>();
-
-        console.log('[ProfilePage] Profile:', userProfile);
+          .single<Profile>();
 
         if (!userProfile) {
-          console.error('[ProfilePage] Profile not found');
           router.push('/auth/login');
           return;
         }
@@ -66,24 +59,20 @@ export default function ProfilePage() {
 
         // Load stats and applications for students
         if (userProfile.role === 'STUDENT') {
-          console.log('[ProfilePage] Loading student data');
           try {
             const [studentStats, studentApplications] = await Promise.all([
               getStudentStats(user.id),
               getStudentApplications(user.id),
             ]);
-            console.log('[ProfilePage] Student data loaded');
             setStats(studentStats);
             setApplications(studentApplications);
-          } catch (error) {
-            console.error('[ProfilePage] Error loading student data:', error);
+          } catch (_error) {
+            // Error loading student data - stats will remain at defaults
           }
         }
 
-        console.log('[ProfilePage] Setting loading to false');
         setLoading(false);
-      } catch (error) {
-        console.error('[ProfilePage] Error in loadProfileData:', error);
+      } catch (_error) {
         setLoading(false);
       }
     }

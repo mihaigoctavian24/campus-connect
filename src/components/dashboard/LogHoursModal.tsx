@@ -48,12 +48,8 @@ export function LogHoursModal({ open, onOpenChange, activities = [] }: LogHoursM
 
     // Simulate API call
     setTimeout(() => {
-      console.log('Logging hours:', {
-        activityId: selectedActivity,
-        date,
-        hours: parseFloat(hours),
-        description,
-      });
+      // TODO: Implement actual API call to log hours
+      // Hours data: activityId, date, hours, description
 
       // Reset form
       setDate(new Date());

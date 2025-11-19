@@ -27,9 +27,10 @@ interface ApplyModalProps {
   activityId: string;
   opportunityTitle: string;
   onSuccess?: () => void;
+  disabled?: boolean;
 }
 
-export function ApplyModal({ activityId, opportunityTitle, onSuccess }: ApplyModalProps) {
+export function ApplyModal({ activityId, opportunityTitle, onSuccess, disabled = false }: ApplyModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState<'form' | 'success'>('form');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -115,9 +116,10 @@ export function ApplyModal({ activityId, opportunityTitle, onSuccess }: ApplyMod
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full rounded-lg bg-[#FFD600] px-6 py-3 font-medium text-[#001f3f] shadow-lg transition hover:bg-[#FFD600]/90"
+        disabled={disabled}
+        className="w-full rounded-lg bg-[#FFD600] px-6 py-3 font-medium text-[#001f3f] shadow-lg transition hover:bg-[#FFD600]/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#FFD600]"
       >
-        Aplică Acum →
+        {disabled ? 'Already Applied' : 'Aplică Acum →'}
       </button>
     );
   }

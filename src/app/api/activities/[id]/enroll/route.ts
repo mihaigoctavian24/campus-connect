@@ -117,7 +117,7 @@ export async function POST(
 
     const { data: enrollment, error: enrollmentError } = await supabase
       .from('enrollments')
-      // @ts-ignore - Database types haven't been regenerated after migration
+      // @ts-expect-error - Database types haven't been regenerated after migration
       .insert(enrollmentData)
       .select()
       .single<{
@@ -135,27 +135,21 @@ export async function POST(
       );
     }
 
-    // Get professor details for notification
-    const { data: professor } = await supabase
+    // Get professor and student details for future email notification
+    const { data: _professor } = await supabase
       .from('profiles')
       .select('id, email, first_name, last_name')
       .eq('id', activity.created_by)
       .single<{ id: string; email: string; first_name: string; last_name: string }>();
 
-    // Get student details for notification
-    const { data: student } = await supabase
+    const { data: _student } = await supabase
       .from('profiles')
       .select('email, first_name, last_name')
       .eq('id', user.id)
       .single<{ email: string; first_name: string; last_name: string }>();
 
-    // TODO: Send email notification to professor
+    // TODO: Send email notification to professor using _professor and _student data
     // This will be implemented when we set up email service
-    console.log('TODO: Send email notification to professor', {
-      professorEmail: professor?.email,
-      studentName: `${student?.first_name} ${student?.last_name}`,
-      activityTitle: activity.title,
-    });
 
     return NextResponse.json(
       {

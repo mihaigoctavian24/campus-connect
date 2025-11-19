@@ -201,9 +201,8 @@ export default function ProfessorDashboardPage() {
         newApplications={stats.newApplications}
         pendingHours={stats.pendingHours}
         upcomingSessions={stats.upcomingSessions}
-        onNavigate={(tab) => {
+        onNavigate={(_tab) => {
           // TODO: Navigate to appropriate section when pages are created
-          console.log('Navigate to:', tab);
         }}
       />
     </div>

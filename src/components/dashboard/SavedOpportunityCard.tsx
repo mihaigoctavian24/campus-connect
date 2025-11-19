@@ -1,7 +1,9 @@
-import { Calendar, MapPin, Users, Bookmark } from 'lucide-react';
+import { Calendar, MapPin, Users } from 'lucide-react';
+import Link from 'next/link';
 import { SavedOpportunity } from './SavedOpportunities';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { SaveButton } from '@/components/opportunities/SaveButton';
 
 interface SavedOpportunityCardProps {
   opportunity: SavedOpportunity;
@@ -23,7 +25,7 @@ export function SavedOpportunityCard({ opportunity }: SavedOpportunityCardProps)
 
   return (
     <div className="flex items-start gap-3 p-3 border rounded-lg hover:bg-accent/50 transition-colors">
-      <Bookmark className="h-5 w-5 text-primary mt-0.5 fill-primary" />
+      <SaveButton activityId={opportunity.activityId} initialSaved={true} size="md" variant="icon" />
       <div className="flex-1 space-y-2">
         <div className="flex items-start justify-between gap-2">
           <div>
@@ -60,11 +62,10 @@ export function SavedOpportunityCard({ opportunity }: SavedOpportunityCardProps)
         </div>
 
         <div className="flex gap-2">
-          <Button size="sm" disabled={isFull}>
-            {isFull ? 'Full' : 'Apply Now'}
-          </Button>
-          <Button size="sm" variant="outline">
-            Remove
+          <Button asChild size="sm" disabled={isFull}>
+            <Link href={`/opportunities/${opportunity.activityId}`}>
+              {isFull ? 'Full' : 'View Details'}
+            </Link>
           </Button>
         </div>
       </div>

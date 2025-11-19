@@ -1,8 +1,9 @@
-import { MapPin, Clock, Users, Calendar, Bookmark } from 'lucide-react';
+import { MapPin, Clock, Users, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { SaveButton } from '@/components/opportunities/SaveButton';
 import type { Opportunity } from '@/lib/services/opportunities.service';
 
 interface OpportunityCardProps {
@@ -120,9 +121,7 @@ export function OpportunityCard({ opportunity }: OpportunityCardProps) {
               {isFull ? 'Full' : 'View Details'}
             </Link>
           </Button>
-          <Button variant="outline" size="icon">
-            <Bookmark className="h-4 w-4" />
-          </Button>
+          <SaveButton activityId={opportunity.id} size="md" variant="button" />
         </div>
       </CardContent>
     </Card>

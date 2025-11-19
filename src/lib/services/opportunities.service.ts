@@ -108,6 +108,7 @@ export async function getOpportunities(
   }
 
   // Transform database response to Opportunity type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const opportunities: Opportunity[] = data.map((activity: any) => {
     // Generate slug from title
     const slug = activity.title
