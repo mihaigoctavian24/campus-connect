@@ -1,122 +1,86 @@
-'use client';
-
-import { useState, useEffect } from 'react';
 import { ArrowLeft, MapPin, Clock, Calendar, Users } from 'lucide-react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
 import { ApplyModal } from '@/components/opportunities/ApplyModal';
 import { SaveButton } from '@/components/opportunities/SaveButton';
 import { Badge } from '@/components/ui/badge';
-import { getOpportunityBySlug, type Opportunity } from '@/lib/services/opportunities.service';
-import { createClient } from '@/lib/supabase/client';
+import { getOpportunityBySlug } from '@/lib/services/opportunities.service';
+import { createClient } from '@/lib/supabase/server';
 
 // Force dynamic rendering to always fetch fresh data
 export const dynamic = 'force-dynamic';
 
-export default function OpportunityDetailsPage() {
-  const params = useParams();
-  const slug = params.slug as string;
+interface OpportunityDetailsPageProps {
+  params: Promise<{ slug: string }>;
+}
 
-  const [opportunity, setOpportunity] = useState<Opportunity | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [enrollment, setEnrollment] = useState<{ id: string; status: string } | null>(null);
-  const [sessions, setSessions] = useState<
-    {
-      id: string;
-      date: string;
-      start_time: string;
-      end_time: string;
-      location: string;
-      status: string;
-    }[]
-  >([]);
+interface Session {
+  id: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+  location: string;
+  status: string;
+}
 
-  useEffect(() => {
-    async function loadOpportunity() {
-      try {
-        const supabase = createClient();
+export default async function OpportunityDetailsPage({ params }: OpportunityDetailsPageProps) {
+  const { slug } = await params;
+  const supabase = await createClient();
 
-        // Get current user
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
-        // Fetch opportunity data
-        const opportunityData = await getOpportunityBySlug(slug);
-
-        if (!opportunityData) {
-          setLoading(false);
-          return;
-        }
-
-        setOpportunity(opportunityData);
-
-        // Fetch sessions for this activity
-        const { data: sessionsData } = await supabase
-          .from('sessions')
-          .select('*')
-          .eq('activity_id', opportunityData.id)
-          .order('date', { ascending: true })
-          .order('start_time', { ascending: true });
-
-        if (sessionsData) {
-          setSessions(sessionsData);
-        }
-
-        // Check if user is already enrolled
-        if (user) {
-          const { data: enrollmentData } = await supabase
-            .from('enrollments')
-            .select('id, status')
-            .eq('activity_id', opportunityData.id)
-            .eq('user_id', user.id)
-            .is('deleted_at', null)
-            .maybeSingle<{ id: string; status: string }>();
-
-          if (enrollmentData) {
-            setEnrollment(enrollmentData);
-          }
-        }
-      } catch (error) {
-        console.error('Error loading opportunity:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadOpportunity();
-  }, [slug]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#001f3f] mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading opportunity...</p>
-        </div>
-      </div>
-    );
-  }
+  // Fetch opportunity data
+  const opportunity = await getOpportunityBySlug(slug);
 
   if (!opportunity) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Opportunity Not Found</h1>
-          <p className="text-gray-600 mb-4">
-            The opportunity you&apos;re looking for doesn&apos;t exist.
-          </p>
-          <Link
-            href="/explore"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#001f3f] text-white rounded-lg hover:bg-[#001f3f]/90"
-          >
-            <ArrowLeft className="size-4" />
-            Back to Explore
-          </Link>
-        </div>
-      </div>
-    );
+    notFound();
+  }
+
+  // Get current user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Fetch sessions for this activity
+  const { data: sessionsData } = await supabase
+    .from('sessions')
+    .select('*')
+    .eq('activity_id', opportunity.id)
+    .order('date', { ascending: true })
+    .order('start_time', { ascending: true });
+
+  const sessions: Session[] = sessionsData || [];
+
+  // Check if user is already enrolled and if activity is saved
+  let enrollment: { id: string; status: string } | null = null;
+  let isSaved = false;
+
+  if (user) {
+    const { data: enrollmentData } = await supabase
+      .from('enrollments')
+      .select('id, status')
+      .eq('activity_id', opportunity.id)
+      .eq('user_id', user.id)
+      .is('deleted_at', null)
+      .maybeSingle<{ id: string; status: string }>();
+
+    enrollment = enrollmentData;
+
+    // Check if activity is saved
+    const { data: savedData } = await supabase
+      .from('saved_opportunities')
+      .select('id')
+      .eq('activity_id', opportunity.id)
+      .eq('user_id', user.id)
+      .maybeSingle<{ id: string }>();
+
+    console.log('[Server] Checking saved status:', {
+      activityId: opportunity.id,
+      userId: user.id,
+      savedData,
+      isSaved: !!savedData,
+    });
+
+    isSaved = !!savedData;
   }
 
   // Calculate spots remaining
@@ -198,7 +162,12 @@ export default function OpportunityDetailsPage() {
             </div>
           </div>
           {/* Save Button */}
-          <SaveButton activityId={opportunity.id} size="lg" variant="button" />
+          <SaveButton
+            activityId={opportunity.id}
+            initialSaved={isSaved}
+            size="lg"
+            variant="button"
+          />
         </div>
       </section>
 

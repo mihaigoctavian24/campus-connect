@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
 
 interface SaveButtonProps {
@@ -18,6 +18,11 @@ export function SaveButton({
 }: SaveButtonProps) {
   const [isSaved, setIsSaved] = useState(initialSaved);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Sync state when prop changes (important for server-rendered initial values)
+  useEffect(() => {
+    setIsSaved(initialSaved);
+  }, [initialSaved]);
 
   const handleToggleSave = async (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent navigation if button is inside a link

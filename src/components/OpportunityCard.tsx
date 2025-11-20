@@ -1,9 +1,9 @@
 'use client';
 
-import { Clock, Bookmark } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { SaveButton } from '@/components/opportunities/SaveButton';
 
 interface OpportunityCardProps {
   title: string;
@@ -16,6 +16,8 @@ interface OpportunityCardProps {
   featured?: boolean;
   hasImage?: boolean;
   slug?: string;
+  activityId: string;
+  initialSaved?: boolean;
 }
 
 export function OpportunityCard({
@@ -29,15 +31,9 @@ export function OpportunityCard({
   featured,
   hasImage,
   slug = 'stem-mentorship-program',
+  activityId,
+  initialSaved = false,
 }: OpportunityCardProps) {
-  const [isSaved, setIsSaved] = useState(false);
-
-  const handleSave = (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent navigation
-    e.stopPropagation();
-    setIsSaved(!isSaved);
-    // Here would be the actual save logic to backend
-  };
 
   return (
     <Link
@@ -57,15 +53,9 @@ export function OpportunityCard({
             </div>
           )}
           {/* Save Button */}
-          <button
-            onClick={handleSave}
-            className={`flex items-center justify-center rounded-full p-2 transition ${
-              isSaved ? 'bg-[gold] text-[#001f3f]' : 'bg-white/90 text-gray-600 hover:bg-white'
-            }`}
-            aria-label={isSaved ? 'Unsave opportunity' : 'Save opportunity'}
-          >
-            <Bookmark className={`size-4 ${isSaved ? 'fill-current' : ''}`} />
-          </button>
+          <div className="rounded-full bg-white/90 p-0.5">
+            <SaveButton activityId={activityId} initialSaved={initialSaved} size="sm" variant="icon" />
+          </div>
         </div>
       </div>
 

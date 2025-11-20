@@ -10,6 +10,12 @@ interface SavedOpportunityCardProps {
 }
 
 export function SavedOpportunityCard({ opportunity }: SavedOpportunityCardProps) {
+  // Generate slug from activity title (must match opportunities.service.ts logic)
+  const slug = opportunity.activityTitle
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+
   // Format activity date
   const activityDate = new Date(opportunity.activityDate);
   const formattedDate = activityDate.toLocaleDateString('en-US', {
@@ -68,9 +74,7 @@ export function SavedOpportunityCard({ opportunity }: SavedOpportunityCardProps)
 
         <div className="flex gap-2">
           <Button asChild size="sm" disabled={isFull}>
-            <Link href={`/opportunities/${opportunity.activityId}`}>
-              {isFull ? 'Full' : 'View Details'}
-            </Link>
+            <Link href={`/opportunities/${slug}`}>{isFull ? 'Full' : 'View Details'}</Link>
           </Button>
         </div>
       </div>

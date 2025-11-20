@@ -168,6 +168,7 @@ export default function ExplorePage() {
                 {opportunities.map((opportunity) => (
                   <OpportunityCard
                     key={opportunity.id}
+                    activityId={opportunity.id}
                     title={opportunity.title}
                     department={opportunity.departmentCode}
                     description={opportunity.description}
@@ -176,6 +177,7 @@ export default function ExplorePage() {
                     hours={`${opportunity.requiredHours} hrs required`}
                     duration="Long-term"
                     slug={opportunity.slug}
+                    initialSaved={false}
                   />
                 ))}
               </div>

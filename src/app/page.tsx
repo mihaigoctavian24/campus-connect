@@ -134,6 +134,7 @@ export default function HomePage() {
           <div className="grid grid-cols-3 gap-6">
             {/* Card 1 */}
             <OpportunityCard
+              activityId="demo-1"
               title="STEM Mentorship Program"
               department="ES"
               description="Guide first-year engineering students through their academic journey and help them develop essential skills."
@@ -146,6 +147,7 @@ export default function HomePage() {
 
             {/* Card 2 */}
             <OpportunityCard
+              activityId="demo-2"
               title="Community Outreach Coordinator"
               department="SVC"
               description="Coordinate volunteer events and connect students with local community organizations."
@@ -158,6 +160,7 @@ export default function HomePage() {
 
             {/* Card 3 */}
             <OpportunityCard
+              activityId="demo-3"
               title="Research Assistant - Psychology Lab"
               department="DP"
               description="Support cutting-edge research in cognitive psychology and gain hands-on research experience."
