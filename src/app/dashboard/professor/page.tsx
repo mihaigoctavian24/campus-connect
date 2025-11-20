@@ -145,7 +145,9 @@ export default function ProfessorDashboardPage() {
             className="h-auto flex flex-col items-center justify-center p-6 hover:bg-[#FFD600] transition-colors group"
           >
             <Plus className="h-8 w-8 mb-2 text-[#001f3f] group-hover:text-black transition-colors" />
-            <span className="font-medium group-hover:text-black transition-colors">Creează Oportunitate</span>
+            <span className="font-medium group-hover:text-black transition-colors">
+              Creează Oportunitate
+            </span>
             <span className="text-xs text-muted-foreground group-hover:text-black text-center mt-1 transition-colors">
               Configurează o nouă activitate
             </span>
@@ -161,7 +163,9 @@ export default function ProfessorDashboardPage() {
               </span>
             )}
             <Users className="h-8 w-8 mb-2 text-[#001f3f] group-hover:text-black transition-colors" />
-            <span className="font-medium group-hover:text-black transition-colors">Revizuiește Aplicații</span>
+            <span className="font-medium group-hover:text-black transition-colors">
+              Revizuiește Aplicații
+            </span>
             <span className="text-xs text-muted-foreground group-hover:text-black text-center mt-1 transition-colors">
               Acceptă sau respinge studenți
             </span>
@@ -188,7 +192,9 @@ export default function ProfessorDashboardPage() {
             className="h-auto flex flex-col items-center justify-center p-6 hover:bg-[#FFD600] transition-colors group"
           >
             <Clock className="h-8 w-8 mb-2 text-[#001f3f] group-hover:text-black transition-colors" />
-            <span className="font-medium group-hover:text-black transition-colors">Gestionează Sesiuni</span>
+            <span className="font-medium group-hover:text-black transition-colors">
+              Gestionează Sesiuni
+            </span>
             <span className="text-xs text-muted-foreground group-hover:text-black text-center mt-1 transition-colors">
               Programează și urmărește
             </span>

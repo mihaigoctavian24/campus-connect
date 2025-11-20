@@ -36,10 +36,7 @@ export async function DELETE(
     }
 
     if (!existing) {
-      return NextResponse.json(
-        { message: 'Activitatea nu este salvată' },
-        { status: 404 }
-      );
+      return NextResponse.json({ message: 'Activitatea nu este salvată' }, { status: 404 });
     }
 
     // Delete the saved opportunity
@@ -57,10 +54,7 @@ export async function DELETE(
       );
     }
 
-    return NextResponse.json(
-      { message: 'Activitate eliminată din salvate' },
-      { status: 200 }
-    );
+    return NextResponse.json({ message: 'Activitate eliminată din salvate' }, { status: 200 });
   } catch (error) {
     console.error('Unsave API error:', error);
     return NextResponse.json(

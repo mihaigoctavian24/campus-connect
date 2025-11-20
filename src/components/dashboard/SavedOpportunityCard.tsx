@@ -25,7 +25,12 @@ export function SavedOpportunityCard({ opportunity }: SavedOpportunityCardProps)
 
   return (
     <div className="flex items-start gap-3 p-3 border rounded-lg hover:bg-accent/50 transition-colors">
-      <SaveButton activityId={opportunity.activityId} initialSaved={true} size="md" variant="icon" />
+      <SaveButton
+        activityId={opportunity.activityId}
+        initialSaved={true}
+        size="md"
+        variant="icon"
+      />
       <div className="flex-1 space-y-2">
         <div className="flex items-start justify-between gap-2">
           <div>

@@ -14,7 +14,7 @@ export function SaveButton({
   activityId,
   initialSaved = false,
   size = 'md',
-  variant = 'icon'
+  variant = 'icon',
 }: SaveButtonProps) {
   const [isSaved, setIsSaved] = useState(initialSaved);
   const [isLoading, setIsLoading] = useState(false);
@@ -58,9 +58,7 @@ export function SaveButton({
     } catch (error) {
       console.error('Save/unsave error:', error);
       alert(
-        error instanceof Error
-          ? error.message
-          : 'A apărut o eroare. Te rugăm să încerci din nou.'
+        error instanceof Error ? error.message : 'A apărut o eroare. Te rugăm să încerci din nou.'
       );
     } finally {
       setIsLoading(false);
@@ -108,9 +106,7 @@ export function SaveButton({
     >
       <Heart
         className={`${sizeClasses[size]} ${
-          isSaved
-            ? 'fill-[#FFD600] text-[#FFD600]'
-            : 'text-gray-400 group-hover:text-[#FFD600]'
+          isSaved ? 'fill-[#FFD600] text-[#FFD600]' : 'text-gray-400 group-hover:text-[#FFD600]'
         } transition-colors`}
       />
     </button>

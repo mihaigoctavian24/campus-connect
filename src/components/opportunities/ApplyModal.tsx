@@ -30,7 +30,12 @@ interface ApplyModalProps {
   disabled?: boolean;
 }
 
-export function ApplyModal({ activityId, opportunityTitle, onSuccess, disabled = false }: ApplyModalProps) {
+export function ApplyModal({
+  activityId,
+  opportunityTitle,
+  onSuccess,
+  disabled = false,
+}: ApplyModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState<'form' | 'success'>('form');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -209,7 +214,9 @@ export function ApplyModal({ activityId, opportunityTitle, onSuccess, disabled =
                 {errors.availability && (
                   <p className="mt-1 text-sm text-red-600">{errors.availability}</p>
                 )}
-                <p className="mt-1 text-xs text-gray-500">{formData.availability.length}/500 caractere</p>
+                <p className="mt-1 text-xs text-gray-500">
+                  {formData.availability.length}/500 caractere
+                </p>
               </div>
 
               {/* Relevant Experience */}
@@ -245,7 +252,9 @@ export function ApplyModal({ activityId, opportunityTitle, onSuccess, disabled =
                   <p className="mt-1 text-sm text-red-600">{errors.experience}</p>
                 )}
                 {formData.experience && (
-                  <p className="mt-1 text-xs text-gray-500">{formData.experience.length}/500 caractere</p>
+                  <p className="mt-1 text-xs text-gray-500">
+                    {formData.experience.length}/500 caractere
+                  </p>
                 )}
               </div>
 

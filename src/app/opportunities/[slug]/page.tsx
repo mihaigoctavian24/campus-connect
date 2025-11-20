@@ -21,7 +21,16 @@ export default function OpportunityDetailsPage() {
   const [opportunity, setOpportunity] = useState<Opportunity | null>(null);
   const [loading, setLoading] = useState(true);
   const [enrollment, setEnrollment] = useState<{ id: string; status: string } | null>(null);
-  const [sessions, setSessions] = useState<{ id: string; date: string; start_time: string; end_time: string; location: string; status: string }[]>([]);
+  const [sessions, setSessions] = useState<
+    {
+      id: string;
+      date: string;
+      start_time: string;
+      end_time: string;
+      location: string;
+      status: string;
+    }[]
+  >([]);
 
   useEffect(() => {
     async function loadOpportunity() {
@@ -29,7 +38,9 @@ export default function OpportunityDetailsPage() {
         const supabase = createClient();
 
         // Get current user
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
         // Fetch opportunity data
         const opportunityData = await getOpportunityBySlug(slug);
@@ -93,7 +104,9 @@ export default function OpportunityDetailsPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Opportunity Not Found</h1>
-          <p className="text-gray-600 mb-4">The opportunity you&apos;re looking for doesn&apos;t exist.</p>
+          <p className="text-gray-600 mb-4">
+            The opportunity you&apos;re looking for doesn&apos;t exist.
+          </p>
           <Link
             href="/explore"
             className="inline-flex items-center gap-2 px-4 py-2 bg-[#001f3f] text-white rounded-lg hover:bg-[#001f3f]/90"
@@ -125,15 +138,21 @@ export default function OpportunityDetailsPage() {
     if (!enrollment) return null;
 
     const statusConfig: Record<string, { label: string; className: string }> = {
-      PENDING: { label: 'Application Pending', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
+      PENDING: {
+        label: 'Application Pending',
+        className: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+      },
       APPROVED: { label: 'Enrolled', className: 'bg-green-100 text-green-800 border-green-200' },
-      REJECTED: { label: 'Application Rejected', className: 'bg-red-100 text-red-800 border-red-200' },
+      REJECTED: {
+        label: 'Application Rejected',
+        className: 'bg-red-100 text-red-800 border-red-200',
+      },
       WITHDRAWN: { label: 'Withdrawn', className: 'bg-gray-100 text-gray-800 border-gray-200' },
     };
 
     const config = statusConfig[enrollment.status] || {
       label: enrollment.status,
-      className: 'bg-gray-100 text-gray-800 border-gray-200'
+      className: 'bg-gray-100 text-gray-800 border-gray-200',
     };
 
     return (
@@ -217,15 +236,27 @@ export default function OpportunityDetailsPage() {
 
                     const getSessionStatusBadge = () => {
                       const statusConfig: Record<string, { label: string; className: string }> = {
-                        SCHEDULED: { label: 'Scheduled', className: 'bg-blue-100 text-blue-800 border-blue-200' },
-                        IN_PROGRESS: { label: 'In Progress', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-                        COMPLETED: { label: 'Completed', className: 'bg-green-100 text-green-800 border-green-200' },
-                        CANCELLED: { label: 'Cancelled', className: 'bg-red-100 text-red-800 border-red-200' },
+                        SCHEDULED: {
+                          label: 'Scheduled',
+                          className: 'bg-blue-100 text-blue-800 border-blue-200',
+                        },
+                        IN_PROGRESS: {
+                          label: 'In Progress',
+                          className: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                        },
+                        COMPLETED: {
+                          label: 'Completed',
+                          className: 'bg-green-100 text-green-800 border-green-200',
+                        },
+                        CANCELLED: {
+                          label: 'Cancelled',
+                          className: 'bg-red-100 text-red-800 border-red-200',
+                        },
                       };
 
                       const config = statusConfig[session.status] || {
                         label: session.status,
-                        className: 'bg-gray-100 text-gray-800 border-gray-200'
+                        className: 'bg-gray-100 text-gray-800 border-gray-200',
                       };
 
                       return (
@@ -243,20 +274,22 @@ export default function OpportunityDetailsPage() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <Calendar className="size-4 text-gray-400" />
-                            <span className="font-medium text-[#001f3f]">{formattedSessionDate}</span>
+                            <span className="font-medium text-[#001f3f]">
+                              {formattedSessionDate}
+                            </span>
                           </div>
                           <div className="flex items-center gap-2 mb-1 text-sm text-gray-600">
                             <Clock className="size-3.5 text-gray-400" />
-                            <span>{session.start_time} - {session.end_time}</span>
+                            <span>
+                              {session.start_time} - {session.end_time}
+                            </span>
                           </div>
                           <div className="flex items-center gap-2 text-sm text-gray-600">
                             <MapPin className="size-3.5 text-gray-400" />
                             <span>{session.location}</span>
                           </div>
                         </div>
-                        <div>
-                          {getSessionStatusBadge()}
-                        </div>
+                        <div>{getSessionStatusBadge()}</div>
                       </div>
                     );
                   })}
@@ -329,7 +362,10 @@ export default function OpportunityDetailsPage() {
                   </Badge>
                 )}
                 {isLimitedSpots && (
-                  <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-200">
+                  <Badge
+                    variant="outline"
+                    className="bg-orange-100 text-orange-800 border-orange-200"
+                  >
                     {spotsRemaining} spots left
                   </Badge>
                 )}

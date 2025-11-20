@@ -11,11 +11,11 @@ const enrollmentSchema = z.object({
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ activityId: string }> }
 ) {
   try {
     const supabase = await createClient();
-    const { id: activityId } = await params;
+    const { activityId } = await params;
 
     // Get authenticated user
     const {

@@ -46,10 +46,7 @@ export async function POST(request: NextRequest) {
       .maybeSingle<{ id: string }>();
 
     if (existing) {
-      return NextResponse.json(
-        { message: 'Activitatea este deja salvată' },
-        { status: 400 }
-      );
+      return NextResponse.json({ message: 'Activitatea este deja salvată' }, { status: 400 });
     }
 
     // Save the opportunity
@@ -65,10 +62,7 @@ export async function POST(request: NextRequest) {
 
     if (saveError) {
       console.error('Save error:', saveError);
-      return NextResponse.json(
-        { message: 'Eroare la salvarea activității' },
-        { status: 500 }
-      );
+      return NextResponse.json({ message: 'Eroare la salvarea activității' }, { status: 500 });
     }
 
     return NextResponse.json(
