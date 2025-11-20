@@ -34,7 +34,6 @@ export function OpportunityCard({
   activityId,
   initialSaved = false,
 }: OpportunityCardProps) {
-
   return (
     <Link
       href={`/opportunities/${slug}`}
@@ -54,7 +53,12 @@ export function OpportunityCard({
           )}
           {/* Save Button */}
           <div className="rounded-full bg-white/90 p-0.5">
-            <SaveButton activityId={activityId} initialSaved={initialSaved} size="sm" variant="icon" />
+            <SaveButton
+              activityId={activityId}
+              initialSaved={initialSaved}
+              size="sm"
+              variant="icon"
+            />
           </div>
         </div>
       </div>

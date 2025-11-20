@@ -80,4 +80,24 @@
       'rlig' 1,
       'calt' 1;
   }
+
+  /* Force time/date input accent color to use theme gold */
+  input[type='time'],
+  input[type='date'] {
+    accent-color: hsl(51 100% 50%); /* Gold accent for native controls */
+  }
+
+  input[type='time']::-webkit-calendar-picker-indicator,
+  input[type='date']::-webkit-calendar-picker-indicator {
+    filter: invert(73%) sepia(95%) saturate(2449%) hue-rotate(359deg) brightness(103%)
+      contrast(101%);
+  }
+
+  input[type='time']::-webkit-datetime-edit-hour-field:focus,
+  input[type='time']::-webkit-datetime-edit-minute-field:focus,
+  input[type='time']::-webkit-datetime-edit-ampm-field:focus {
+    background-color: hsl(51 100% 50%);
+    color: hsl(210 100% 12.5%);
+    outline: none;
+  }
 }

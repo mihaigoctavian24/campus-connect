@@ -122,6 +122,7 @@ export async function getActiveEnrollments(userId: string): Promise<ActiveOpport
 
       return {
         id: enrollment.id,
+        activityId: activity.id,
         title: activity.title,
         department: activity.categories?.name || 'General',
         progress,

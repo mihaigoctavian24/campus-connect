@@ -6,17 +6,11 @@ import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { Users, BookOpen, Clock, CheckCircle, Plus } from 'lucide-react';
 import { PendingActions } from '@/components/dashboard/professor/PendingActions';
-
-interface ProfessorStats {
-  activeOpportunities: number;
-  totalStudents: number;
-  pendingActions: number;
-  newApplications: number;
-  pendingHours: number;
-  upcomingSessions: number;
-}
+import { getProfessorStats, type ProfessorStats } from '@/lib/services/professor-stats.service';
+import { useRouter } from 'next/navigation';
 
 export default function ProfessorDashboardPage() {
+  const router = useRouter();
   const [userName, setUserName] = useState('Professor');
   const [stats, setStats] = useState<ProfessorStats>({
     activeOpportunities: 0,
@@ -50,16 +44,9 @@ export default function ProfessorDashboardPage() {
             setUserName(`${profileData.first_name} ${profileData.last_name}`);
           }
 
-          // TODO: Fetch professor stats from database
-          // For now, using placeholder data
-          setStats({
-            activeOpportunities: 0,
-            totalStudents: 0,
-            pendingActions: 0,
-            newApplications: 0,
-            pendingHours: 0,
-            upcomingSessions: 0,
-          });
+          // Fetch real professor stats from database
+          const professorStats = await getProfessorStats(user.id);
+          setStats(professorStats);
         } catch (error) {
           console.error('Failed to load professor data:', error);
         }
@@ -143,6 +130,7 @@ export default function ProfessorDashboardPage() {
           <Button
             variant="outline"
             className="h-auto flex flex-col items-center justify-center p-6 hover:bg-[#FFD600] transition-colors group"
+            onClick={() => router.push('/dashboard/professor/opportunities')}
           >
             <Plus className="h-8 w-8 mb-2 text-[#001f3f] group-hover:text-black transition-colors" />
             <span className="font-medium group-hover:text-black transition-colors">
@@ -156,6 +144,7 @@ export default function ProfessorDashboardPage() {
           <Button
             variant="outline"
             className="h-auto flex flex-col items-center justify-center p-6 hover:bg-[#FFD600] transition-colors group relative"
+            onClick={() => router.push('/dashboard/professor/opportunities')}
           >
             {stats.newApplications > 0 && (
               <span className="absolute top-2 right-2 h-6 w-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">
@@ -174,6 +163,7 @@ export default function ProfessorDashboardPage() {
           <Button
             variant="outline"
             className="h-auto flex flex-col items-center justify-center p-6 hover:bg-[#FFD600] transition-colors group relative"
+            onClick={() => router.push('/dashboard/professor/students')}
           >
             {stats.pendingHours > 0 && (
               <span className="absolute top-2 right-2 h-6 w-6 rounded-full bg-yellow-600 text-white text-xs flex items-center justify-center">
@@ -190,6 +180,7 @@ export default function ProfessorDashboardPage() {
           <Button
             variant="outline"
             className="h-auto flex flex-col items-center justify-center p-6 hover:bg-[#FFD600] transition-colors group"
+            onClick={() => router.push('/dashboard/professor/sessions')}
           >
             <Clock className="h-8 w-8 mb-2 text-[#001f3f] group-hover:text-black transition-colors" />
             <span className="font-medium group-hover:text-black transition-colors">
@@ -207,8 +198,8 @@ export default function ProfessorDashboardPage() {
         newApplications={stats.newApplications}
         pendingHours={stats.pendingHours}
         upcomingSessions={stats.upcomingSessions}
-        onNavigate={(_tab) => {
-          // TODO: Navigate to appropriate section when pages are created
+        onNavigate={(tab) => {
+          router.push(`/dashboard/professor/${tab}`);
         }}
       />
     </div>

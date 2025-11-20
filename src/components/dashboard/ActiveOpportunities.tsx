@@ -5,6 +5,7 @@ import { ActiveOpportunityCard } from './ActiveOpportunityCard';
 
 export interface ActiveOpportunity {
   id: string;
+  activityId: string;
   title: string;
   department: string;
   progress: number;
@@ -21,12 +22,14 @@ interface ActiveOpportunitiesProps {
   opportunities: ActiveOpportunity[];
   loading?: boolean;
   className?: string;
+  onCheckInSuccess?: () => void;
 }
 
 export function ActiveOpportunities({
   opportunities,
   loading = false,
   className,
+  onCheckInSuccess,
 }: ActiveOpportunitiesProps) {
   if (loading) {
     return (
@@ -60,7 +63,11 @@ export function ActiveOpportunities({
       <h2 className="text-2xl font-semibold">My Active Opportunities</h2>
       <div className="grid gap-4 md:grid-cols-2">
         {opportunities.map((opportunity) => (
-          <ActiveOpportunityCard key={opportunity.id} opportunity={opportunity} />
+          <ActiveOpportunityCard
+            key={opportunity.id}
+            opportunity={opportunity}
+            onCheckInSuccess={onCheckInSuccess}
+          />
         ))}
       </div>
     </div>

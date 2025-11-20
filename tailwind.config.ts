@@ -1,4 +1,4 @@
-import type { Config } from 'tailwindcss'
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
   darkMode: ['class'],
@@ -18,9 +18,9 @@ const config: Config = {
     extend: {
       colors: {
         // Campus Connect Brand Colors
-        'navy': '#001f3f',
-        'burgundy': '#800020',
-        'gold': 'gold',
+        navy: '#001f3f',
+        burgundy: '#800020',
+        gold: 'gold',
 
         // shadcn/ui semantic colors
         border: 'hsl(var(--border))',
@@ -79,6 +79,6 @@ const config: Config = {
     },
   },
   plugins: [require('tailwindcss-animate')],
-}
+};
 
-export default config
+export default config;

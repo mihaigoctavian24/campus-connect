@@ -5,14 +5,19 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { Calendar, MapPin, Eye, FileText, QrCode } from 'lucide-react';
+import { Calendar, MapPin, Eye, FileText } from 'lucide-react';
+import { CheckInButton } from '@/components/attendance/CheckInButton';
 import type { ActiveOpportunity } from './ActiveOpportunities';
 
 interface ActiveOpportunityCardProps {
   opportunity: ActiveOpportunity;
+  onCheckInSuccess?: () => void;
 }
 
-export function ActiveOpportunityCard({ opportunity }: ActiveOpportunityCardProps) {
+export function ActiveOpportunityCard({
+  opportunity,
+  onCheckInSuccess,
+}: ActiveOpportunityCardProps) {
   return (
     <Card>
       <CardHeader>
@@ -56,10 +61,12 @@ export function ActiveOpportunityCard({ opportunity }: ActiveOpportunityCardProp
             <FileText className="mr-2 h-4 w-4" />
             Log Hours
           </Button>
-          <Button size="sm">
-            <QrCode className="mr-2 h-4 w-4" />
-            Check-in
-          </Button>
+          <CheckInButton
+            activityId={opportunity.activityId}
+            activityTitle={opportunity.title}
+            size="sm"
+            onSuccess={onCheckInSuccess}
+          />
         </div>
       </CardContent>
     </Card>

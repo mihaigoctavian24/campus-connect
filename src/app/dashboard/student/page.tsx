@@ -35,48 +35,48 @@ export default function StudentDashboardPage() {
   const [savedOpportunities, setSavedOpportunities] = useState<SavedOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadUserAndStats() {
-      const supabase = createClient();
+  const loadUserAndStats = async () => {
+    const supabase = createClient();
 
-      // Get current user
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    // Get current user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-      if (user) {
-        // Fetch user profile and stats in parallel
-        try {
-          const [profileData, userStats, enrollments, userApplications, sessions, savedOpps] =
-            await Promise.all([
-              supabase
-                .from('profiles')
-                .select('first_name, last_name')
-                .eq('id', user.id)
-                .single<{ first_name: string; last_name: string }>(),
-              getStudentStats(user.id),
-              getActiveEnrollments(user.id),
-              getStudentApplications(user.id),
-              getUpcomingSessions(user.id),
-              getSavedOpportunities(user.id),
-            ]);
+    if (user) {
+      // Fetch user profile and stats in parallel
+      try {
+        const [profileData, userStats, enrollments, userApplications, sessions, savedOpps] =
+          await Promise.all([
+            supabase
+              .from('profiles')
+              .select('first_name, last_name')
+              .eq('id', user.id)
+              .single<{ first_name: string; last_name: string }>(),
+            getStudentStats(user.id),
+            getActiveEnrollments(user.id),
+            getStudentApplications(user.id),
+            getUpcomingSessions(user.id),
+            getSavedOpportunities(user.id),
+          ]);
 
-          if (profileData.data) {
-            setUserName(`${profileData.data.first_name} ${profileData.data.last_name}`);
-          }
-          setStats(userStats);
-          setActiveOpportunities(enrollments);
-          setApplications(userApplications);
-          setUpcomingSessions(sessions);
-          setSavedOpportunities(savedOpps);
-        } catch (error) {
-          console.error('Failed to load data:', error);
+        if (profileData.data) {
+          setUserName(`${profileData.data.first_name} ${profileData.data.last_name}`);
         }
+        setStats(userStats);
+        setActiveOpportunities(enrollments);
+        setApplications(userApplications);
+        setUpcomingSessions(sessions);
+        setSavedOpportunities(savedOpps);
+      } catch (error) {
+        console.error('Failed to load data:', error);
       }
-
-      setLoading(false);
     }
 
+    setLoading(false);
+  };
+
+  useEffect(() => {
     loadUserAndStats();
   }, []);
 
@@ -113,7 +113,11 @@ export default function StudentDashboardPage() {
       />
 
       {/* Active Opportunities */}
-      <ActiveOpportunities opportunities={activeOpportunities} loading={loading} />
+      <ActiveOpportunities
+        opportunities={activeOpportunities}
+        loading={loading}
+        onCheckInSuccess={loadUserAndStats}
+      />
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Upcoming Sessions */}

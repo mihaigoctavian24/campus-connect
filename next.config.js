@@ -15,6 +15,6 @@ const nextConfig = {
       bodySizeLimit: '5mb',
     },
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
