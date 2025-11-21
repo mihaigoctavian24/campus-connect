@@ -42,6 +42,7 @@ export default async function OpportunityDetailsPage({ params }: OpportunityDeta
 
   // Fetch sessions for this activity
   const { data: sessionsData } = await supabase
+    .schema('public')
     .from('sessions')
     .select('*')
     .eq('activity_id', opportunity.id)

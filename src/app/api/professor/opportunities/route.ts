@@ -98,6 +98,7 @@ export async function GET() {
 
         // Get sessions for this activity
         const { data: sessions } = await supabase
+          .schema('public')
           .from('sessions')
           .select('id, start_time, end_time, status')
           .eq('activity_id', activity.id);

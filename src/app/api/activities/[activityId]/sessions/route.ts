@@ -148,6 +148,7 @@ export async function POST(
 
     // Insert all sessions into database
     const { data: createdSessions, error: insertError } = await supabase
+      .schema('public')
       .from('sessions')
       // @ts-expect-error - Supabase type inference issue with sessions table
       .insert(sessionRecords)
@@ -191,6 +192,7 @@ export async function GET(
 
     // Get sessions for this activity
     const { data: sessions, error } = await supabase
+      .schema('public')
       .from('sessions')
       .select('*')
       .eq('activity_id', activityId)

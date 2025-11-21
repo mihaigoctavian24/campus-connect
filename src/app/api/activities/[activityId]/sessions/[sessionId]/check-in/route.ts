@@ -71,6 +71,7 @@ export async function POST(
 
     // 5. Verify session exists and belongs to activity
     const { data: session, error: sessionError } = await supabase
+      .schema('public')
       .from('sessions')
       .select('id, activity_id, date, start_time, end_time, status')
       .eq('id', sessionId)

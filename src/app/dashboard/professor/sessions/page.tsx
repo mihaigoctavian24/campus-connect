@@ -22,47 +22,107 @@ import { SessionScheduler } from '@/components/sessions/SessionScheduler';
 import { SessionCalendar } from '@/components/sessions/SessionCalendar';
 import { createClient } from '@/lib/supabase/client';
 
+interface Session {
+  id: string;
+  activity_id: string;
+  activity_title: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+  location: string;
+  max_participants: number | null;
+  status: 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+  reminder_sent: boolean;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
 export default function ProfessorSessionsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activities, setActivities] = useState<Array<{ id: string; title: string }>>([]);
   const [selectedActivityId, setSelectedActivityId] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const [allSessions, setAllSessions] = useState<Session[]>([]);
 
   useEffect(() => {
-    async function loadActivities() {
+    loadActivitiesAndSessions();
+  }, []);
+
+  async function loadActivitiesAndSessions() {
+    try {
+      setLoading(true);
       const supabase = createClient();
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (user) {
-        const { data } = await supabase
-          .from('activities')
-          .select('id, title')
-          .eq('created_by', user.id)
-          .eq('status', 'OPEN')
-          .is('deleted_at', null)
-          .order('created_at', { ascending: false })
-          .returns<Array<{ id: string; title: string }>>();
+      if (!user) {
+        setLoading(false);
+        return;
+      }
 
-        if (data) {
-          setActivities(data);
-          if (data.length > 0) {
-            setSelectedActivityId(data[0].id);
+      // Load activities
+      const { data: activitiesData } = await supabase
+        .from('activities')
+        .select('id, title')
+        .eq('created_by', user.id)
+        .eq('status', 'OPEN')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .returns<Array<{ id: string; title: string }>>();
+
+      if (activitiesData) {
+        setActivities(activitiesData);
+        if (activitiesData.length > 0) {
+          setSelectedActivityId(activitiesData[0].id);
+        }
+
+        // Load all sessions for all activities
+        const activityIds = activitiesData.map((a) => a.id);
+
+        if (activityIds.length > 0) {
+          const { data: sessionsData } = await supabase
+            .schema('public')
+            .from('sessions')
+            .select('*')
+            .in('activity_id', activityIds)
+            .order('date', { ascending: true })
+            .order('start_time', { ascending: true });
+
+          if (sessionsData) {
+            // Enrich sessions with activity titles
+            const sessionsWithTitles: Session[] = sessionsData.map((session) => {
+              const activity = activitiesData.find((a) => a.id === session.activity_id);
+              return {
+                ...session,
+                activity_title: activity?.title || 'Activitate',
+              };
+            });
+
+            setAllSessions(sessionsWithTitles);
           }
         }
       }
+    } catch (error) {
+      console.error('Error loading activities and sessions:', error);
+    } finally {
       setLoading(false);
     }
-
-    loadActivities();
-  }, []);
+  }
 
   const [refreshKey, setRefreshKey] = useState(0);
 
   const handleSessionsCreated = () => {
     setIsDialogOpen(false);
-    setRefreshKey((prev) => prev + 1); // Trigger calendar refresh
+    loadActivitiesAndSessions(); // Reload all sessions
+    setRefreshKey((prev) => prev + 1);
+  };
+
+  const handleSessionUpdate = () => {
+    loadActivitiesAndSessions(); // Reload all sessions
+    setRefreshKey((prev) => prev + 1);
   };
 
   return (
@@ -122,14 +182,12 @@ export default function ProfessorSessionsPage() {
         </Dialog>
       </div>
 
-      {/* Sessions Calendar */}
-      {selectedActivityId && (
-        <SessionCalendar
-          key={refreshKey}
-          activityId={selectedActivityId}
-          onSessionUpdate={() => setRefreshKey((prev) => prev + 1)}
-        />
-      )}
+      {/* Sessions Calendar - Show ALL sessions from ALL activities */}
+      <SessionCalendar
+        key={refreshKey}
+        sessions={allSessions}
+        onSessionUpdate={handleSessionUpdate}
+      />
     </div>
   );
 }

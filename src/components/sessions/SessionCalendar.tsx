@@ -30,6 +30,7 @@ import { cn } from '@/components/ui/utils';
 interface Session {
   id: string;
   activity_id: string;
+  activity_title?: string;
   date: string;
   start_time: string;
   end_time: string;
@@ -43,7 +44,8 @@ interface Session {
 }
 
 interface SessionCalendarProps {
-  activityId: string;
+  activityId?: string | null;
+  sessions?: Session[];
   onSessionUpdate?: () => void;
 }
 
@@ -61,30 +63,39 @@ const statusLabels = {
   CANCELLED: 'Anulată',
 };
 
-export function SessionCalendar({ activityId, onSessionUpdate }: SessionCalendarProps) {
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [loading, setLoading] = useState(true);
+export function SessionCalendar({ activityId, sessions: propSessions, onSessionUpdate }: SessionCalendarProps) {
+  const [sessions, setSessions] = useState<Session[]>(propSessions || []);
+  const [loading, setLoading] = useState(!propSessions);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [activityTitle, setActivityTitle] = useState<string>('');
 
   useEffect(() => {
-    loadActivityAndSessions();
+    if (propSessions) {
+      setSessions(propSessions);
+      setLoading(false);
+    } else if (activityId) {
+      loadActivityAndSessions();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activityId]);
+  }, [activityId, propSessions]);
 
   async function loadActivityAndSessions() {
+    if (!activityId) return;
+
     try {
       setLoading(true);
 
-      // Load sessions and activity title
+      // Load sessions for specific activity
       const response = await fetch(`/api/activities/${activityId}/sessions`);
       if (response.ok) {
         const data = await response.json();
-        setSessions(data.sessions || []);
-        setActivityTitle(data.activityTitle || '');
+        const sessionsWithTitle = data.sessions.map((s: Session) => ({
+          ...s,
+          activity_title: data.activityTitle,
+        }));
+        setSessions(sessionsWithTitle || []);
       }
     } catch (error) {
       console.error('Error loading activity and sessions:', error);
@@ -112,19 +123,24 @@ export function SessionCalendar({ activityId, onSessionUpdate }: SessionCalendar
     setIsDetailsOpen(true);
   }
 
-  async function handleCancelSession(sessionId: string) {
+  async function handleCancelSession(session: Session) {
     if (!confirm('Sigur vrei să anulezi această sesiune?')) return;
 
     try {
-      const response = await fetch(`/api/activities/${activityId}/sessions/${sessionId}`, {
+      const response = await fetch(`/api/activities/${session.activity_id}/sessions/${session.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'CANCELLED' }),
       });
 
       if (response.ok) {
-        await loadActivityAndSessions();
-        onSessionUpdate?.();
+        if (propSessions) {
+          // If using propSessions, notify parent to refresh
+          onSessionUpdate?.();
+        } else {
+          // If using activityId, reload locally
+          await loadActivityAndSessions();
+        }
         setIsDetailsOpen(false);
       }
     } catch (error) {
@@ -287,7 +303,7 @@ export function SessionCalendar({ activityId, onSessionUpdate }: SessionCalendar
                   {/* Activity Title + Status Badge */}
                   <div className="flex items-start justify-between mb-2">
                     <h4 className="font-semibold text-sm group-hover:text-white line-clamp-1">
-                      {activityTitle}
+                      {session.activity_title || 'Activitate'}
                     </h4>
                     <Badge
                       className={`${statusColors[session.status]} ml-2 shrink-0`}
@@ -328,7 +344,9 @@ export function SessionCalendar({ activityId, onSessionUpdate }: SessionCalendar
       <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader className="space-y-3">
-            <DialogTitle className="text-2xl">{activityTitle}</DialogTitle>
+            <DialogTitle className="text-2xl">
+              {selectedSession?.activity_title || 'Activitate'}
+            </DialogTitle>
             <div className="flex items-center justify-between">
               <DialogDescription className="text-base">
                 {selectedSession &&
@@ -395,7 +413,7 @@ export function SessionCalendar({ activityId, onSessionUpdate }: SessionCalendar
                   <Button
                     variant="destructive"
                     className="flex-1"
-                    onClick={() => handleCancelSession(selectedSession.id)}
+                    onClick={() => handleCancelSession(selectedSession)}
                   >
                     <XCircle className="h-4 w-4 mr-2" />
                     Anulează

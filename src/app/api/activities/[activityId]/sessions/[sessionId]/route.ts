@@ -49,6 +49,7 @@ export async function PUT(
 
     // Verify session exists and belongs to this activity
     const { data: existingSession, error: sessionCheckError } = await supabase
+      .schema('public')
       .from('sessions')
       .select('id')
       .eq('id', sessionId)
@@ -77,6 +78,7 @@ export async function PUT(
     };
 
     const { data: updatedSession, error: updateError } = await supabase
+      .schema('public')
       .from('sessions')
       // @ts-expect-error - Supabase type inference issue with activity_sessions table
       .update(updateData)
@@ -141,6 +143,7 @@ export async function DELETE(
 
     // Verify session exists and belongs to this activity
     const { data: existingSession, error: sessionCheckError } = await supabase
+      .schema('public')
       .from('sessions')
       .select('id')
       .eq('id', sessionId)
@@ -159,6 +162,7 @@ export async function DELETE(
     };
 
     const { error: deleteError } = await supabase
+      .schema('public')
       .from('sessions')
       // @ts-expect-error - Supabase type inference issue with activity_sessions table
       .update(deleteData)

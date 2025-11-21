@@ -76,13 +76,13 @@ export async function getProfessorStats(professorId: string): Promise<ProfessorS
     nextWeek.setDate(today.getDate() + 7);
 
     const { count: upcomingSessionsCount, error: sessionsError } = await supabase
+      .schema('public')
       .from('sessions')
       .select('*, activities!inner(created_by)', { count: 'exact', head: true })
       .eq('activities.created_by', professorId)
       .gte('date', today.toISOString().split('T')[0])
       .lte('date', nextWeek.toISOString().split('T')[0])
-      .in('status', ['SCHEDULED', 'IN_PROGRESS'])
-      .is('deleted_at', null);
+      .in('status', ['SCHEDULED', 'IN_PROGRESS']);
 
     if (sessionsError) {
       console.error('Error fetching upcoming sessions:', sessionsError);
