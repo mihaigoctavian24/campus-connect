@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -58,6 +58,10 @@ export function CreateOpportunityWizard({ onSuccess }: CreateOpportunityWizardPr
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
+  // Categories and departments from database
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
+
   // Form data for each step
   const [step1Data, setStep1Data] = useState<Step1Data>({
     title: '',
@@ -86,20 +90,27 @@ export function CreateOpportunityWizard({ onSuccess }: CreateOpportunityWizardPr
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Categories and departments (mock data for now - will be fetched from API)
-  const categories = [
-    { id: '1', name: 'Educație' },
-    { id: '2', name: 'Mediu' },
-    { id: '3', name: 'Social' },
-    { id: '4', name: 'Sport' },
-  ];
+  // Fetch categories and departments on mount
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [categoriesRes, departmentsRes] = await Promise.all([
+          fetch('/api/categories'),
+          fetch('/api/departments'),
+        ]);
 
-  const departments = [
-    { id: '1', name: 'Informatică' },
-    { id: '2', name: 'Medicină' },
-    { id: '3', name: 'Drept' },
-    { id: '4', name: 'Economie' },
-  ];
+        if (categoriesRes.ok && departmentsRes.ok) {
+          const categoriesData = await categoriesRes.json();
+          const departmentsData = await departmentsRes.json();
+          setCategories(categoriesData);
+          setDepartments(departmentsData);
+        }
+      } catch (error) {
+        console.error('Error loading categories and departments:', error);
+      }
+    }
+    loadData();
+  }, []);
 
   const validateStep = (step: number): boolean => {
     setErrors({});
