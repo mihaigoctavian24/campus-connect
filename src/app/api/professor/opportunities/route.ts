@@ -96,28 +96,46 @@ export async function GET() {
           .eq('activity_id', activity.id)
           .eq('status', 'PENDING');
 
-        // Get total hours from sessions
+        // Get sessions for this activity
         const { data: sessions } = await supabase
-          .from('activity_sessions')
-          .select('duration_hours')
+          .from('sessions')
+          .select('id, start_time, end_time, status')
           .eq('activity_id', activity.id);
 
-        const totalHours = sessions?.reduce((sum, session) => sum + (session.duration_hours || 0), 0) || 0;
+        // Calculate total hours from sessions (difference between start and end time)
+        let totalHours = 0;
+        if (sessions && sessions.length > 0) {
+          sessions.forEach((session) => {
+            if (session.start_time && session.end_time) {
+              const start = new Date(`1970-01-01T${session.start_time}`);
+              const end = new Date(`1970-01-01T${session.end_time}`);
+              const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+              totalHours += hours;
+            }
+          });
+        }
 
-        // Calculate average attendance rate from sessions
-        const { data: sessionStats } = await supabase
-          .from('activity_sessions')
-          .select('total_participants, attended_count')
-          .eq('activity_id', activity.id)
-          .gt('total_participants', 0);
-
+        // Calculate average attendance rate from attendance records
         let avgAttendance: number | null = null;
-        if (sessionStats && sessionStats.length > 0) {
-          const totalAttendanceRate = sessionStats.reduce((sum, stat) => {
-            const rate = (stat.attended_count / stat.total_participants) * 100;
-            return sum + rate;
-          }, 0);
-          avgAttendance = Math.round(totalAttendanceRate / sessionStats.length);
+        if (sessions && sessions.length > 0) {
+          const sessionIds = sessions.map((s) => s.id);
+
+          // Get total attendance records for these sessions
+          const { count: totalAttendance } = await supabase
+            .from('attendance')
+            .select('*', { count: 'exact', head: true })
+            .in('session_id', sessionIds);
+
+          // Get present attendance records
+          const { count: presentCount } = await supabase
+            .from('attendance')
+            .select('*', { count: 'exact', head: true })
+            .in('session_id', sessionIds)
+            .eq('status', 'PRESENT');
+
+          if (totalAttendance && totalAttendance > 0) {
+            avgAttendance = Math.round(((presentCount || 0) / totalAttendance) * 100);
+          }
         }
 
         return {
