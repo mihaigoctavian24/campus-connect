@@ -27,16 +27,18 @@ export async function GET(
         id,
         title,
         description,
-        category,
+        category_id,
         location,
-        start_date,
-        end_date,
+        date,
+        start_time,
+        end_time,
         status,
         max_participants,
         current_participants,
         created_by,
         created_at,
-        updated_at
+        updated_at,
+        department_id
       `
       )
       .eq('id', activityId)

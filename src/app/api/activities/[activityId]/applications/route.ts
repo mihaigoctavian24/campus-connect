@@ -39,7 +39,7 @@ export async function GET(
 
     // Fetch all enrollments (applications) for this activity with student details
     const { data: applications, error: applicationsError } = await supabase
-      .from('activity_enrollments')
+      .from('enrollments')
       .select(
         `
         id,
@@ -52,7 +52,7 @@ export async function GET(
         reviewed_at,
         rejection_reason,
         custom_message,
-        profiles (
+        profiles!enrollments_user_id_fkey (
           id,
           first_name,
           last_name,
@@ -82,7 +82,7 @@ export async function GET(
       applications.map(async (app: any) => {
         // Get total completed hours for this student
         const { count: completedActivities } = await supabase
-          .from('activity_enrollments')
+          .from('enrollments')
           .select('*', { count: 'exact', head: true })
           .eq('user_id', app.user_id)
           .eq('status', 'APPROVED')
