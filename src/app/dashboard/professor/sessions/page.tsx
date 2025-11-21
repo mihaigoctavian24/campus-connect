@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -18,8 +17,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Clock, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { SessionScheduler } from '@/components/sessions/SessionScheduler';
+import { SessionCalendar } from '@/components/sessions/SessionCalendar';
 import { createClient } from '@/lib/supabase/client';
 
 export default function ProfessorSessionsPage() {
@@ -58,9 +58,11 @@ export default function ProfessorSessionsPage() {
     loadActivities();
   }, []);
 
+  const [refreshKey, setRefreshKey] = useState(0);
+
   const handleSessionsCreated = () => {
     setIsDialogOpen(false);
-    // Refresh sessions list here if needed
+    setRefreshKey((prev) => prev + 1); // Trigger calendar refresh
   };
 
   return (
@@ -120,27 +122,14 @@ export default function ProfessorSessionsPage() {
         </Dialog>
       </div>
 
-      {/* Sessions Calendar/List - Placeholder */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Sesiuni Viitoare</CardTitle>
-          <CardDescription>Sesiunile tale programate</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-12 text-muted-foreground">
-            <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p className="text-lg mb-2">Nu ai sesiuni programate</p>
-            <p className="text-sm mb-4">Programează o sesiune pentru studenții tăi</p>
-            <Button
-              onClick={() => setIsDialogOpen(true)}
-              disabled={loading || activities.length === 0}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Programează Sesiune
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Sessions Calendar */}
+      {selectedActivityId && (
+        <SessionCalendar
+          key={refreshKey}
+          activityId={selectedActivityId}
+          onSessionUpdate={() => setRefreshKey((prev) => prev + 1)}
+        />
+      )}
     </div>
   );
 }
