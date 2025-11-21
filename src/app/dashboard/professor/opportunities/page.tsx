@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BookOpen, Plus } from 'lucide-react';
@@ -17,10 +18,12 @@ export default function ProfessorOpportunitiesPage() {
 
       {/* Create Opportunity Button */}
       <div>
-        <Button size="lg">
-          <Plus className="h-5 w-5 mr-2" />
-          Creează Oportunitate Nouă
-        </Button>
+        <Link href="/dashboard/professor/opportunities/create">
+          <Button size="lg">
+            <Plus className="h-5 w-5 mr-2" />
+            Creează Oportunitate Nouă
+          </Button>
+        </Link>
       </div>
 
       {/* Opportunities List - Placeholder */}
@@ -34,10 +37,12 @@ export default function ProfessorOpportunitiesPage() {
             <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p className="text-lg mb-2">Nu ai oportunități create încă</p>
             <p className="text-sm mb-4">Creează prima ta oportunitate de voluntariat</p>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Creează Oportunitate
-            </Button>
+            <Link href="/dashboard/professor/opportunities/create">
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Creează Oportunitate
+              </Button>
+            </Link>
           </div>
         </CardContent>
       </Card>
