@@ -14,14 +14,17 @@ interface Activity {
   id: string;
   title: string;
   description: string;
-  category: string;
+  category_id: string;
   location: string;
-  start_date: string;
-  end_date: string;
+  date: string;
+  start_time: string;
+  end_time: string;
   status: string;
   max_participants: number;
   current_participants: number;
+  department_id: string;
   created_at: string;
+  updated_at: string;
 }
 
 interface OpportunityDetailPageProps {
@@ -100,7 +103,6 @@ export function OpportunityDetailPage({ activityId }: OpportunityDetailPageProps
                 <Badge className={getStatusBadgeClass(activity.status)}>
                   {getStatusLabel(activity.status)}
                 </Badge>
-                <Badge variant="outline">{activity.category}</Badge>
               </div>
             </div>
             <div className="text-right">
@@ -117,9 +119,9 @@ export function OpportunityDetailPage({ activityId }: OpportunityDetailPageProps
             <div className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">Dată Început</p>
+                <p className="text-sm text-muted-foreground">Dată</p>
                 <p className="font-medium">
-                  {new Date(activity.start_date).toLocaleDateString('ro-RO', {
+                  {new Date(activity.date).toLocaleDateString('ro-RO', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
@@ -131,13 +133,9 @@ export function OpportunityDetailPage({ activityId }: OpportunityDetailPageProps
             <div className="flex items-center gap-2">
               <Clock className="h-5 w-5 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">Dată Sfârșit</p>
+                <p className="text-sm text-muted-foreground">Interval Orar</p>
                 <p className="font-medium">
-                  {new Date(activity.end_date).toLocaleDateString('ro-RO', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
+                  {activity.start_time} - {activity.end_time}
                 </p>
               </div>
             </div>
