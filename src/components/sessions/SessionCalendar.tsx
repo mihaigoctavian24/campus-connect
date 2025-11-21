@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,9 +11,21 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Clock, MapPin, Users, Edit2, XCircle } from 'lucide-react';
-import { format, parseISO, isSameDay } from 'date-fns';
+import { Clock, MapPin, Users, Edit2, XCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  format,
+  parseISO,
+  isSameDay,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  addMonths,
+  subMonths,
+  isSameMonth,
+  isToday,
+} from 'date-fns';
 import { ro } from 'date-fns/locale';
+import { cn } from '@/components/ui/utils';
 
 interface Session {
   id: string;
@@ -53,25 +64,30 @@ const statusLabels = {
 export function SessionCalendar({ activityId, onSessionUpdate }: SessionCalendarProps) {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [activityTitle, setActivityTitle] = useState<string>('');
 
   useEffect(() => {
-    loadSessions();
+    loadActivityAndSessions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activityId]);
 
-  async function loadSessions() {
+  async function loadActivityAndSessions() {
     try {
       setLoading(true);
+
+      // Load sessions and activity title
       const response = await fetch(`/api/activities/${activityId}/sessions`);
       if (response.ok) {
         const data = await response.json();
         setSessions(data.sessions || []);
+        setActivityTitle(data.activityTitle || '');
       }
     } catch (error) {
-      console.error('Error loading sessions:', error);
+      console.error('Error loading activity and sessions:', error);
     } finally {
       setLoading(false);
     }
@@ -79,22 +95,16 @@ export function SessionCalendar({ activityId, onSessionUpdate }: SessionCalendar
 
   // Get sessions for the selected date
   const selectedDateSessions = sessions.filter((session) => {
-    if (!selectedDate) return false;
     const sessionDate = parseISO(session.date);
     return isSameDay(sessionDate, selectedDate);
   });
 
-  // Get all dates that have sessions
-  const sessionDates = sessions.map((session) => parseISO(session.date));
-
-  // Custom day renderer to show dots for sessions
-  const modifiers = {
-    hasSession: sessionDates,
-  };
-
-  const modifiersClassNames = {
-    hasSession:
-      'relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-primary after:rounded-full',
+  // Check if a date has sessions
+  const hasSessionsOnDate = (date: Date) => {
+    return sessions.some((session) => {
+      const sessionDate = parseISO(session.date);
+      return isSameDay(sessionDate, date);
+    });
   };
 
   function handleSessionClick(session: Session) {
@@ -113,7 +123,7 @@ export function SessionCalendar({ activityId, onSessionUpdate }: SessionCalendar
       });
 
       if (response.ok) {
-        await loadSessions();
+        await loadActivityAndSessions();
         onSessionUpdate?.();
         setIsDetailsOpen(false);
       }
@@ -121,6 +131,99 @@ export function SessionCalendar({ activityId, onSessionUpdate }: SessionCalendar
       console.error('Error cancelling session:', error);
     }
   }
+
+  // Render custom calendar
+  const renderCalendar = () => {
+    const monthStart = startOfMonth(currentMonth);
+    const monthEnd = endOfMonth(currentMonth);
+    const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
+    const firstDayOfWeek = monthStart.getDay();
+    const calendarDays: (Date | null)[] = [...Array(firstDayOfWeek).fill(null), ...daysInMonth];
+
+    return (
+      <div className="space-y-3">
+        {/* Month Navigation */}
+        <div className="flex items-center justify-between">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+            className="h-7 w-7"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <div className="text-sm font-medium">
+            {format(currentMonth, 'MMMM yyyy', { locale: ro })}
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+            className="h-7 w-7"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Calendar Grid */}
+        <table className="w-full border-collapse">
+          <thead>
+            <tr>
+              {['D', 'L', 'M', 'M', 'J', 'V', 'S'].map((day, index) => (
+                <th
+                  key={index}
+                  className="text-center text-xs font-normal text-muted-foreground p-2"
+                >
+                  {day}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: Math.ceil(calendarDays.length / 7) }).map((_, weekIndex) => (
+              <tr key={weekIndex}>
+                {calendarDays.slice(weekIndex * 7, (weekIndex + 1) * 7).map((day, dayIndex) => {
+                  if (!day) {
+                    return <td key={dayIndex} className="p-1" />;
+                  }
+
+                  const isSelected = isSameDay(day, selectedDate);
+                  const isCurrentMonth = isSameMonth(day, currentMonth);
+                  const isTodayDate = isToday(day);
+                  const hasSessions = hasSessionsOnDate(day);
+
+                  return (
+                    <td key={dayIndex} className="p-0.5 text-center">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedDate(day)}
+                        className={cn(
+                          'w-8 h-8 rounded-md text-xs transition-colors relative',
+                          !isCurrentMonth && 'text-muted-foreground opacity-50',
+                          isSelected && 'bg-primary text-primary-foreground font-medium',
+                          !isSelected && isTodayDate && 'bg-accent text-accent-foreground',
+                          !isSelected &&
+                            !isTodayDate &&
+                            'hover:bg-accent hover:text-accent-foreground'
+                        )}
+                      >
+                        {format(day, 'd')}
+                        {hasSessions && (
+                          <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full" />
+                        )}
+                      </button>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
 
   if (loading) {
     return (
@@ -154,27 +257,13 @@ export function SessionCalendar({ activityId, onSessionUpdate }: SessionCalendar
           <CardTitle>Calendar Sesiuni</CardTitle>
           <CardDescription>Selectează o dată pentru a vedea sesiunile</CardDescription>
         </CardHeader>
-        <CardContent>
-          <Calendar
-            mode="single"
-            selected={selectedDate}
-            onSelect={setSelectedDate}
-            modifiers={modifiers}
-            modifiersClassNames={modifiersClassNames}
-            locale={ro}
-            className="rounded-md border"
-          />
-        </CardContent>
+        <CardContent>{renderCalendar()}</CardContent>
       </Card>
 
       {/* Sessions List for Selected Date */}
       <Card>
         <CardHeader>
-          <CardTitle>
-            {selectedDate
-              ? format(selectedDate, 'd MMMM yyyy', { locale: ro })
-              : 'Selectează o dată'}
-          </CardTitle>
+          <CardTitle>{format(selectedDate, 'd MMMM yyyy', { locale: ro })}</CardTitle>
           <CardDescription>
             {selectedDateSessions.length > 0
               ? `${selectedDateSessions.length} ${selectedDateSessions.length === 1 ? 'sesiune' : 'sesiuni'}`
@@ -192,32 +281,42 @@ export function SessionCalendar({ activityId, onSessionUpdate }: SessionCalendar
               {selectedDateSessions.map((session) => (
                 <div
                   key={session.id}
-                  className="border rounded-lg p-4 hover:bg-accent cursor-pointer transition-colors"
+                  className="border rounded-lg p-3 hover:bg-accent cursor-pointer transition-colors group"
                   onClick={() => handleSessionClick(session)}
                 >
+                  {/* Activity Title + Status Badge */}
                   <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium">
-                        {session.start_time} - {session.end_time}
-                      </span>
-                    </div>
-                    <Badge className={statusColors[session.status]} variant="outline">
+                    <h4 className="font-semibold text-sm group-hover:text-white line-clamp-1">
+                      {activityTitle}
+                    </h4>
+                    <Badge
+                      className={`${statusColors[session.status]} ml-2 shrink-0`}
+                      variant="outline"
+                    >
                       {statusLabels[session.status]}
                     </Badge>
                   </div>
 
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4" />
-                    <span>{session.location}</span>
+                  {/* Time */}
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground group-hover:text-white mb-1">
+                    <Clock className="h-3.5 w-3.5" />
+                    <span>
+                      {session.start_time} - {session.end_time}
+                    </span>
                   </div>
 
-                  {session.max_participants && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                      <Users className="h-4 w-4" />
-                      <span>Max. {session.max_participants} participanți</span>
-                    </div>
-                  )}
+                  {/* Location */}
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground group-hover:text-white">
+                    <MapPin className="h-3.5 w-3.5" />
+                    <span className="line-clamp-1">{session.location}</span>
+                    {session.max_participants && (
+                      <>
+                        <span className="mx-1">•</span>
+                        <Users className="h-3.5 w-3.5" />
+                        <span>Max. {session.max_participants}</span>
+                      </>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -227,58 +326,68 @@ export function SessionCalendar({ activityId, onSessionUpdate }: SessionCalendar
 
       {/* Session Details Dialog */}
       <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Detalii Sesiune</DialogTitle>
-            <DialogDescription>
-              {selectedSession &&
-                format(parseISO(selectedSession.date), 'd MMMM yyyy', { locale: ro })}
-            </DialogDescription>
-          </DialogHeader>
-
-          {selectedSession && (
-            <div className="space-y-4">
-              {/* Status Badge */}
-              <div className="flex justify-center">
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader className="space-y-3">
+            <DialogTitle className="text-2xl">{activityTitle}</DialogTitle>
+            <div className="flex items-center justify-between">
+              <DialogDescription className="text-base">
+                {selectedSession &&
+                  format(parseISO(selectedSession.date), 'EEEE, d MMMM yyyy', { locale: ro })}
+              </DialogDescription>
+              {selectedSession && (
                 <Badge className={statusColors[selectedSession.status]} variant="outline">
                   {statusLabels[selectedSession.status]}
                 </Badge>
-              </div>
+              )}
+            </div>
+          </DialogHeader>
 
+          {selectedSession && (
+            <div className="space-y-6 py-4">
               {/* Time */}
-              <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
-                <Clock className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <div className="text-sm text-muted-foreground">Interval Orar</div>
-                  <div className="font-medium">
+              <div className="flex items-start gap-4 p-4 bg-muted/50 rounded-lg border border-border/50">
+                <div className="mt-0.5 p-2 bg-background rounded-md">
+                  <Clock className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-muted-foreground mb-1">
+                    Interval Orar
+                  </div>
+                  <div className="text-lg font-semibold">
                     {selectedSession.start_time} - {selectedSession.end_time}
                   </div>
                 </div>
               </div>
 
               {/* Location */}
-              <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
-                <MapPin className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <div className="text-sm text-muted-foreground">Locație</div>
-                  <div className="font-medium">{selectedSession.location}</div>
+              <div className="flex items-start gap-4 p-4 bg-muted/50 rounded-lg border border-border/50">
+                <div className="mt-0.5 p-2 bg-background rounded-md">
+                  <MapPin className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-muted-foreground mb-1">Locație</div>
+                  <div className="text-lg font-semibold">{selectedSession.location}</div>
                 </div>
               </div>
 
               {/* Max Participants */}
               {selectedSession.max_participants && (
-                <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
-                  <Users className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <div className="text-sm text-muted-foreground">Participanți Maxim</div>
-                    <div className="font-medium">{selectedSession.max_participants}</div>
+                <div className="flex items-start gap-4 p-4 bg-muted/50 rounded-lg border border-border/50">
+                  <div className="mt-0.5 p-2 bg-background rounded-md">
+                    <Users className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-muted-foreground mb-1">
+                      Participanți Maxim
+                    </div>
+                    <div className="text-lg font-semibold">{selectedSession.max_participants}</div>
                   </div>
                 </div>
               )}
 
               {/* Actions */}
               {selectedSession.status === 'SCHEDULED' && (
-                <div className="flex gap-2 pt-4 border-t">
+                <div className="flex gap-3 pt-2">
                   <Button variant="outline" className="flex-1" disabled>
                     <Edit2 className="h-4 w-4 mr-2" />
                     Editează

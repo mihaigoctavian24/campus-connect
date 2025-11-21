@@ -182,12 +182,18 @@ export async function GET(
     const { activityId } = await params;
     const supabase = await createClient();
 
+    // Get activity title
+    const { data: activity } = await supabase
+      .from('activities')
+      .select('title')
+      .eq('id', activityId)
+      .single<{ title: string }>();
+
     // Get sessions for this activity
     const { data: sessions, error } = await supabase
       .from('sessions')
       .select('*')
       .eq('activity_id', activityId)
-      .is('deleted_at', null)
       .order('date', { ascending: true })
       .order('start_time', { ascending: true });
 
@@ -196,7 +202,13 @@ export async function GET(
       return NextResponse.json({ error: 'Failed to fetch sessions' }, { status: 500 });
     }
 
-    return NextResponse.json({ sessions }, { status: 200 });
+    return NextResponse.json(
+      {
+        sessions,
+        activityTitle: activity?.title || '',
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('Session fetch error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
