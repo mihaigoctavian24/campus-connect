@@ -54,33 +54,33 @@ export async function PUT(
     const body = await request.json();
     const { custom_message } = body;
 
-    // Update enrollment status to APPROVED
-    const { error: updateError } = await supabase
-      .from('activity_enrollments')
+    // Update enrollment status to CONFIRMED
+    const updateResult = await supabase
+      .from('enrollments')
       .update({
-        status: 'APPROVED',
+        status: 'CONFIRMED',
         custom_message: custom_message || null,
         reviewed_at: new Date().toISOString(),
-        reviewed_by: user.id,
       })
       .eq('id', enrollmentId)
       .eq('activity_id', activityId);
 
+    const updateError = updateResult.error;
+
     if (updateError) {
       console.error('Error accepting application:', updateError);
-      return NextResponse.json(
-        { message: 'Eroare la acceptarea aplicației' },
-        { status: 500 }
-      );
+      return NextResponse.json({ message: 'Eroare la acceptarea aplicației' }, { status: 500 });
     }
 
     // Increment current_participants counter
-    const { error: counterError } = await supabase
+    const counterResult = await supabase
       .from('activities')
       .update({
         current_participants: activity.current_participants + 1,
       })
       .eq('id', activityId);
+
+    const counterError = counterResult.error;
 
     if (counterError) {
       console.error('Error updating participant count:', counterError);

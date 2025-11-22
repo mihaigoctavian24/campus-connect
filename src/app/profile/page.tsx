@@ -66,13 +66,13 @@ export default function ProfilePage() {
             ]);
             setStats(studentStats);
             setApplications(studentApplications);
-          } catch (_error) {
+          } catch {
             // Error loading student data - stats will remain at defaults
           }
         }
 
         setLoading(false);
-      } catch (_error) {
+      } catch {
         setLoading(false);
       }
     }

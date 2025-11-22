@@ -21,7 +21,7 @@ interface Session {
   start_time: string;
   end_time: string;
   location: string;
-  status: string;
+  status: string | null;
 }
 
 export default async function OpportunityDetailsPage({ params }: OpportunityDetailsPageProps) {
@@ -73,13 +73,6 @@ export default async function OpportunityDetailsPage({ params }: OpportunityDeta
       .eq('activity_id', opportunity.id)
       .eq('user_id', user.id)
       .maybeSingle<{ id: string }>();
-
-    console.log('[Server] Checking saved status:', {
-      activityId: opportunity.id,
-      userId: user.id,
-      savedData,
-      isSaved: !!savedData,
-    });
 
     isSaved = !!savedData;
   }
@@ -224,8 +217,8 @@ export default async function OpportunityDetailsPage({ params }: OpportunityDeta
                         },
                       };
 
-                      const config = statusConfig[session.status] || {
-                        label: session.status,
+                      const config = (session.status && statusConfig[session.status]) || {
+                        label: session.status || 'Unknown',
                         className: 'bg-gray-100 text-gray-800 border-gray-200',
                       };
 

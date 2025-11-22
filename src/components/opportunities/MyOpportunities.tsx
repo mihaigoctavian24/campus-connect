@@ -6,17 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Plus,
-  MapPin,
-  Calendar,
-  Users,
-  Eye,
-  Edit,
-  Archive,
-  TrendingUp,
-  Clock,
-} from 'lucide-react';
+import { Plus, MapPin, Calendar, Users, Eye, Edit, Archive, TrendingUp, Clock } from 'lucide-react';
 
 interface OpportunityStats {
   enrolled: number;
@@ -69,9 +59,7 @@ export function MyOpportunities() {
   }
 
   const filteredOpportunities =
-    filter === 'all'
-      ? opportunities
-      : opportunities.filter((opp) => opp.status === filter);
+    filter === 'all' ? opportunities : opportunities.filter((opp) => opp.status === filter);
 
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
@@ -127,7 +115,7 @@ export function MyOpportunities() {
       </div>
 
       {/* Filters */}
-      <Tabs value={filter} onValueChange={(value: any) => setFilter(value)}>
+      <Tabs value={filter} onValueChange={(value) => setFilter(value as typeof filter)}>
         <TabsList>
           <TabsTrigger value="all">Toate</TabsTrigger>
           <TabsTrigger value="OPEN">Active</TabsTrigger>
@@ -215,9 +203,7 @@ export function MyOpportunities() {
                 <Button
                   variant="default"
                   size="sm"
-                  onClick={() =>
-                    router.push(`/dashboard/professor/opportunities/${opp.id}`)
-                  }
+                  onClick={() => router.push(`/dashboard/professor/opportunities/${opp.id}`)}
                   className="gap-2"
                 >
                   <Eye className="h-4 w-4" />
@@ -227,9 +213,7 @@ export function MyOpportunities() {
                   variant="outline"
                   size="sm"
                   className="gap-2"
-                  onClick={() =>
-                    router.push(`/dashboard/professor/opportunities/${opp.id}/edit`)
-                  }
+                  onClick={() => router.push(`/dashboard/professor/opportunities/${opp.id}/edit`)}
                 >
                   <Edit className="h-4 w-4" />
                   Editează

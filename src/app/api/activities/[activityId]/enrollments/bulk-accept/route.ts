@@ -47,10 +47,7 @@ export async function POST(
     const { enrollment_ids, custom_message } = body;
 
     if (!enrollment_ids || !Array.isArray(enrollment_ids) || enrollment_ids.length === 0) {
-      return NextResponse.json(
-        { message: 'Lista de aplicații este invalidă' },
-        { status: 400 }
-      );
+      return NextResponse.json({ message: 'Lista de aplicații este invalidă' }, { status: 400 });
     }
 
     // Check if accepting these would exceed max participants
@@ -64,33 +61,33 @@ export async function POST(
       );
     }
 
-    // Update all enrollments to APPROVED
-    const { error: updateError } = await supabase
-      .from('activity_enrollments')
+    // Update all enrollments to CONFIRMED
+    const updateResult = await supabase
+      .from('enrollments')
       .update({
-        status: 'APPROVED',
+        status: 'CONFIRMED',
         custom_message: custom_message || null,
         reviewed_at: new Date().toISOString(),
-        reviewed_by: user.id,
       })
       .in('id', enrollment_ids)
       .eq('activity_id', activityId);
 
+    const updateError = updateResult.error;
+
     if (updateError) {
       console.error('Error bulk accepting applications:', updateError);
-      return NextResponse.json(
-        { message: 'Eroare la acceptarea aplicațiilor' },
-        { status: 500 }
-      );
+      return NextResponse.json({ message: 'Eroare la acceptarea aplicațiilor' }, { status: 500 });
     }
 
     // Update current_participants counter
-    const { error: counterError } = await supabase
+    const counterResult = await supabase
       .from('activities')
       .update({
         current_participants: activity.current_participants + enrollment_ids.length,
       })
       .eq('id', activityId);
+
+    const counterError = counterResult.error;
 
     if (counterError) {
       console.error('Error updating participant count:', counterError);

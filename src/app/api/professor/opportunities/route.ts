@@ -69,29 +69,37 @@ export async function GET() {
     const enrichedActivities = await Promise.all(
       activities.map(async (activity) => {
         // Get category name
-        const { data: category } = await supabase
-          .from('categories')
-          .select('name')
-          .eq('id', activity.category_id)
-          .single();
+        let category = null;
+        if (activity.category_id) {
+          const result = await supabase
+            .from('categories')
+            .select('name')
+            .eq('id', activity.category_id)
+            .single();
+          category = result.data;
+        }
 
         // Get department name
-        const { data: department } = await supabase
-          .from('departments')
-          .select('name')
-          .eq('id', activity.department_id)
-          .single();
+        let department = null;
+        if (activity.department_id) {
+          const result = await supabase
+            .from('departments')
+            .select('name')
+            .eq('id', activity.department_id)
+            .single();
+          department = result.data;
+        }
 
         // Get enrollment stats
         const { count: enrolledCount } = await supabase
-          .from('activity_enrollments')
+          .from('enrollments')
           .select('*', { count: 'exact', head: true })
           .eq('activity_id', activity.id)
           .eq('status', 'APPROVED');
 
         // Get pending applications count
         const { count: pendingCount } = await supabase
-          .from('activity_enrollments')
+          .from('enrollments')
           .select('*', { count: 'exact', head: true })
           .eq('activity_id', activity.id)
           .eq('status', 'PENDING');

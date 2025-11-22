@@ -65,7 +65,7 @@ export async function PUT(
     const updates: UpdateSessionRequest = await request.json();
 
     // Update session with provided fields
-    const updateData: any = {
+    const updateData: Partial<UpdateSessionRequest> & { updated_at?: string } = {
       ...(updates.date && { date: updates.date }),
       ...(updates.start_time && { start_time: updates.start_time }),
       ...(updates.end_time && { end_time: updates.end_time }),
@@ -80,7 +80,6 @@ export async function PUT(
     const { data: updatedSession, error: updateError } = await supabase
       .schema('public')
       .from('sessions')
-      // @ts-expect-error - Supabase type inference issue with activity_sessions table
       .update(updateData)
       .eq('id', sessionId)
       .select()
@@ -156,7 +155,7 @@ export async function DELETE(
     }
 
     // Soft delete the session
-    const deleteData: any = {
+    const deleteData: { deleted_at: string; updated_at: string } = {
       deleted_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -164,7 +163,6 @@ export async function DELETE(
     const { error: deleteError } = await supabase
       .schema('public')
       .from('sessions')
-      // @ts-expect-error - Supabase type inference issue with activity_sessions table
       .update(deleteData)
       .eq('id', sessionId);
 

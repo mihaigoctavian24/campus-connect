@@ -12,7 +12,10 @@ export async function GET() {
 
     if (error) {
       console.error('Error fetching departments:', error);
-      return NextResponse.json({ message: 'Eroare la încărcarea departamentelor' }, { status: 500 });
+      return NextResponse.json(
+        { message: 'Eroare la încărcarea departamentelor' },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json(departments);

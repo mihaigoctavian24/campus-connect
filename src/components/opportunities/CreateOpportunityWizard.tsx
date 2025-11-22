@@ -299,9 +299,7 @@ export function CreateOpportunityWizard({ onSuccess }: CreateOpportunityWizardPr
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="mb-2 block text-sm font-medium text-[#001f3f]">
-                  Categorie *
-                </label>
+                <label className="mb-2 block text-sm font-medium text-[#001f3f]">Categorie *</label>
                 <select
                   value={step1Data.category_id}
                   onChange={(e) => setStep1Data({ ...step1Data, category_id: e.target.value })}
@@ -611,9 +609,7 @@ export function CreateOpportunityWizard({ onSuccess }: CreateOpportunityWizardPr
                 <div className="space-y-1 text-sm text-gray-700">
                   <p>Acceptare automată: {step4Data.auto_accept ? 'Da' : 'Nu'}</p>
                   <p>Necesită confirmare: {step4Data.require_confirmation ? 'Da' : 'Nu'}</p>
-                  {step4Data.required_hours && (
-                    <p>Ore necesare: {step4Data.required_hours} ore</p>
-                  )}
+                  {step4Data.required_hours && <p>Ore necesare: {step4Data.required_hours} ore</p>}
                 </div>
               </div>
             </div>

@@ -396,7 +396,7 @@ export function SessionScheduler({ activityId, onSessionsCreated }: SessionSched
                 <Label>Tip Recurență</Label>
                 <Select
                   value={recurringPattern}
-                  onValueChange={(value: any) => setRecurringPattern(value)}
+                  onValueChange={(value) => setRecurringPattern(value as typeof recurringPattern)}
                 >
                   <SelectTrigger>
                     <SelectValue />

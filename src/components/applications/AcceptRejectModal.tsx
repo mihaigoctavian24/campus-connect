@@ -86,8 +86,7 @@ export function AcceptRejectModal({
   const [addToWaitlist, setAddToWaitlist] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const templates =
-    actionType === 'accept' ? ACCEPT_MESSAGE_TEMPLATES : REJECT_MESSAGE_TEMPLATES;
+  const templates = actionType === 'accept' ? ACCEPT_MESSAGE_TEMPLATES : REJECT_MESSAGE_TEMPLATES;
 
   const handleTemplateChange = (value: string) => {
     const index = parseInt(value);
@@ -162,9 +161,9 @@ export function AcceptRejectModal({
 
       onComplete();
       handleClose();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error submitting action:', error);
-      toast.error(error.message || 'Eroare la procesare');
+      toast.error(error instanceof Error ? error.message : 'Eroare la procesare');
     } finally {
       setIsSubmitting(false);
     }
@@ -217,10 +216,7 @@ export function AcceptRejectModal({
           {/* Message Template Selector */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Șablon Mesaj</label>
-            <Select
-              value={selectedTemplate.toString()}
-              onValueChange={handleTemplateChange}
-            >
+            <Select value={selectedTemplate.toString()} onValueChange={handleTemplateChange}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -237,8 +233,7 @@ export function AcceptRejectModal({
           {/* Custom Message Field */}
           <div className="space-y-2">
             <label className="text-sm font-medium">
-              Mesaj Personalizat{' '}
-              <span className="text-muted-foreground">(opțional)</span>
+              Mesaj Personalizat <span className="text-muted-foreground">(opțional)</span>
             </label>
             <Textarea
               placeholder="Adaugă un mesaj personalizat pentru student..."
@@ -247,9 +242,7 @@ export function AcceptRejectModal({
               rows={4}
               disabled={selectedTemplate !== templates.length - 1}
             />
-            <p className="text-xs text-muted-foreground">
-              {customMessage.length} caractere
-            </p>
+            <p className="text-xs text-muted-foreground">{customMessage.length} caractere</p>
           </div>
 
           {/* Add to Waitlist Option (only for reject) */}

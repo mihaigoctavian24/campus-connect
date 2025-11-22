@@ -135,7 +135,7 @@ export async function POST(
     );
 
     // Prepare session records for database insertion
-    const sessionRecords: any[] = sessionsToCreate.map((sess) => ({
+    const sessionRecords = sessionsToCreate.map((sess) => ({
       activity_id: activityId,
       date: sess.date,
       start_time: sess.start_time,
@@ -150,7 +150,6 @@ export async function POST(
     const { data: createdSessions, error: insertError } = await supabase
       .schema('public')
       .from('sessions')
-      // @ts-expect-error - Supabase type inference issue with sessions table
       .insert(sessionRecords)
       .select();
 

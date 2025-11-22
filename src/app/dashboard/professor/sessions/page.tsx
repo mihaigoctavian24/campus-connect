@@ -31,11 +31,11 @@ interface Session {
   end_time: string;
   location: string;
   max_participants: number | null;
-  status: 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-  reminder_sent: boolean;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string | null;
+  status: string | null;
+  reminder_sent: boolean | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+  deleted_at?: string | null;
 }
 
 export default function ProfessorSessionsPage() {

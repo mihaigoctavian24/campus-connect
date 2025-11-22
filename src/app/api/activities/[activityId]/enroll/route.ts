@@ -117,7 +117,6 @@ export async function POST(
 
     const { data: enrollment, error: enrollmentError } = await supabase
       .from('enrollments')
-      // @ts-expect-error - Database types haven't been regenerated after migration
       .insert(enrollmentData)
       .select()
       .single<{
@@ -135,21 +134,8 @@ export async function POST(
       );
     }
 
-    // Get professor and student details for future email notification
-    const { data: _professor } = await supabase
-      .from('profiles')
-      .select('id, email, first_name, last_name')
-      .eq('id', activity.created_by)
-      .single<{ id: string; email: string; first_name: string; last_name: string }>();
-
-    const { data: _student } = await supabase
-      .from('profiles')
-      .select('email, first_name, last_name')
-      .eq('id', user.id)
-      .single<{ email: string; first_name: string; last_name: string }>();
-
-    // TODO: Send email notification to professor using _professor and _student data
-    // This will be implemented when we set up email service
+    // TODO: Send email notification to professor about new application
+    // (will fetch professor and student details when email system is implemented)
 
     return NextResponse.json(
       {

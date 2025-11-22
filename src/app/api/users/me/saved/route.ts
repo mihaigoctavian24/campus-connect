@@ -52,7 +52,6 @@ export async function POST(request: NextRequest) {
     // Save the opportunity
     const { data: saved, error: saveError } = await supabase
       .from('saved_opportunities')
-      // @ts-expect-error - Database types haven't been regenerated after migration
       .insert({
         user_id: user.id,
         activity_id: activityId,

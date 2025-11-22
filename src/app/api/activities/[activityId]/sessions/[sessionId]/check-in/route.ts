@@ -163,7 +163,6 @@ export async function POST(
     // 11. Create attendance record
     const { data: attendance, error: attendanceError } = await supabase
       .from('attendance')
-      // @ts-expect-error - Database types haven't been regenerated after attendance migration
       .insert({
         session_id: sessionId,
         enrollment_id: enrollment.id,

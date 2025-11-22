@@ -36,11 +36,11 @@ interface Session {
   end_time: string;
   location: string;
   max_participants: number | null;
-  status: 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-  reminder_sent: boolean;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string | null;
+  status: string | null;
+  reminder_sent: boolean | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+  deleted_at?: string | null;
 }
 
 interface SessionCalendarProps {
@@ -49,21 +49,25 @@ interface SessionCalendarProps {
   onSessionUpdate?: () => void;
 }
 
-const statusColors = {
+const statusColors: Record<string, string> = {
   SCHEDULED: 'bg-blue-100 text-blue-800 border-blue-300',
   IN_PROGRESS: 'bg-green-100 text-green-800 border-green-300',
   COMPLETED: 'bg-gray-100 text-gray-800 border-gray-300',
   CANCELLED: 'bg-red-100 text-red-800 border-red-300',
 };
 
-const statusLabels = {
+const statusLabels: Record<string, string> = {
   SCHEDULED: 'Programată',
   IN_PROGRESS: 'În Desfășurare',
   COMPLETED: 'Finalizată',
   CANCELLED: 'Anulată',
 };
 
-export function SessionCalendar({ activityId, sessions: propSessions, onSessionUpdate }: SessionCalendarProps) {
+export function SessionCalendar({
+  activityId,
+  sessions: propSessions,
+  onSessionUpdate,
+}: SessionCalendarProps) {
   const [sessions, setSessions] = useState<Session[]>(propSessions || []);
   const [loading, setLoading] = useState(!propSessions);
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -127,11 +131,14 @@ export function SessionCalendar({ activityId, sessions: propSessions, onSessionU
     if (!confirm('Sigur vrei să anulezi această sesiune?')) return;
 
     try {
-      const response = await fetch(`/api/activities/${session.activity_id}/sessions/${session.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'CANCELLED' }),
-      });
+      const response = await fetch(
+        `/api/activities/${session.activity_id}/sessions/${session.id}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'CANCELLED' }),
+        }
+      );
 
       if (response.ok) {
         if (propSessions) {
@@ -306,10 +313,10 @@ export function SessionCalendar({ activityId, sessions: propSessions, onSessionU
                       {session.activity_title || 'Activitate'}
                     </h4>
                     <Badge
-                      className={`${statusColors[session.status]} ml-2 shrink-0`}
+                      className={`${session.status ? statusColors[session.status] || 'bg-gray-100 text-gray-800 border-gray-300' : 'bg-gray-100 text-gray-800 border-gray-300'} ml-2 shrink-0`}
                       variant="outline"
                     >
-                      {statusLabels[session.status]}
+                      {session.status ? statusLabels[session.status] || 'Unknown' : 'Unknown'}
                     </Badge>
                   </div>
 
@@ -352,9 +359,15 @@ export function SessionCalendar({ activityId, sessions: propSessions, onSessionU
                 {selectedSession &&
                   format(parseISO(selectedSession.date), 'EEEE, d MMMM yyyy', { locale: ro })}
               </DialogDescription>
-              {selectedSession && (
-                <Badge className={statusColors[selectedSession.status]} variant="outline">
-                  {statusLabels[selectedSession.status]}
+              {selectedSession && selectedSession.status && (
+                <Badge
+                  className={
+                    statusColors[selectedSession.status] ||
+                    'bg-gray-100 text-gray-800 border-gray-300'
+                  }
+                  variant="outline"
+                >
+                  {statusLabels[selectedSession.status] || 'Unknown'}
                 </Badge>
               )}
             </div>

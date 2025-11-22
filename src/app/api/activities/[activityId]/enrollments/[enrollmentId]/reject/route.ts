@@ -48,27 +48,25 @@ export async function PUT(
       );
     }
 
-    // Update enrollment status to REJECTED or WAITLISTED
-    const newStatus = add_to_waitlist ? 'WAITLISTED' : 'REJECTED';
+    // Update enrollment status to CANCELLED or WAITLISTED
+    const newStatus = add_to_waitlist ? 'WAITLISTED' : 'CANCELLED';
 
-    const { error: updateError } = await supabase
-      .from('activity_enrollments')
+    const updateResult = await supabase
+      .from('enrollments')
       .update({
         status: newStatus,
         rejection_reason,
         custom_message: custom_message || null,
         reviewed_at: new Date().toISOString(),
-        reviewed_by: user.id,
       })
       .eq('id', enrollmentId)
       .eq('activity_id', activityId);
 
+    const updateError = updateResult.error;
+
     if (updateError) {
       console.error('Error rejecting application:', updateError);
-      return NextResponse.json(
-        { message: 'Eroare la respingerea aplicației' },
-        { status: 500 }
-      );
+      return NextResponse.json({ message: 'Eroare la respingerea aplicației' }, { status: 500 });
     }
 
     // TODO: Send email notification to student (#185)

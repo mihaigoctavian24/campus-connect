@@ -38,6 +38,7 @@ export function OpportunityDetailPage({ activityId }: OpportunityDetailPageProps
 
   useEffect(() => {
     fetchActivity();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activityId]);
 
   async function fetchActivity() {
@@ -87,7 +88,9 @@ export function OpportunityDetailPage({ activityId }: OpportunityDetailPageProps
           <ArrowLeft className="mr-2 h-4 w-4" />
           Înapoi la Oportunități
         </Button>
-        <Button onClick={() => router.push(`/dashboard/professor/opportunities/${activityId}/edit`)}>
+        <Button
+          onClick={() => router.push(`/dashboard/professor/opportunities/${activityId}/edit`)}
+        >
           <Edit className="mr-2 h-4 w-4" />
           Editează
         </Button>

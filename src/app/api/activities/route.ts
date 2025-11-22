@@ -44,10 +44,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (profile.role !== 'PROFESSOR') {
-      return NextResponse.json(
-        { message: 'Doar profesorii pot crea activități' },
-        { status: 403 }
-      );
+      return NextResponse.json({ message: 'Doar profesorii pot crea activități' }, { status: 403 });
     }
 
     // Parse and validate request body
@@ -73,7 +70,7 @@ export async function POST(request: NextRequest) {
 
     const { data: activity, error: createError } = await supabase
       .from('activities')
-      .insert(activityData as any) // TypeScript issue with Supabase generated types
+      .insert(activityData)
       .select('id, title')
       .single<{ id: string; title: string }>();
 
@@ -97,15 +94,9 @@ export async function POST(request: NextRequest) {
     console.error('Activity creation error:', error);
 
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { message: 'Date invalide', errors: error.errors },
-        { status: 400 }
-      );
+      return NextResponse.json({ message: 'Date invalide', errors: error.errors }, { status: 400 });
     }
 
-    return NextResponse.json(
-      { message: 'Eroare internă la crearea activității' },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: 'Eroare internă la crearea activității' }, { status: 500 });
   }
 }

@@ -6,15 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Search,
-  CheckCircle,
-  XCircle,
-  Eye,
-  User,
-  CheckSquare,
-  XSquare,
-} from 'lucide-react';
+import { Search, CheckCircle, XCircle, Eye, User, CheckSquare, XSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import { ApplicationDetailView } from './ApplicationDetailView';
 import { AcceptRejectModal } from './AcceptRejectModal';
@@ -64,6 +56,7 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
 
   useEffect(() => {
     fetchApplications();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activityId]);
 
   async function fetchApplications() {
@@ -181,8 +174,8 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
         >
           <option value="ALL">Toate</option>
           <option value="PENDING">În Așteptare</option>
-          <option value="APPROVED">Acceptate</option>
-          <option value="REJECTED">Respinse</option>
+          <option value="CONFIRMED">Acceptate</option>
+          <option value="CANCELLED">Respinse</option>
           <option value="WAITLISTED">Listă Așteptare</option>
         </select>
       </div>
@@ -190,9 +183,7 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
       {/* Bulk Actions */}
       {selectedForBulk.size > 0 && (
         <div className="flex items-center gap-3 p-3 bg-muted rounded-md">
-          <span className="text-sm">
-            {selectedForBulk.size} aplicații selectate
-          </span>
+          <span className="text-sm">{selectedForBulk.size} aplicații selectate</span>
           <Button
             size="sm"
             onClick={handleBulkAccept}
@@ -261,9 +252,7 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
                 <div className="flex gap-4 text-xs text-muted-foreground">
                   <span>Activități: {app.student.completed_activities}</span>
                   <span>Certificate: {app.student.certificates_earned}</span>
-                  <span>
-                    Aplicat: {new Date(app.applied_at).toLocaleDateString('ro-RO')}
-                  </span>
+                  <span>Aplicat: {new Date(app.applied_at).toLocaleDateString('ro-RO')}</span>
                 </div>
               </div>
 
@@ -332,21 +321,26 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
             isOpen={isProfileModalOpen}
             onClose={() => setIsProfileModalOpen(false)}
           />
-
-          <AcceptRejectModal
-            isOpen={isAcceptRejectModalOpen}
-            onClose={() => setIsAcceptRejectModalOpen(false)}
-            actionType={actionType}
-            activityId={activityId}
-            applicationIds={
-              selectedForBulk.size > 0
-                ? Array.from(selectedForBulk)
-                : [selectedApplication.id]
-            }
-            isBulk={selectedForBulk.size > 0}
-            onComplete={handleActionComplete}
-          />
         </>
+      )}
+
+      {/* Accept/Reject Modal - can be used for both individual and bulk actions */}
+      {(selectedApplication || selectedForBulk.size > 0) && (
+        <AcceptRejectModal
+          isOpen={isAcceptRejectModalOpen}
+          onClose={() => setIsAcceptRejectModalOpen(false)}
+          actionType={actionType}
+          activityId={activityId}
+          applicationIds={
+            selectedForBulk.size > 0
+              ? Array.from(selectedForBulk)
+              : selectedApplication
+                ? [selectedApplication.id]
+                : []
+          }
+          isBulk={selectedForBulk.size > 0}
+          onComplete={handleActionComplete}
+        />
       )}
     </div>
   );
@@ -356,9 +350,9 @@ function getStatusBadgeClass(status: string) {
   switch (status) {
     case 'PENDING':
       return 'bg-yellow-600 text-white';
-    case 'APPROVED':
+    case 'CONFIRMED':
       return 'bg-green-600 text-white';
-    case 'REJECTED':
+    case 'CANCELLED':
       return 'bg-red-600 text-white';
     case 'WAITLISTED':
       return 'bg-blue-600 text-white';
@@ -371,9 +365,9 @@ function getStatusLabel(status: string) {
   switch (status) {
     case 'PENDING':
       return 'În Așteptare';
-    case 'APPROVED':
+    case 'CONFIRMED':
       return 'Acceptat';
-    case 'REJECTED':
+    case 'CANCELLED':
       return 'Respins';
     case 'WAITLISTED':
       return 'Listă Așteptare';

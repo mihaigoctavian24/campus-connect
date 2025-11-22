@@ -105,9 +105,7 @@ export function StudentProfileQuickView({
                 <p className="text-2xl font-bold text-primary mb-1">
                   {student.completed_activities}
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  Activități Completate
-                </p>
+                <p className="text-xs text-muted-foreground">Activități Completate</p>
               </Card>
               <Card className="p-4 text-center bg-secondary/5">
                 <div className="flex items-center justify-center mb-2">

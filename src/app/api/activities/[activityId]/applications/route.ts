@@ -1,6 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+interface EnrollmentWithProfile {
+  id: string;
+  user_id: string;
+  status: string;
+  motivation: string;
+  availability: string;
+  experience: string | null;
+  created_at: string;
+  reviewed_at: string | null;
+  rejection_reason: string | null;
+  custom_message: string | null;
+  profiles: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    profile_picture_url: string | null;
+    faculty: string | null;
+    specialization: string | null;
+    year: number | null;
+    program_type: string | null;
+  };
+}
+
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ activityId: string }> }
@@ -71,15 +95,12 @@ export async function GET(
 
     if (applicationsError) {
       console.error('Error fetching applications:', applicationsError);
-      return NextResponse.json(
-        { message: 'Eroare la încărcarea aplicațiilor' },
-        { status: 500 }
-      );
+      return NextResponse.json({ message: 'Eroare la încărcarea aplicațiilor' }, { status: 500 });
     }
 
     // For each student, get their volunteer history
     const enrichedApplications = await Promise.all(
-      applications.map(async (app: any) => {
+      (applications as EnrollmentWithProfile[]).map(async (app) => {
         // Get total completed hours for this student
         const { count: completedActivities } = await supabase
           .from('enrollments')

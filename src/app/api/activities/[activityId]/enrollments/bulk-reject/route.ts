@@ -42,10 +42,7 @@ export async function POST(
     const { enrollment_ids, rejection_reason, custom_message, add_to_waitlist } = body;
 
     if (!enrollment_ids || !Array.isArray(enrollment_ids) || enrollment_ids.length === 0) {
-      return NextResponse.json(
-        { message: 'Lista de aplicații este invalidă' },
-        { status: 400 }
-      );
+      return NextResponse.json({ message: 'Lista de aplicații este invalidă' }, { status: 400 });
     }
 
     if (!rejection_reason) {
@@ -55,27 +52,25 @@ export async function POST(
       );
     }
 
-    // Update all enrollments to REJECTED or WAITLISTED
-    const newStatus = add_to_waitlist ? 'WAITLISTED' : 'REJECTED';
+    // Update all enrollments to CANCELLED or WAITLISTED
+    const newStatus = add_to_waitlist ? 'WAITLISTED' : 'CANCELLED';
 
-    const { error: updateError } = await supabase
-      .from('activity_enrollments')
+    const updateResult = await supabase
+      .from('enrollments')
       .update({
         status: newStatus,
         rejection_reason,
         custom_message: custom_message || null,
         reviewed_at: new Date().toISOString(),
-        reviewed_by: user.id,
       })
       .in('id', enrollment_ids)
       .eq('activity_id', activityId);
 
+    const updateError = updateResult.error;
+
     if (updateError) {
       console.error('Error bulk rejecting applications:', updateError);
-      return NextResponse.json(
-        { message: 'Eroare la respingerea aplicațiilor' },
-        { status: 500 }
-      );
+      return NextResponse.json({ message: 'Eroare la respingerea aplicațiilor' }, { status: 500 });
     }
 
     // TODO: Send bulk email notifications to students (#185)

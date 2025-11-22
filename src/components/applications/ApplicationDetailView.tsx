@@ -92,33 +92,25 @@ export function ApplicationDetailView({
             </Card>
             <Card className="p-3 text-center">
               <p className="text-sm text-muted-foreground mb-1">Activități</p>
-              <p className="text-2xl text-primary font-bold">
-                {student.completed_activities}
-              </p>
+              <p className="text-2xl text-primary font-bold">{student.completed_activities}</p>
             </Card>
             <Card className="p-3 text-center">
               <p className="text-sm text-muted-foreground mb-1">Certificate</p>
-              <p className="text-2xl text-primary font-bold">
-                {student.certificates_earned}
-              </p>
+              <p className="text-2xl text-primary font-bold">{student.certificates_earned}</p>
             </Card>
           </div>
 
           {/* Application Responses */}
           <div className="space-y-4">
             <div>
-              <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                Motivație
-              </h4>
+              <h4 className="text-sm font-medium text-muted-foreground mb-2">Motivație</h4>
               <Card className="p-3">
                 <p className="text-sm whitespace-pre-wrap">{application.motivation}</p>
               </Card>
             </div>
 
             <div>
-              <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                Disponibilitate
-              </h4>
+              <h4 className="text-sm font-medium text-muted-foreground mb-2">Disponibilitate</h4>
               <Card className="p-3">
                 <p className="text-sm whitespace-pre-wrap">{application.availability}</p>
               </Card>
@@ -134,9 +126,7 @@ export function ApplicationDetailView({
             </div>
 
             <div>
-              <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                Data Aplicării
-              </h4>
+              <h4 className="text-sm font-medium text-muted-foreground mb-2">Data Aplicării</h4>
               <Card className="p-3">
                 <p className="text-sm">
                   {new Date(application.applied_at).toLocaleDateString('ro-RO', {
