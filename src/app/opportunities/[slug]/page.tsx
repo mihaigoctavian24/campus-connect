@@ -113,7 +113,7 @@ export default async function OpportunityDetailsPage({ params }: OpportunityDeta
             end_time: record.session.end_time,
             location: record.session.location,
             activity_title: opportunity.title,
-            activity_category: opportunity.categoryName,
+            activity_category: opportunity.categoryName || 'General',
           },
         }));
       }

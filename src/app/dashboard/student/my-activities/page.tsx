@@ -74,7 +74,9 @@ export default async function MyActivitiesPage() {
         location,
         activity:activities (
           title,
-          category_id
+          category:categories (
+            name
+          )
         )
       )
     `)
@@ -93,7 +95,7 @@ export default async function MyActivitiesPage() {
       end_time: (record.session as any).end_time,
       location: (record.session as any).location,
       activity_title: (record.session as any).activity.title,
-      activity_category: (record.session as any).activity.category_id || 'General',
+      activity_category: (record.session as any).activity.category?.name || 'General',
     },
   })) || [];
 
