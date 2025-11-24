@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Clock, MapPin, Users, Edit2, XCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CheckInButton } from './CheckInButton';
 import {
   format,
   parseISO,
@@ -47,6 +48,7 @@ interface SessionCalendarProps {
   activityId?: string | null;
   sessions?: Session[];
   onSessionUpdate?: () => void;
+  viewMode?: 'professor' | 'student';
 }
 
 const statusColors: Record<string, string> = {
@@ -67,6 +69,7 @@ export function SessionCalendar({
   activityId,
   sessions: propSessions,
   onSessionUpdate,
+  viewMode = 'professor',
 }: SessionCalendarProps) {
   const [sessions, setSessions] = useState<Session[]>(propSessions || []);
   const [loading, setLoading] = useState(!propSessions);
@@ -417,7 +420,7 @@ export function SessionCalendar({
               )}
 
               {/* Actions */}
-              {selectedSession.status === 'SCHEDULED' && (
+              {viewMode === 'professor' && selectedSession.status === 'SCHEDULED' && (
                 <div className="flex gap-3 pt-2">
                   <Button variant="outline" className="flex-1" disabled>
                     <Edit2 className="h-4 w-4 mr-2" />
@@ -431,6 +434,20 @@ export function SessionCalendar({
                     <XCircle className="h-4 w-4 mr-2" />
                     Anulează
                   </Button>
+                </div>
+              )}
+
+              {viewMode === 'student' && selectedSession.status === 'SCHEDULED' && (
+                <div className="flex justify-center pt-2">
+                  <CheckInButton
+                    activityId={selectedSession.activity_id}
+                    sessionId={selectedSession.id}
+                    sessionTitle={selectedSession.activity_title || 'Activitate'}
+                    onCheckInSuccess={() => {
+                      setIsDetailsOpen(false);
+                      onSessionUpdate?.();
+                    }}
+                  />
                 </div>
               )}
             </div>

@@ -8,7 +8,15 @@ interface ApplicationStatusCardProps {
 }
 
 export function ApplicationStatusCard({ application }: ApplicationStatusCardProps) {
-  const statusConfig = {
+  const statusConfig: Record<
+    string,
+    {
+      label: string;
+      color: string;
+      icon: typeof Clock;
+      iconColor: string;
+    }
+  > = {
     PENDING: {
       label: 'Pending Review',
       color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
@@ -21,15 +29,38 @@ export function ApplicationStatusCard({ application }: ApplicationStatusCardProp
       icon: CheckCircle,
       iconColor: 'text-green-600',
     },
+    APPROVED: {
+      label: 'Approved',
+      color: 'bg-green-100 text-green-800 border-green-200',
+      icon: CheckCircle,
+      iconColor: 'text-green-600',
+    },
     REJECTED: {
       label: 'Rejected',
       color: 'bg-red-100 text-red-800 border-red-200',
       icon: XCircle,
       iconColor: 'text-red-600',
     },
+    CANCELLED: {
+      label: 'Cancelled',
+      color: 'bg-gray-100 text-gray-800 border-gray-200',
+      icon: XCircle,
+      iconColor: 'text-gray-600',
+    },
+    WAITLISTED: {
+      label: 'Waitlisted',
+      color: 'bg-blue-100 text-blue-800 border-blue-200',
+      icon: Clock,
+      iconColor: 'text-blue-600',
+    },
   };
 
-  const config = statusConfig[application.status];
+  const config = statusConfig[application.status] || {
+    label: application.status,
+    color: 'bg-gray-100 text-gray-800 border-gray-200',
+    icon: Clock,
+    iconColor: 'text-gray-600',
+  };
   const StatusIcon = config.icon;
 
   // Format dates

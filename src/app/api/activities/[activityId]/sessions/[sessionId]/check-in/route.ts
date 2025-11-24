@@ -1,79 +1,39 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from 'next/server';
 
-// QR code data validation schema
-const qrDataSchema = z.object({
-  session_id: z.string().uuid(),
-  activity_id: z.string().uuid(),
-  timestamp: z.string().datetime(),
-  location_hash: z.string().optional(),
-  signature: z.string().optional(),
-});
-
-// Request body schema
-const checkInSchema = z.object({
-  qr_data: qrDataSchema,
-});
+interface CheckInRequest {
+  qr_code?: string;
+  gps_latitude?: number;
+  gps_longitude?: number;
+  gps_accuracy?: number;
+}
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ activityId: string; sessionId: string }> }
 ) {
   try {
-    const supabase = await createClient();
     const { activityId, sessionId } = await params;
+    const supabase = await createClient();
 
-    // 1. Authenticate user
+    // Get current user
     const {
       data: { user },
       error: authError,
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json({ message: 'Nu ești autentificat' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 2. Verify user is a student
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single<{ role: string }>();
+    // Parse request body
+    const body: CheckInRequest = await request.json();
 
-    if (profileError || !profile) {
-      return NextResponse.json({ message: 'Profil negăsit' }, { status: 404 });
-    }
-
-    if (profile.role !== 'STUDENT') {
-      return NextResponse.json({ message: 'Doar studenții pot face check-in' }, { status: 403 });
-    }
-
-    // 3. Parse and validate request body
-    const body = await request.json();
-    const validatedData = checkInSchema.parse(body);
-    const qrData = validatedData.qr_data;
-
-    // 4. Validate QR code data matches URL parameters (#108)
-    if (qrData.session_id !== sessionId) {
-      return NextResponse.json(
-        { message: 'ID-ul sesiunii din QR nu corespunde cu sesiunea curentă' },
-        { status: 400 }
-      );
-    }
-
-    if (qrData.activity_id !== activityId) {
-      return NextResponse.json(
-        { message: 'ID-ul activității din QR nu corespunde cu activitatea curentă' },
-        { status: 400 }
-      );
-    }
-
-    // 5. Verify session exists and belongs to activity
+    // Verify session exists and belongs to activity
     const { data: session, error: sessionError } = await supabase
       .schema('public')
       .from('sessions')
-      .select('id, activity_id, date, start_time, end_time, status')
+      .select('*')
       .eq('id', sessionId)
       .eq('activity_id', activityId)
       .single<{
@@ -82,138 +42,124 @@ export async function POST(
         date: string;
         start_time: string;
         end_time: string;
-        status: string;
+        qr_code_data: string | null;
+        status: string | null;
       }>();
 
     if (sessionError || !session) {
-      return NextResponse.json({ message: 'Sesiunea nu a fost găsită' }, { status: 404 });
+      return NextResponse.json({ error: 'Session not found' }, { status: 404 });
     }
 
-    // 6. Check session status
-    if (session.status === 'CANCELLED') {
-      return NextResponse.json({ message: 'Această sesiune a fost anulată' }, { status: 400 });
+    // Verify QR code if provided
+    if (body.qr_code && session.qr_code_data !== body.qr_code) {
+      return NextResponse.json({ error: 'Invalid QR code' }, { status: 400 });
     }
 
-    if (session.status === 'COMPLETED') {
-      return NextResponse.json({ message: 'Această sesiune s-a încheiat deja' }, { status: 400 });
-    }
-
-    // 7. Validate time window (±15 minutes from session start) (#109)
-    const sessionDateTime = new Date(`${session.date}T${session.start_time}`);
+    // Check if session is happening now (±15 minutes window)
     const now = new Date();
-    const timeDiffMs = Math.abs(now.getTime() - sessionDateTime.getTime());
-    const timeDiffMinutes = timeDiffMs / (1000 * 60);
+    const sessionDate = new Date(session.date);
+    const [startHour, startMin] = session.start_time.split(':').map(Number);
+    const [endHour, endMin] = session.end_time.split(':').map(Number);
 
-    if (timeDiffMinutes > 15) {
-      const isTooEarly = now < sessionDateTime;
+    const sessionStart = new Date(sessionDate);
+    sessionStart.setHours(startHour, startMin, 0, 0);
+
+    const sessionEnd = new Date(sessionDate);
+    sessionEnd.setHours(endHour, endMin, 0, 0);
+
+    const checkInWindowStart = new Date(sessionStart.getTime() - 15 * 60 * 1000); // 15 min before
+    const checkInWindowEnd = new Date(sessionEnd.getTime() + 15 * 60 * 1000); // 15 min after
+
+    if (now < checkInWindowStart || now > checkInWindowEnd) {
       return NextResponse.json(
         {
-          message: isTooEarly
-            ? 'Ești prea devreme. Check-in este disponibil cu 15 minute înainte de începerea sesiunii.'
-            : 'Ești prea târziu. Check-in este disponibil doar în primele 15 minute de la începerea sesiunii.',
+          error: 'Check-in window not active',
+          message:
+            'You can only check in 15 minutes before the session starts until 15 minutes after it ends',
         },
         { status: 400 }
       );
     }
 
-    // 8. Verify user is enrolled in this activity
+    // Get user's enrollment for this activity
     const { data: enrollment, error: enrollmentError } = await supabase
       .from('enrollments')
       .select('id, status')
       .eq('activity_id', activityId)
       .eq('user_id', user.id)
-      .is('deleted_at', null)
       .single<{ id: string; status: string }>();
 
     if (enrollmentError || !enrollment) {
       return NextResponse.json(
-        { message: 'Nu ești înscris la această activitate' },
+        { error: 'You are not enrolled in this activity' },
         { status: 403 }
       );
     }
 
     if (enrollment.status !== 'CONFIRMED') {
       return NextResponse.json(
-        { message: 'Înscrierea ta nu a fost confirmată încă' },
+        { error: 'Your enrollment is not approved yet' },
         { status: 403 }
       );
     }
 
-    // 9. Check for duplicate check-in
+    // Check for duplicate check-in
     const { data: existingAttendance } = await supabase
+      .schema('public')
       .from('attendance')
       .select('id')
       .eq('session_id', sessionId)
       .eq('enrollment_id', enrollment.id)
-      .maybeSingle<{ id: string }>();
+      .eq('user_id', user.id)
+      .maybeSingle();
 
     if (existingAttendance) {
       return NextResponse.json(
-        { message: 'Ai făcut deja check-in pentru această sesiune' },
+        { error: 'You have already checked in for this session' },
         { status: 400 }
       );
     }
 
-    // 10. Calculate hours for this session
-    const sessionStart = new Date(`${session.date}T${session.start_time}`);
-    const sessionEnd = new Date(`${session.date}T${session.end_time}`);
+    // Calculate hours to credit (session duration in hours)
     const durationMs = sessionEnd.getTime() - sessionStart.getTime();
-    const hours = Number((durationMs / (1000 * 60 * 60)).toFixed(2));
+    const hoursToCredit = durationMs / (1000 * 60 * 60); // Convert ms to hours
 
-    // 11. Create attendance record
+    // Create attendance record
+    const attendanceData = {
+      session_id: sessionId,
+      enrollment_id: enrollment.id,
+      user_id: user.id,
+      status: 'PRESENT',
+      check_in_method: body.qr_code ? 'QR_CODE' : 'MANUAL',
+      checked_in_at: new Date().toISOString(),
+      hours_credited: hoursToCredit,
+      gps_latitude: body.gps_latitude || null,
+      gps_longitude: body.gps_longitude || null,
+      gps_accuracy: body.gps_accuracy || null,
+    };
+
     const { data: attendance, error: attendanceError } = await supabase
+      .schema('public')
       .from('attendance')
-      .insert({
-        session_id: sessionId,
-        enrollment_id: enrollment.id,
-        user_id: user.id,
-        status: 'PRESENT',
-        check_in_method: 'QR_CODE',
-        hours_credited: hours,
-        checked_in_at: now.toISOString(),
-      })
-      .select('id, checked_in_at, hours_credited')
-      .single<{ id: string; checked_in_at: string; hours_credited: number }>();
+      .insert(attendanceData)
+      .select()
+      .single();
 
     if (attendanceError) {
-      console.error('Attendance creation error:', attendanceError);
-      return NextResponse.json(
-        { message: 'Eroare la înregistrarea prezenței. Te rugăm să încerci din nou.' },
-        { status: 500 }
-      );
+      console.error('Error creating attendance record:', attendanceError);
+      return NextResponse.json({ error: 'Failed to check in' }, { status: 500 });
     }
 
-    // 12. Success response
     return NextResponse.json(
       {
-        message: 'Prezență înregistrată cu succes',
-        attendance: {
-          id: attendance.id,
-          checked_in_at: attendance.checked_in_at,
-          hours_credited: attendance.hours_credited,
-        },
+        message: 'Checked in successfully',
+        attendance,
+        hours_credited: hoursToCredit,
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error('Check-in API error:', error);
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          message: 'Date QR code invalide',
-          errors: error.errors.map((e) => ({
-            field: e.path.join('.'),
-            message: e.message,
-          })),
-        },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json(
-      { message: 'A apărut o eroare la procesarea check-in-ului' },
-      { status: 500 }
-    );
+    console.error('Check-in error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

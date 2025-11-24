@@ -7,6 +7,7 @@ import { SaveButton } from '@/components/opportunities/SaveButton';
 import { Badge } from '@/components/ui/badge';
 import { getOpportunityBySlug } from '@/lib/services/opportunities.service';
 import { createClient } from '@/lib/supabase/server';
+import { AttendanceHistory } from '@/components/attendance/AttendanceHistory';
 
 // Force dynamic rendering to always fetch fresh data
 export const dynamic = 'force-dynamic';
@@ -54,6 +55,7 @@ export default async function OpportunityDetailsPage({ params }: OpportunityDeta
   // Check if user is already enrolled and if activity is saved
   let enrollment: { id: string; status: string } | null = null;
   let isSaved = false;
+  let attendanceRecords: any[] = [];
 
   if (user) {
     const { data: enrollmentData } = await supabase
@@ -75,6 +77,47 @@ export default async function OpportunityDetailsPage({ params }: OpportunityDeta
       .maybeSingle<{ id: string }>();
 
     isSaved = !!savedData;
+
+    // Fetch attendance records for this activity if user is enrolled
+    if (enrollment && enrollment.status === 'CONFIRMED') {
+      const { data: attendanceData } = await supabase
+        .from('attendance')
+        .select(`
+          id,
+          status,
+          check_in_method,
+          checked_in_at,
+          hours_credited,
+          session:sessions!inner (
+            date,
+            start_time,
+            end_time,
+            location,
+            activity_id
+          )
+        `)
+        .eq('user_id', user.id)
+        .eq('session.activity_id', opportunity.id)
+        .order('checked_in_at', { ascending: false });
+
+      if (attendanceData) {
+        attendanceRecords = attendanceData.map((record: any) => ({
+          id: record.id,
+          status: record.status,
+          check_in_method: record.check_in_method,
+          checked_in_at: record.checked_in_at,
+          hours_credited: Number(record.hours_credited),
+          session: {
+            date: record.session.date,
+            start_time: record.session.start_time,
+            end_time: record.session.end_time,
+            location: record.session.location,
+            activity_title: opportunity.title,
+            activity_category: opportunity.categoryName,
+          },
+        }));
+      }
+    }
   }
 
   // Calculate spots remaining
@@ -257,6 +300,13 @@ export default async function OpportunityDetailsPage({ params }: OpportunityDeta
                     );
                   })}
                 </div>
+              </section>
+            )}
+
+            {/* Attendance History - Only for enrolled students */}
+            {enrollment && enrollment.status === 'CONFIRMED' && attendanceRecords.length > 0 && (
+              <section>
+                <AttendanceHistory attendanceRecords={attendanceRecords} activityId={opportunity.id} />
               </section>
             )}
           </main>
