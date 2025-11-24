@@ -52,6 +52,7 @@ export default async function MyActivitiesPage() {
     location: session.location,
     max_participants: session.max_participants,
     status: session.status,
+    qr_code_data: session.qr_code_data,
     reminder_sent: session.reminder_sent,
     created_at: session.created_at,
     updated_at: session.updated_at,

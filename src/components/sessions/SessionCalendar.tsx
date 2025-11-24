@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import { Clock, MapPin, Users, Edit2, XCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CheckInButton } from './CheckInButton';
+import { ManualCheckInNotice } from './ManualCheckInNotice';
 import {
   format,
   parseISO,
@@ -38,6 +39,7 @@ interface Session {
   location: string;
   max_participants: number | null;
   status: string | null;
+  qr_code_data?: string | null;
   reminder_sent: boolean | null;
   created_at?: string | null;
   updated_at?: string | null;
@@ -438,16 +440,30 @@ export function SessionCalendar({
               )}
 
               {viewMode === 'student' && selectedSession.status === 'SCHEDULED' && (
-                <div className="flex justify-center pt-2">
-                  <CheckInButton
-                    activityId={selectedSession.activity_id}
-                    sessionId={selectedSession.id}
-                    sessionTitle={selectedSession.activity_title || 'Activitate'}
-                    onCheckInSuccess={() => {
-                      setIsDetailsOpen(false);
-                      onSessionUpdate?.();
-                    }}
-                  />
+                <div className="pt-2">
+                  {selectedSession.qr_code_data ? (
+                    <div className="flex justify-center">
+                      <CheckInButton
+                        activityId={selectedSession.activity_id}
+                        sessionId={selectedSession.id}
+                        sessionTitle={selectedSession.activity_title || 'Activitate'}
+                        onCheckInSuccess={() => {
+                          setIsDetailsOpen(false);
+                          onSessionUpdate?.();
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <ManualCheckInNotice
+                      session={{
+                        date: selectedSession.date,
+                        start_time: selectedSession.start_time,
+                        end_time: selectedSession.end_time,
+                        location: selectedSession.location,
+                        activity_title: selectedSession.activity_title,
+                      }}
+                    />
+                  )}
                 </div>
               )}
             </div>
