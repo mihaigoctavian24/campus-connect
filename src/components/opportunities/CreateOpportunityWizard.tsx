@@ -15,6 +15,7 @@ import {
   Eye,
 } from 'lucide-react';
 import { TimePicker } from '@/components/ui/time-picker';
+import { SessionSetupWizard } from '@/components/sessions/SessionSetupWizard';
 
 // Validation schemas for each step
 const step1Schema = z.object({
@@ -57,6 +58,8 @@ export function CreateOpportunityWizard({ onSuccess }: CreateOpportunityWizardPr
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [createdActivityId, setCreatedActivityId] = useState<string | null>(null);
+  const [showSessionSetup, setShowSessionSetup] = useState(false);
 
   // Categories and departments from database
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
@@ -173,11 +176,13 @@ export function CreateOpportunityWizard({ onSuccess }: CreateOpportunityWizardPr
       }
 
       const result = await response.json();
+      setCreatedActivityId(result.id);
       setShowSuccess(true);
-      onSuccess?.(result.id);
 
+      // Transition to session setup after 2 seconds
       setTimeout(() => {
-        router.push('/dashboard/professor/opportunities');
+        setShowSuccess(false);
+        setShowSessionSetup(true);
       }, 2000);
     } catch (error) {
       console.error('Error creating opportunity:', error);
@@ -199,6 +204,26 @@ export function CreateOpportunityWizard({ onSuccess }: CreateOpportunityWizardPr
     { number: 5, title: 'Previzualizare', icon: Eye },
   ];
 
+  // Show session setup wizard after activity creation
+  if (showSessionSetup && createdActivityId) {
+    return (
+      <SessionSetupWizard
+        activityId={createdActivityId}
+        defaultLocation={step2Data.location}
+        defaultMaxParticipants={step2Data.max_participants}
+        onComplete={() => {
+          onSuccess?.(createdActivityId);
+          router.push('/dashboard/professor/opportunities');
+        }}
+        onCancel={() => {
+          // Skip session setup and go directly to opportunities
+          onSuccess?.(createdActivityId);
+          router.push('/dashboard/professor/opportunities');
+        }}
+      />
+    );
+  }
+
   if (showSuccess) {
     return (
       <div className="py-16 text-center">
@@ -209,9 +234,9 @@ export function CreateOpportunityWizard({ onSuccess }: CreateOpportunityWizardPr
         </div>
         <h2 className="mb-4 text-2xl font-medium text-[#001f3f]">Oportunitate Creată!</h2>
         <p className="mb-8 text-gray-600">
-          Oportunitatea ta a fost creată cu succes și este acum disponibilă pentru studenți.
+          Oportunitatea ta a fost creată cu succes. Acum poți configura sesiunile activității.
         </p>
-        <p className="text-sm text-gray-500">Redirecționare...</p>
+        <p className="text-sm text-gray-500">Pregătire configurare sesiuni...</p>
       </div>
     );
   }

@@ -9,6 +9,9 @@ import { ArrowLeft, Calendar, MapPin, Users, Clock, Edit } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { ApplicationReview } from '@/components/applications/ApplicationReview';
+import { SessionManagementTable } from '@/components/sessions/SessionManagementTable';
+import { EditSessionDialog } from '@/components/sessions/EditSessionDialog';
+import { RescheduleSessionDialog } from '@/components/sessions/RescheduleSessionDialog';
 
 interface Activity {
   id: string;
@@ -31,10 +34,28 @@ interface OpportunityDetailPageProps {
   activityId: string;
 }
 
+interface Session {
+  id: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+  location: string;
+  max_participants?: number;
+  status: 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+  qr_code_data?: string;
+  reminder_sent: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export function OpportunityDetailPage({ activityId }: OpportunityDetailPageProps) {
   const router = useRouter();
   const [activity, setActivity] = useState<Activity | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [isLoadingSessions, setIsLoadingSessions] = useState(false);
+  const [editingSession, setEditingSession] = useState<Session | null>(null);
+  const [reschedulingSession, setReschedulingSession] = useState<Session | null>(null);
 
   useEffect(() => {
     fetchActivity();
@@ -59,6 +80,95 @@ export function OpportunityDetailPage({ activityId }: OpportunityDetailPageProps
       setIsLoading(false);
     }
   }
+
+  async function fetchSessions() {
+    try {
+      setIsLoadingSessions(true);
+      const response = await fetch(`/api/activities/${activityId}/sessions`);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch sessions');
+      }
+
+      const data = await response.json();
+      setSessions(data.sessions || []);
+    } catch (error) {
+      console.error('Error fetching sessions:', error);
+      toast.error('Eroare la încărcarea sesiunilor');
+    } finally {
+      setIsLoadingSessions(false);
+    }
+  }
+
+  const handleEditSession = (session: Session) => {
+    setEditingSession(session);
+  };
+
+  const handleCancelSession = async (sessionId: string) => {
+    try {
+      const response = await fetch(`/api/activities/${activityId}/sessions/${sessionId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to cancel session');
+      }
+
+      toast.success('Sesiune anulată cu succes');
+      fetchSessions(); // Reload sessions
+    } catch (error) {
+      console.error('Error canceling session:', error);
+      toast.error('Eroare la anularea sesiunii');
+    }
+  };
+
+  const handleRescheduleSession = (session: Session) => {
+    setReschedulingSession(session);
+  };
+
+  const handleEditSessionSave = async (sessionId: string, data: any) => {
+    try {
+      const response = await fetch(`/api/activities/${activityId}/sessions/${sessionId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update session');
+      }
+
+      toast.success('Sesiune actualizată cu succes');
+      setEditingSession(null);
+      fetchSessions(); // Reload sessions
+    } catch (error) {
+      console.error('Error updating session:', error);
+      toast.error('Eroare la actualizarea sesiunii');
+      throw error;
+    }
+  };
+
+  const handleRescheduleSave = async (sessionId: string, data: any) => {
+    try {
+      const response = await fetch(`/api/activities/${activityId}/sessions/${sessionId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to reschedule session');
+      }
+
+      toast.success('Sesiune reprogramată cu succes');
+      setReschedulingSession(null);
+      fetchSessions(); // Reload sessions
+    } catch (error) {
+      console.error('Error rescheduling session:', error);
+      toast.error('Eroare la reprogramarea sesiunii');
+      throw error;
+    }
+  };
 
   if (isLoading) {
     return (
@@ -155,7 +265,11 @@ export function OpportunityDetailPage({ activityId }: OpportunityDetailPageProps
       </Card>
 
       {/* Tabs for different sections */}
-      <Tabs defaultValue="applications" className="w-full">
+      <Tabs defaultValue="applications" className="w-full" onValueChange={(value) => {
+        if (value === 'sessions' && sessions.length === 0) {
+          fetchSessions();
+        }
+      }}>
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="applications" className="gap-2">
             <Users className="h-4 w-4" />
@@ -172,9 +286,13 @@ export function OpportunityDetailPage({ activityId }: OpportunityDetailPageProps
 
         <TabsContent value="sessions" className="mt-6">
           <Card className="p-6">
-            <p className="text-muted-foreground text-center">
-              Secțiunea Sesiuni va fi implementată în viitor
-            </p>
+            <SessionManagementTable
+              sessions={sessions}
+              onEdit={handleEditSession}
+              onCancel={handleCancelSession}
+              onReschedule={handleRescheduleSession}
+              isLoading={isLoadingSessions}
+            />
           </Card>
         </TabsContent>
 
@@ -194,6 +312,26 @@ export function OpportunityDetailPage({ activityId }: OpportunityDetailPageProps
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Edit Session Dialog */}
+      {editingSession && (
+        <EditSessionDialog
+          session={editingSession}
+          activityId={activityId}
+          onClose={() => setEditingSession(null)}
+          onSave={handleEditSessionSave}
+        />
+      )}
+
+      {/* Reschedule Session Dialog */}
+      {reschedulingSession && (
+        <RescheduleSessionDialog
+          session={reschedulingSession}
+          activityId={activityId}
+          onClose={() => setReschedulingSession(null)}
+          onSave={handleRescheduleSave}
+        />
+      )}
     </div>
   );
 }

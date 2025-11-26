@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { sendApplicationRejectedEmail } from '@/lib/email/service';
 
 export async function PUT(
   request: NextRequest,
@@ -69,13 +70,51 @@ export async function PUT(
       return NextResponse.json({ message: 'Eroare la respingerea aplicației' }, { status: 500 });
     }
 
-    // TODO: Send email notification to student (#185)
-    // await sendEmail({
-    //   to: student.email,
-    //   subject: `Aplicația ta pentru ${activity.title}`,
-    //   template: add_to_waitlist ? 'application_waitlisted' : 'application_rejected',
-    //   data: { rejection_reason, custom_message, activity_title: activity.title }
-    // });
+    // Get student and professor details for email
+    const { data: enrollment } = await supabase
+      .from('enrollments')
+      .select(
+        `
+        user_id,
+        profiles!enrollments_user_id_fkey (
+          email,
+          first_name,
+          last_name
+        )
+      `
+      )
+      .eq('id', enrollmentId)
+      .single();
+
+    const { data: professor } = await supabase
+      .from('profiles')
+      .select('first_name, last_name')
+      .eq('id', user.id)
+      .single();
+
+    // Send email notification to student
+    if (enrollment?.profiles && professor) {
+      const studentProfile = enrollment.profiles as {
+        email: string;
+        first_name: string;
+        last_name: string;
+      };
+
+      const emailResult = await sendApplicationRejectedEmail({
+        studentEmail: studentProfile.email,
+        studentName: `${studentProfile.first_name} ${studentProfile.last_name}`,
+        activityTitle: activity.title,
+        professorName: `${professor.first_name} ${professor.last_name}`,
+        rejectionReason: rejection_reason,
+        customMessage: custom_message,
+        isWaitlisted: add_to_waitlist,
+      });
+
+      if (!emailResult.success) {
+        console.error('Failed to send rejection email:', emailResult.error);
+        // Don't fail the request - email is not critical
+      }
+    }
 
     return NextResponse.json({
       message: add_to_waitlist

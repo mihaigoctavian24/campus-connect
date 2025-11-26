@@ -82,7 +82,8 @@ export default async function OpportunityDetailsPage({ params }: OpportunityDeta
     if (enrollment && enrollment.status === 'CONFIRMED') {
       const { data: attendanceData } = await supabase
         .from('attendance')
-        .select(`
+        .select(
+          `
           id,
           status,
           check_in_method,
@@ -95,7 +96,8 @@ export default async function OpportunityDetailsPage({ params }: OpportunityDeta
             location,
             activity_id
           )
-        `)
+        `
+        )
         .eq('user_id', user.id)
         .eq('session.activity_id', opportunity.id)
         .order('checked_in_at', { ascending: false });
@@ -306,7 +308,10 @@ export default async function OpportunityDetailsPage({ params }: OpportunityDeta
             {/* Attendance History - Only for enrolled students */}
             {enrollment && enrollment.status === 'CONFIRMED' && attendanceRecords.length > 0 && (
               <section>
-                <AttendanceHistory attendanceRecords={attendanceRecords} activityId={opportunity.id} />
+                <AttendanceHistory
+                  attendanceRecords={attendanceRecords}
+                  activityId={opportunity.id}
+                />
               </section>
             )}
           </main>

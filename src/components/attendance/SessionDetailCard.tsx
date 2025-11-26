@@ -66,10 +66,14 @@ export function SessionDetailCard({ attendance }: SessionDetailCardProps) {
             {/* Activity Title + Status */}
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-3">
-                <StatusIcon className={`h-5 w-5 mt-0.5 ${config.color.includes('green') ? 'text-green-600' : config.color.includes('red') ? 'text-red-600' : 'text-yellow-600'}`} />
+                <StatusIcon
+                  className={`h-5 w-5 mt-0.5 ${config.color.includes('green') ? 'text-green-600' : config.color.includes('red') ? 'text-red-600' : 'text-yellow-600'}`}
+                />
                 <div>
                   <h4 className="font-semibold text-base">{attendance.session.activity_title}</h4>
-                  <p className="text-sm text-muted-foreground">{attendance.session.activity_category}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {attendance.session.activity_category}
+                  </p>
                 </div>
               </div>
               <Badge variant="outline" className={config.color}>
@@ -86,7 +90,8 @@ export function SessionDetailCard({ attendance }: SessionDetailCardProps) {
               <div className="flex items-center gap-1.5">
                 <Clock className="h-4 w-4" />
                 <span>
-                  {attendance.session.start_time.substring(0, 5)} - {attendance.session.end_time.substring(0, 5)}
+                  {attendance.session.start_time.substring(0, 5)} -{' '}
+                  {attendance.session.end_time.substring(0, 5)}
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -100,7 +105,9 @@ export function SessionDetailCard({ attendance }: SessionDetailCardProps) {
               <div className="text-xs text-muted-foreground ml-8 space-y-1">
                 <div className="flex items-center gap-2">
                   <span className="font-medium">Ore acreditate:</span>
-                  <span className="font-semibold text-green-700">{attendance.hours_credited.toFixed(2)} ore</span>
+                  <span className="font-semibold text-green-700">
+                    {attendance.hours_credited.toFixed(2)} ore
+                  </span>
                 </div>
                 {checkedInDate && (
                   <div className="flex items-center gap-2">

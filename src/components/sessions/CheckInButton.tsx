@@ -70,17 +70,14 @@ export function CheckInButton({
         gps_longitude: gpsCoords?.longitude,
         gps_accuracy: gpsCoords?.accuracy,
       };
-      
-      const response = await fetch(
-        `/api/activities/${activityId}/sessions/${sessionId}/check-in`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(body),
-        }
-      );
+
+      const response = await fetch(`/api/activities/${activityId}/sessions/${sessionId}/check-in`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
 
       const data = await response.json();
 
@@ -133,9 +130,7 @@ export function CheckInButton({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Location (Optional)
-              </label>
+              <label className="text-sm font-medium">Location (Optional)</label>
               <Button
                 variant="outline"
                 size="sm"
@@ -154,8 +149,7 @@ export function CheckInButton({
               </Button>
               {gpsCoords && (
                 <p className="text-xs text-muted-foreground">
-                  Lat: {gpsCoords.latitude.toFixed(6)}, Lng:{' '}
-                  {gpsCoords.longitude.toFixed(6)}
+                  Lat: {gpsCoords.latitude.toFixed(6)}, Lng: {gpsCoords.longitude.toFixed(6)}
                 </p>
               )}
             </div>

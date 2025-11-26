@@ -90,17 +90,11 @@ export async function POST(
       .single<{ id: string; status: string }>();
 
     if (enrollmentError || !enrollment) {
-      return NextResponse.json(
-        { error: 'You are not enrolled in this activity' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'You are not enrolled in this activity' }, { status: 403 });
     }
 
     if (enrollment.status !== 'CONFIRMED') {
-      return NextResponse.json(
-        { error: 'Your enrollment is not approved yet' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Your enrollment is not approved yet' }, { status: 403 });
     }
 
     // Check for duplicate check-in

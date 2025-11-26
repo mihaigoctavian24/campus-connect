@@ -6,10 +6,23 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, CheckCircle, XCircle, Eye, User, CheckSquare, XSquare } from 'lucide-react';
+import {
+  Search,
+  CheckCircle,
+  XCircle,
+  Eye,
+  User,
+  CheckSquare,
+  XSquare,
+  ChevronDown,
+  ChevronUp,
+  SlidersHorizontal,
+  ArrowUpDown,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { ApplicationDetailView } from './ApplicationDetailView';
-import { AcceptRejectModal } from './AcceptRejectModal';
+import { AcceptModal } from './AcceptModal';
+import { RejectModal } from './RejectModal';
 import { StudentProfileQuickView } from './StudentProfileQuickView';
 
 interface ApplicationReviewProps {
@@ -49,10 +62,20 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
   const [statusFilter, setStatusFilter] = useState<string>('PENDING');
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [isAcceptRejectModalOpen, setIsAcceptRejectModalOpen] = useState(false);
+  const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  const [actionType, setActionType] = useState<'accept' | 'reject'>('accept');
   const [selectedForBulk, setSelectedForBulk] = useState<Set<string>>(new Set());
+
+  // Advanced Filters
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [facultyFilter, setFacultyFilter] = useState<string>('ALL');
+  const [dateFrom, setDateFrom] = useState<string>('');
+  const [dateTo, setDateTo] = useState<string>('');
+
+  // Sorting
+  const [sortBy, setSortBy] = useState<'name' | 'date' | 'year'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
     fetchApplications();
@@ -78,16 +101,51 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
     }
   }
 
-  const filteredApplications = applications.filter((app) => {
-    const matchesSearch =
-      app.student.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      app.student.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      app.student.email.toLowerCase().includes(searchQuery.toLowerCase());
+  // Get unique faculties for filter
+  const uniqueFaculties = Array.from(
+    new Set(applications.map((app) => app.student.faculty).filter(Boolean))
+  ).sort();
 
-    const matchesStatus = statusFilter === 'ALL' || app.status === statusFilter;
+  const filteredAndSortedApplications = applications
+    .filter((app) => {
+      // Search filter
+      const matchesSearch =
+        app.student.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        app.student.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        app.student.email.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesSearch && matchesStatus;
-  });
+      // Status filter
+      const matchesStatus = statusFilter === 'ALL' || app.status === statusFilter;
+
+      // Faculty filter
+      const matchesFaculty = facultyFilter === 'ALL' || app.student.faculty === facultyFilter;
+
+      // Date range filter
+      const applicationDate = new Date(app.applied_at);
+      const matchesDateFrom = !dateFrom || applicationDate >= new Date(dateFrom);
+      const matchesDateTo = !dateTo || applicationDate <= new Date(dateTo + 'T23:59:59');
+
+      return matchesSearch && matchesStatus && matchesFaculty && matchesDateFrom && matchesDateTo;
+    })
+    .sort((a, b) => {
+      let comparison = 0;
+
+      switch (sortBy) {
+        case 'name':
+          const nameA = `${a.student.last_name} ${a.student.first_name}`.toLowerCase();
+          const nameB = `${b.student.last_name} ${b.student.first_name}`.toLowerCase();
+          comparison = nameA.localeCompare(nameB);
+          break;
+        case 'date':
+          comparison = new Date(a.applied_at).getTime() - new Date(b.applied_at).getTime();
+          break;
+        case 'year':
+          comparison = (a.student.year || 0) - (b.student.year || 0);
+          break;
+      }
+
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
 
   const handleViewDetails = (app: Application) => {
     setSelectedApplication(app);
@@ -101,14 +159,12 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
 
   const handleAcceptClick = (app: Application) => {
     setSelectedApplication(app);
-    setActionType('accept');
-    setIsAcceptRejectModalOpen(true);
+    setIsAcceptModalOpen(true);
   };
 
   const handleRejectClick = (app: Application) => {
     setSelectedApplication(app);
-    setActionType('reject');
-    setIsAcceptRejectModalOpen(true);
+    setIsRejectModalOpen(true);
   };
 
   const handleBulkToggle = (appId: string) => {
@@ -126,8 +182,7 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
       toast.error('Selectează cel puțin o aplicație');
       return;
     }
-    setActionType('accept');
-    setIsAcceptRejectModalOpen(true);
+    setIsAcceptModalOpen(true);
   };
 
   const handleBulkReject = () => {
@@ -135,14 +190,14 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
       toast.error('Selectează cel puțin o aplicație');
       return;
     }
-    setActionType('reject');
-    setIsAcceptRejectModalOpen(true);
+    setIsRejectModalOpen(true);
   };
 
   const handleActionComplete = () => {
     fetchApplications();
     setSelectedForBulk(new Set());
-    setIsAcceptRejectModalOpen(false);
+    setIsAcceptModalOpen(false);
+    setIsRejectModalOpen(false);
   };
 
   if (isLoading) {
@@ -178,6 +233,106 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
           <option value="CANCELLED">Respinse</option>
           <option value="WAITLISTED">Listă Așteptare</option>
         </select>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+          className="gap-2"
+        >
+          <SlidersHorizontal className="h-4 w-4" />
+          Filtre Avansate
+          {showAdvancedFilters ? (
+            <ChevronUp className="h-4 w-4" />
+          ) : (
+            <ChevronDown className="h-4 w-4" />
+          )}
+        </Button>
+      </div>
+
+      {/* Advanced Filters */}
+      {showAdvancedFilters && (
+        <Card className="p-4 space-y-4 border-primary/20">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Faculty Filter */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Facultate</label>
+              <select
+                value={facultyFilter}
+                onChange={(e) => setFacultyFilter(e.target.value)}
+                className="w-full px-3 py-2 border rounded-md text-sm"
+              >
+                <option value="ALL">Toate facultățile</option>
+                {uniqueFaculties.map((faculty) => (
+                  <option key={faculty} value={faculty}>
+                    {faculty}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Date From */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Data de la</label>
+              <Input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                className="text-sm"
+              />
+            </div>
+
+            {/* Date To */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Data până la</label>
+              <Input
+                type="date"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+                className="text-sm"
+              />
+            </div>
+          </div>
+
+          {/* Reset Filters Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setFacultyFilter('ALL');
+              setDateFrom('');
+              setDateTo('');
+            }}
+            className="text-xs"
+          >
+            Resetează filtrele avansate
+          </Button>
+        </Card>
+      )}
+
+      {/* Sorting Controls */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <ArrowUpDown className="h-4 w-4" />
+          <span>Sortare:</span>
+        </div>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as 'name' | 'date' | 'year')}
+          className="px-3 py-1.5 border rounded-md text-sm"
+        >
+          <option value="date">Dată aplicare</option>
+          <option value="name">Nume</option>
+          <option value="year">An studiu</option>
+        </select>
+        <select
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+          className="px-3 py-1.5 border rounded-md text-sm"
+        >
+          <option value="desc">Descrescător</option>
+          <option value="asc">Crescător</option>
+        </select>
       </div>
 
       {/* Bulk Actions */}
@@ -206,12 +361,12 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
 
       {/* Results Count */}
       <p className="text-sm text-muted-foreground">
-        {filteredApplications.length} aplicații găsite
+        {filteredAndSortedApplications.length} aplicații găsite
       </p>
 
       {/* Applications List */}
       <div className="space-y-3">
-        {filteredApplications.map((app) => (
+        {filteredAndSortedApplications.map((app) => (
           <Card key={app.id} className="p-5 hover:shadow-md transition-shadow">
             <div className="flex items-start gap-4">
               {/* Checkbox for bulk selection */}
@@ -324,12 +479,29 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
         </>
       )}
 
-      {/* Accept/Reject Modal - can be used for both individual and bulk actions */}
+      {/* Accept Modal */}
       {(selectedApplication || selectedForBulk.size > 0) && (
-        <AcceptRejectModal
-          isOpen={isAcceptRejectModalOpen}
-          onClose={() => setIsAcceptRejectModalOpen(false)}
-          actionType={actionType}
+        <AcceptModal
+          isOpen={isAcceptModalOpen}
+          onClose={() => setIsAcceptModalOpen(false)}
+          activityId={activityId}
+          applicationIds={
+            selectedForBulk.size > 0
+              ? Array.from(selectedForBulk)
+              : selectedApplication
+                ? [selectedApplication.id]
+                : []
+          }
+          isBulk={selectedForBulk.size > 0}
+          onComplete={handleActionComplete}
+        />
+      )}
+
+      {/* Reject Modal */}
+      {(selectedApplication || selectedForBulk.size > 0) && (
+        <RejectModal
+          isOpen={isRejectModalOpen}
+          onClose={() => setIsRejectModalOpen(false)}
           activityId={activityId}
           applicationIds={
             selectedForBulk.size > 0

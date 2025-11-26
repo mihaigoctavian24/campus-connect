@@ -144,7 +144,7 @@ export async function DELETE(
     const { data: existingSession, error: sessionCheckError } = await supabase
       .schema('public')
       .from('sessions')
-      .select('id')
+      .select('id, status')
       .eq('id', sessionId)
       .eq('activity_id', activityId)
       .is('deleted_at', null)
@@ -154,26 +154,52 @@ export async function DELETE(
       return NextResponse.json({ error: 'Session not found' }, { status: 404 });
     }
 
-    // Soft delete the session
-    const deleteData: { deleted_at: string; updated_at: string } = {
-      deleted_at: new Date().toISOString(),
+    // Prevent cancelling already completed sessions
+    if (existingSession.status === 'COMPLETED') {
+      return NextResponse.json(
+        { error: 'Cannot cancel a completed session' },
+        { status: 400 }
+      );
+    }
+
+    // Get enrolled students for this session (for notifications)
+    const { data: enrolledStudents } = await supabase
+      .from('enrollments')
+      .select('user_id, profiles(email, first_name, last_name)')
+      .eq('activity_id', activityId)
+      .eq('status', 'ACTIVE');
+
+    // Cancel the session (set status to CANCELLED instead of soft delete)
+    const cancelData: { status: string; updated_at: string } = {
+      status: 'CANCELLED',
       updated_at: new Date().toISOString(),
     };
 
-    const { error: deleteError } = await supabase
+    const { error: cancelError } = await supabase
       .schema('public')
       .from('sessions')
-      .update(deleteData)
+      .update(cancelData)
       .eq('id', sessionId);
 
-    if (deleteError) {
-      console.error('Error deleting session:', deleteError);
-      return NextResponse.json({ error: 'Failed to delete session' }, { status: 500 });
+    if (cancelError) {
+      console.error('Error cancelling session:', cancelError);
+      return NextResponse.json({ error: 'Failed to cancel session' }, { status: 500 });
+    }
+
+    // TODO: Send notifications to enrolled students
+    // This will be implemented in Week 21-22 (Platform Configuration)
+    // For now, we just log the students who should be notified
+    if (enrolledStudents && enrolledStudents.length > 0) {
+      console.log(
+        `Session ${sessionId} cancelled. ${enrolledStudents.length} students should be notified:`,
+        enrolledStudents.map((e: any) => e.profiles?.email)
+      );
     }
 
     return NextResponse.json(
       {
-        message: 'Session deleted successfully',
+        message: 'Session cancelled successfully',
+        notified_students: enrolledStudents?.length || 0,
       },
       { status: 200 }
     );

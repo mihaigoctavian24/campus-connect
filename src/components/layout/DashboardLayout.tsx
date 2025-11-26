@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/components/ui/utils';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, Calendar, FileText, Menu, X, User } from 'lucide-react';
+import { LayoutDashboard, Calendar, FileText, Menu, X, User, Users } from 'lucide-react';
 import { useState } from 'react';
 
 interface DashboardLayoutProps {
@@ -20,20 +20,22 @@ export function DashboardLayout({ children, role = 'student' }: DashboardLayoutP
   const navigationItems = {
     student: [
       { href: '/dashboard/student', label: 'Dashboard', icon: LayoutDashboard },
-      { href: '/profile', label: 'My Profile', icon: User },
+      { href: '/dashboard/student/profile', label: 'My Profile', icon: User },
       { href: '/dashboard/student/my-activities', label: 'My Activities', icon: Calendar },
       { href: '/dashboard/student/applications', label: 'Applications', icon: FileText },
     ],
     professor: [
       { href: '/dashboard/professor', label: 'Overview', icon: LayoutDashboard },
+      { href: '/dashboard/professor/profile', label: 'My Profile', icon: User },
       { href: '/dashboard/professor/opportunities', label: 'Oportunități', icon: Calendar },
-      { href: '/dashboard/professor/students', label: 'Studenți', icon: User },
+      { href: '/dashboard/professor/students', label: 'Studenți', icon: Users },
       { href: '/dashboard/professor/sessions', label: 'Sesiuni', icon: Calendar },
       { href: '/dashboard/professor/analytics', label: 'Analytics', icon: FileText },
     ],
     admin: [
       { href: '/dashboard/admin', label: 'Dashboard', icon: LayoutDashboard },
-      { href: '/dashboard/admin/users', label: 'Users', icon: User },
+      { href: '/dashboard/admin/profile', label: 'My Profile', icon: User },
+      { href: '/dashboard/admin/users', label: 'Users', icon: Users },
       { href: '/dashboard/admin/opportunities', label: 'Opportunities', icon: Calendar },
       { href: '/dashboard/admin/reports', label: 'Reports', icon: FileText },
     ],

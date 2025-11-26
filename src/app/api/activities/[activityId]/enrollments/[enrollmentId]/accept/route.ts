@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { sendApplicationAcceptedEmail } from '@/lib/email/service';
 
 export async function PUT(
   request: NextRequest,
@@ -19,7 +20,7 @@ export async function PUT(
       return NextResponse.json({ message: 'Nu ești autentificat' }, { status: 401 });
     }
 
-    // Verify user is the professor who created this activity
+    // Verify user is the professor who created this activity and get activity details
     const { data: activity, error: activityError } = await supabase
       .from('activities')
       .select('created_by, title, max_participants, current_participants')
@@ -86,13 +87,50 @@ export async function PUT(
       console.error('Error updating participant count:', counterError);
     }
 
-    // TODO: Send email notification to student (#185)
-    // await sendEmail({
-    //   to: student.email,
-    //   subject: `Aplicația ta pentru ${activity.title} a fost acceptată`,
-    //   template: 'application_accepted',
-    //   data: { custom_message, activity_title: activity.title }
-    // });
+    // Get student and professor details for email
+    const { data: enrollment } = await supabase
+      .from('enrollments')
+      .select(
+        `
+        user_id,
+        profiles!enrollments_user_id_fkey (
+          email,
+          first_name,
+          last_name
+        )
+      `
+      )
+      .eq('id', enrollmentId)
+      .single();
+
+    const { data: professor } = await supabase
+      .from('profiles')
+      .select('first_name, last_name')
+      .eq('id', user.id)
+      .single();
+
+    // Send email notification to student
+    if (enrollment?.profiles && professor) {
+      const studentProfile = enrollment.profiles as {
+        email: string;
+        first_name: string;
+        last_name: string;
+      };
+
+      const emailResult = await sendApplicationAcceptedEmail({
+        studentEmail: studentProfile.email,
+        studentName: `${studentProfile.first_name} ${studentProfile.last_name}`,
+        activityTitle: activity.title,
+        professorName: `${professor.first_name} ${professor.last_name}`,
+        customMessage: custom_message,
+        activityId,
+      });
+
+      if (!emailResult.success) {
+        console.error('Failed to send acceptance email:', emailResult.error);
+        // Don't fail the request - email is not critical
+      }
+    }
 
     return NextResponse.json({
       message: 'Aplicație acceptată cu succes',
