@@ -21,7 +21,7 @@ interface EditSessionDialogProps {
 
 export function EditSessionDialog({
   session,
-  activityId,
+  activityId: _activityId,
   onClose,
   onSave,
 }: EditSessionDialogProps) {
@@ -150,9 +150,7 @@ export function EditSessionDialog({
                   placeholder="--:--"
                   disabled={isSubmitting}
                 />
-                {errors.end_time && (
-                  <p className="mt-1 text-sm text-red-600">{errors.end_time}</p>
-                )}
+                {errors.end_time && <p className="mt-1 text-sm text-red-600">{errors.end_time}</p>}
               </div>
             </div>
 

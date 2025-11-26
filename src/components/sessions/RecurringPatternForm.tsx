@@ -226,11 +226,7 @@ export function RecurringPatternForm({
               <label className="mb-2 block text-sm font-medium text-[#001f3f]">
                 Ora de Început *
               </label>
-              <TimePicker
-                value={startTime}
-                onChange={setStartTime}
-                placeholder="--:--"
-              />
+              <TimePicker value={startTime} onChange={setStartTime} placeholder="--:--" />
               {errors.startTime && <p className="mt-1 text-sm text-red-600">{errors.startTime}</p>}
             </div>
 
@@ -238,11 +234,7 @@ export function RecurringPatternForm({
               <label className="mb-2 block text-sm font-medium text-[#001f3f]">
                 Ora de Final *
               </label>
-              <TimePicker
-                value={endTime}
-                onChange={setEndTime}
-                placeholder="--:--"
-              />
+              <TimePicker value={endTime} onChange={setEndTime} placeholder="--:--" />
               {errors.endTime && <p className="mt-1 text-sm text-red-600">{errors.endTime}</p>}
             </div>
           </div>
@@ -311,7 +303,9 @@ export function RecurringPatternForm({
               type="number"
               min="1"
               value={maxParticipants || ''}
-              onChange={(e) => setMaxParticipants(e.target.value ? parseInt(e.target.value) : undefined)}
+              onChange={(e) =>
+                setMaxParticipants(e.target.value ? parseInt(e.target.value) : undefined)
+              }
               className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-[#001f3f] focus:outline-none focus:ring-2 focus:ring-[#001f3f]/20"
               placeholder={`Implicit: ${defaultMaxParticipants}`}
             />

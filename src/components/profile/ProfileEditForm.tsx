@@ -96,9 +96,7 @@ export function ProfileEditForm({ profile, onSave, onCancel }: ProfileEditFormPr
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-800 rounded-lg p-4">
-          {error}
-        </div>
+        <div className="bg-red-50 border border-red-200 text-red-800 rounded-lg p-4">{error}</div>
       )}
 
       {/* Personal Information */}
@@ -133,21 +131,14 @@ export function ProfileEditForm({ profile, onSave, onCancel }: ProfileEditFormPr
               placeholder="Popescu"
               className={errors.last_name ? 'border-red-500' : ''}
             />
-            {errors.last_name && (
-              <p className="text-sm text-red-500">{errors.last_name.message}</p>
-            )}
+            {errors.last_name && <p className="text-sm text-red-500">{errors.last_name.message}</p>}
           </div>
         </div>
 
         {/* Phone */}
         <div className="space-y-2">
           <Label htmlFor="phone">Telefon (opțional)</Label>
-          <Input
-            id="phone"
-            {...register('phone')}
-            placeholder="+40 712 345 678"
-            type="tel"
-          />
+          <Input id="phone" {...register('phone')} placeholder="+40 712 345 678" type="tel" />
         </div>
       </div>
 
@@ -232,7 +223,11 @@ export function ProfileEditForm({ profile, onSave, onCancel }: ProfileEditFormPr
 
       {/* Action Buttons */}
       <div className="flex items-center gap-4 border-t border-gray-200 pt-6">
-        <Button type="submit" disabled={isSubmitting} className="bg-[#001f3f] hover:bg-[#003366] text-white">
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="bg-[#001f3f] hover:bg-[#003366] text-white"
+        >
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Salvează Modificările
         </Button>

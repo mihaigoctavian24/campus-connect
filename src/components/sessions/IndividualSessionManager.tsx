@@ -234,7 +234,9 @@ export function IndividualSessionManager({
                 onChange={(value) => setFormData({ ...formData, start_time: value })}
                 placeholder="--:--"
               />
-              {errors.start_time && <p className="mt-1 text-sm text-red-600">{errors.start_time}</p>}
+              {errors.start_time && (
+                <p className="mt-1 text-sm text-red-600">{errors.start_time}</p>
+              )}
             </div>
 
             <div>
@@ -378,7 +380,13 @@ export function IndividualSessionManager({
       {/* Actions */}
       <div className="flex gap-4">
         {onCancel && (
-          <Button type="button" onClick={onCancel} variant="outline" className="flex-1" disabled={isSaving}>
+          <Button
+            type="button"
+            onClick={onCancel}
+            variant="outline"
+            className="flex-1"
+            disabled={isSaving}
+          >
             Anulează
           </Button>
         )}

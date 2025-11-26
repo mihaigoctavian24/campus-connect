@@ -1,8 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Dialog,
   DialogContent,
@@ -10,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle, Save, FileText } from 'lucide-react';
 
 interface Application {
   id: string;
@@ -20,6 +22,7 @@ interface Application {
   availability: string;
   experience: string;
   applied_at: string;
+  professor_notes?: string | null;
   student: {
     id: string;
     first_name: string;
@@ -37,20 +40,60 @@ interface Application {
 
 interface ApplicationDetailViewProps {
   application: Application;
+  activityId: string;
   isOpen: boolean;
   onClose: () => void;
   onAccept: () => void;
   onReject: () => void;
+  onNotesUpdate?: () => void;
 }
 
 export function ApplicationDetailView({
   application,
+  activityId,
   isOpen,
   onClose,
   onAccept,
   onReject,
+  onNotesUpdate,
 }: ApplicationDetailViewProps) {
   const { student } = application;
+  const [professorNotes, setProfessorNotes] = useState(application.professor_notes || '');
+  const [isSavingNotes, setIsSavingNotes] = useState(false);
+  const [notesError, setNotesError] = useState<string | null>(null);
+  const [notesSuccess, setNotesSuccess] = useState(false);
+
+  const handleSaveNotes = async () => {
+    setIsSavingNotes(true);
+    setNotesError(null);
+    setNotesSuccess(false);
+
+    try {
+      const response = await fetch(
+        `/api/activities/${activityId}/enrollments/${application.id}/notes`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ professor_notes: professorNotes }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to save notes');
+      }
+
+      setNotesSuccess(true);
+      if (onNotesUpdate) {
+        onNotesUpdate();
+      }
+      setTimeout(() => setNotesSuccess(false), 3000);
+    } catch (error) {
+      console.error('Error saving professor notes:', error);
+      setNotesError('Eroare la salvarea notițelor');
+    } finally {
+      setIsSavingNotes(false);
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -139,6 +182,51 @@ export function ApplicationDetailView({
                 </p>
               </Card>
             </div>
+          </div>
+
+          {/* Professor Notes Section */}
+          <div className="pt-4 border-t">
+            <div className="flex items-center gap-2 mb-3">
+              <FileText className="h-5 w-5 text-[#001f3f]" />
+              <h4 className="text-sm font-medium text-[#001f3f]">Notițe Professor (Private)</h4>
+            </div>
+            <Card className="p-4 bg-amber-50 border-amber-200">
+              <div className="space-y-3">
+                <Textarea
+                  value={professorNotes}
+                  onChange={(e) => setProfessorNotes(e.target.value)}
+                  placeholder="Adaugă notițe despre acest student (vizibile doar pentru tine)..."
+                  className="min-h-[100px] resize-none bg-white"
+                  disabled={isSavingNotes}
+                />
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-muted-foreground">
+                    Aceste notițe sunt private și nu vor fi văzute de student
+                  </p>
+                  <div className="flex items-center gap-2">
+                    {notesSuccess && (
+                      <span className="text-xs text-green-600 font-medium">✓ Salvat</span>
+                    )}
+                    {notesError && <span className="text-xs text-red-600">{notesError}</span>}
+                    <Button
+                      onClick={handleSaveNotes}
+                      disabled={isSavingNotes}
+                      size="sm"
+                      className="bg-[#001f3f] hover:bg-[#001f3f]/90 gap-2"
+                    >
+                      {isSavingNotes ? (
+                        <>Salvează...</>
+                      ) : (
+                        <>
+                          <Save className="h-4 w-4" />
+                          Salvează Notițe
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </Card>
           </div>
 
           {/* Actions */}

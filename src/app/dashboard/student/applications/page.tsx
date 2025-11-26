@@ -48,7 +48,8 @@ export default async function ApplicationsPage() {
         activityCategory: category?.name || 'Uncategorized',
         status: enrollment.status.toUpperCase() as Application['status'],
         appliedAt: enrollment.created_at,
-        respondedAt: enrollment.updated_at !== enrollment.created_at ? enrollment.updated_at : undefined,
+        respondedAt:
+          enrollment.updated_at !== enrollment.created_at ? enrollment.updated_at : undefined,
         activityDate: activity.date,
         activityLocation: activity.location,
       };

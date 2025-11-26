@@ -101,14 +101,8 @@ export async function sendApplicationAcceptedEmail(params: {
   customMessage?: string;
   activityId: string;
 }): Promise<{ success: boolean; error?: string }> {
-  const {
-    studentEmail,
-    studentName,
-    activityTitle,
-    professorName,
-    customMessage,
-    activityId,
-  } = params;
+  const { studentEmail, studentName, activityTitle, professorName, customMessage, activityId } =
+    params;
 
   const subject = `Aplicația ta a fost acceptată - ${activityTitle}`;
 
@@ -151,12 +145,16 @@ export async function sendApplicationAcceptedEmail(params: {
     <div class="content" style="background: #f9fafb;">
       <p style="color: #374151;">Bună <strong style="color: #111827;">${studentName}</strong>,</p>
 
-      ${customMessage ? `
+      ${
+        customMessage
+          ? `
         <div class="message-box" style="background: #e0e7ff; color: #1e40af;">
           <strong style="color: #1e40af;">Mesaj de la profesor:</strong>
           <p style="margin: 10px 0 0 0; color: #1e40af;">${customMessage}</p>
         </div>
-      ` : ''}
+      `
+          : ''
+      }
 
       <div class="details" style="background: #ffffff; border: 1px solid #e5e7eb;">
         <h3 style="margin-top: 0; color: #667eea;">Detalii Activitate</h3>
@@ -265,12 +263,16 @@ export async function sendApplicationRejectedEmail(params: {
     <div class="content" style="background: #f9fafb;">
       <p style="color: #374151;">Bună <strong style="color: #111827;">${studentName}</strong>,</p>
 
-      ${customMessage ? `
+      ${
+        customMessage
+          ? `
         <div class="message-box" style="background: #fef3c7; color: #92400e;">
           <strong style="color: #78350f;">Mesaj de la profesor:</strong>
           <p style="margin: 10px 0 0 0; color: #92400e;">${customMessage}</p>
         </div>
-      ` : ''}
+      `
+          : ''
+      }
 
       <div class="details" style="background: #ffffff; border: 1px solid #e5e7eb;">
         <div class="detail-row" style="color: #1f2937;">
@@ -291,16 +293,20 @@ export async function sendApplicationRejectedEmail(params: {
         </div>
       </div>
 
-      ${isWaitlisted ? `
+      ${
+        isWaitlisted
+          ? `
         <p class="info-box" style="background: #fef3c7; padding: 15px; border-radius: 6px; border-left: 4px solid #f59e0b; color: #92400e;">
           <strong style="color: #78350f;">📌 Listă de așteptare:</strong><br>
           <span style="color: #92400e;">Te-am adăugat în lista de așteptare. Dacă se eliberează un loc, te vom contacta imediat prin email.</span>
         </p>
-      ` : `
+      `
+          : `
         <p style="color: #6b7280;">
           Te încurajăm să explorezi alte oportunități de voluntariat disponibile pe platformă.
         </p>
-      `}
+      `
+      }
 
       <a href="${EMAIL_CONFIG.appUrl}/opportunities" class="button" style="background: #667eea; color: #ffffff; text-decoration: none;">
         ${isWaitlisted ? 'Alte Oportunități' : 'Explorează Oportunități'}

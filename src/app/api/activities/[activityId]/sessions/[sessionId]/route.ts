@@ -156,10 +156,7 @@ export async function DELETE(
 
     // Prevent cancelling already completed sessions
     if (existingSession.status === 'COMPLETED') {
-      return NextResponse.json(
-        { error: 'Cannot cancel a completed session' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Cannot cancel a completed session' }, { status: 400 });
     }
 
     // Get enrolled students for this session (for notifications)

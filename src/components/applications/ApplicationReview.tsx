@@ -23,7 +23,8 @@ import { toast } from 'sonner';
 import { ApplicationDetailView } from './ApplicationDetailView';
 import { AcceptModal } from './AcceptModal';
 import { RejectModal } from './RejectModal';
-import { StudentProfileQuickView } from './StudentProfileQuickView';
+import { StudentProfileModal } from './StudentProfileModal';
+import { WaitingListPanel } from './WaitingListPanel';
 
 interface ApplicationReviewProps {
   activityId: string;
@@ -40,6 +41,7 @@ interface Application {
   reviewed_at: string | null;
   rejection_reason: string | null;
   custom_message: string | null;
+  professor_notes: string | null;
   student: {
     id: string;
     first_name: string;
@@ -58,6 +60,10 @@ interface Application {
 export function ApplicationReview({ activityId }: ApplicationReviewProps) {
   const [applications, setApplications] = useState<Application[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [activityDetails, setActivityDetails] = useState<{
+    max_participants: number;
+    current_participants: number;
+  } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('PENDING');
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
@@ -65,6 +71,7 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
   const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   const [selectedForBulk, setSelectedForBulk] = useState<Set<string>>(new Set());
 
   // Advanced Filters
@@ -79,6 +86,7 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
 
   useEffect(() => {
     fetchApplications();
+    fetchActivityDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activityId]);
 
@@ -98,6 +106,21 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
       toast.error('Eroare la încărcarea aplicațiilor');
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function fetchActivityDetails() {
+    try {
+      const response = await fetch(`/api/activities/${activityId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setActivityDetails({
+          max_participants: data.max_participants,
+          current_participants: data.current_participants,
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching activity details:', error);
     }
   }
 
@@ -154,6 +177,7 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
 
   const handleViewProfile = (app: Application) => {
     setSelectedApplication(app);
+    setSelectedStudentId(app.user_id);
     setIsProfileModalOpen(true);
   };
 
@@ -195,9 +219,33 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
 
   const handleActionComplete = () => {
     fetchApplications();
+    fetchActivityDetails();
     setSelectedForBulk(new Set());
     setIsAcceptModalOpen(false);
     setIsRejectModalOpen(false);
+  };
+
+  const handlePromote = async (app: Application) => {
+    try {
+      const response = await fetch(`/api/activities/${activityId}/enrollments/${app.id}/accept`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          custom_message:
+            'Felicitări! Un loc s-a eliberat și ai fost promovat din lista de așteptare. Te așteptăm!',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to promote from waitlist');
+      }
+
+      toast.success('Student promovat cu succes din lista de așteptare!');
+      handleActionComplete();
+    } catch (error) {
+      console.error('Error promoting student:', error);
+      toast.error('Eroare la promovarea studentului');
+    }
   };
 
   if (isLoading) {
@@ -364,115 +412,132 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
         {filteredAndSortedApplications.length} aplicații găsite
       </p>
 
-      {/* Applications List */}
-      <div className="space-y-3">
-        {filteredAndSortedApplications.map((app) => (
-          <Card key={app.id} className="p-5 hover:shadow-md transition-shadow">
-            <div className="flex items-start gap-4">
-              {/* Checkbox for bulk selection */}
-              {app.status === 'PENDING' && (
-                <Checkbox
-                  checked={selectedForBulk.has(app.id)}
-                  onCheckedChange={() => handleBulkToggle(app.id)}
-                  className="mt-1"
-                />
-              )}
-
-              {/* Avatar */}
-              <div className="h-14 w-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white flex-shrink-0">
-                <span className="text-lg">
-                  {app.student.first_name[0]}
-                  {app.student.last_name[0]}
-                </span>
-              </div>
-
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <h4 className="text-primary">
-                    {app.student.first_name} {app.student.last_name}
-                  </h4>
-                  <Badge variant="outline">Anul {app.student.year}</Badge>
-                  <Badge className={getStatusBadgeClass(app.status)}>
-                    {getStatusLabel(app.status)}
-                  </Badge>
-                </div>
-
-                <p className="text-sm text-muted-foreground mb-2">
-                  {app.student.specialization} • {app.student.email}
-                </p>
-
-                <p className="text-sm mb-2 line-clamp-2">{app.motivation}</p>
-
-                <div className="flex gap-4 text-xs text-muted-foreground">
-                  <span>Activități: {app.student.completed_activities}</span>
-                  <span>Certificate: {app.student.certificates_earned}</span>
-                  <span>Aplicat: {new Date(app.applied_at).toLocaleDateString('ro-RO')}</span>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex flex-col gap-2">
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    onClick={() => handleViewProfile(app)}
-                    variant="outline"
-                    className="gap-2"
-                  >
-                    <User className="h-4 w-4" />
-                    Profil
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={() => handleViewDetails(app)}
-                    variant="outline"
-                    className="gap-2"
-                  >
-                    <Eye className="h-4 w-4" />
-                    Detalii
-                  </Button>
-                </div>
+      {/* Waiting List Panel or Applications List */}
+      {statusFilter === 'WAITLISTED' ? (
+        <WaitingListPanel
+          applications={filteredAndSortedApplications}
+          activityId={activityId}
+          onViewProfile={handleViewProfile}
+          onViewDetails={handleViewDetails}
+          onPromote={handlePromote}
+          availableSlots={
+            activityDetails
+              ? activityDetails.max_participants - activityDetails.current_participants
+              : 0
+          }
+        />
+      ) : (
+        <div className="space-y-3">
+          {filteredAndSortedApplications.map((app) => (
+            <Card key={app.id} className="p-5 hover:shadow-md transition-shadow">
+              <div className="flex items-start gap-4">
+                {/* Checkbox for bulk selection */}
                 {app.status === 'PENDING' && (
+                  <Checkbox
+                    checked={selectedForBulk.has(app.id)}
+                    onCheckedChange={() => handleBulkToggle(app.id)}
+                    className="mt-1"
+                  />
+                )}
+
+                {/* Avatar */}
+                <div className="h-14 w-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white flex-shrink-0">
+                  <span className="text-lg">
+                    {app.student.first_name[0]}
+                    {app.student.last_name[0]}
+                  </span>
+                </div>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="text-primary">
+                      {app.student.first_name} {app.student.last_name}
+                    </h4>
+                    <Badge variant="outline">Anul {app.student.year}</Badge>
+                    <Badge className={getStatusBadgeClass(app.status)}>
+                      {getStatusLabel(app.status)}
+                    </Badge>
+                  </div>
+
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {app.student.specialization} • {app.student.email}
+                  </p>
+
+                  <p className="text-sm mb-2 line-clamp-2">{app.motivation}</p>
+
+                  <div className="flex gap-4 text-xs text-muted-foreground">
+                    <span>Activități: {app.student.completed_activities}</span>
+                    <span>Certificate: {app.student.certificates_earned}</span>
+                    <span>Aplicat: {new Date(app.applied_at).toLocaleDateString('ro-RO')}</span>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex flex-col gap-2">
                   <div className="flex gap-2">
                     <Button
                       size="sm"
-                      onClick={() => handleAcceptClick(app)}
-                      className="gap-2 bg-green-600 hover:bg-green-700 flex-1"
+                      onClick={() => handleViewProfile(app)}
+                      variant="outline"
+                      className="gap-2"
                     >
-                      <CheckCircle className="h-4 w-4" />
-                      Acceptă
+                      <User className="h-4 w-4" />
+                      Profil
                     </Button>
                     <Button
                       size="sm"
+                      onClick={() => handleViewDetails(app)}
                       variant="outline"
-                      onClick={() => handleRejectClick(app)}
-                      className="gap-2 text-destructive hover:text-destructive flex-1"
+                      className="gap-2"
                     >
-                      <XCircle className="h-4 w-4" />
-                      Respinge
+                      <Eye className="h-4 w-4" />
+                      Detalii
                     </Button>
                   </div>
-                )}
+                  {app.status === 'PENDING' && (
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => handleAcceptClick(app)}
+                        className="gap-2 bg-green-600 hover:bg-green-700 flex-1"
+                      >
+                        <CheckCircle className="h-4 w-4" />
+                        Acceptă
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleRejectClick(app)}
+                        className="gap-2 text-destructive hover:text-destructive flex-1"
+                      >
+                        <XCircle className="h-4 w-4" />
+                        Respinge
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </Card>
-        ))}
-      </div>
+            </Card>
+          ))}
+        </div>
+      )}
 
       {/* Modals */}
       {selectedApplication && (
         <>
           <ApplicationDetailView
             application={selectedApplication}
+            activityId={activityId}
             isOpen={isDetailModalOpen}
             onClose={() => setIsDetailModalOpen(false)}
             onAccept={() => handleAcceptClick(selectedApplication)}
             onReject={() => handleRejectClick(selectedApplication)}
+            onNotesUpdate={fetchApplications}
           />
 
-          <StudentProfileQuickView
-            student={selectedApplication.student}
+          <StudentProfileModal
+            studentId={selectedStudentId}
             isOpen={isProfileModalOpen}
             onClose={() => setIsProfileModalOpen(false)}
           />

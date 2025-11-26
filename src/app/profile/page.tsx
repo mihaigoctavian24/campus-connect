@@ -78,7 +78,11 @@ export default function ProfilePage() {
       }
 
       // Fetch user profile
-      const { data: userProfile } = await supabase.from('profiles').select('*').eq('id', user.id).single<Profile>();
+      const { data: userProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single<Profile>();
 
       if (!userProfile) {
         router.push('/auth/login');
@@ -138,7 +142,10 @@ export default function ProfilePage() {
       // Reload profile data
       await loadProfileData();
     } catch (error) {
-      showNotification('error', error instanceof Error ? error.message : 'Failed to update profile');
+      showNotification(
+        'error',
+        error instanceof Error ? error.message : 'Failed to update profile'
+      );
       throw error;
     }
   };
@@ -207,7 +214,10 @@ export default function ProfilePage() {
 
       showNotification('success', 'Notification preferences updated');
     } catch (error) {
-      showNotification('error', error instanceof Error ? error.message : 'Failed to update preferences');
+      showNotification(
+        'error',
+        error instanceof Error ? error.message : 'Failed to update preferences'
+      );
       throw error;
     }
   };
@@ -225,7 +235,10 @@ export default function ProfilePage() {
 
       showNotification('success', 'Password changed successfully');
     } catch (error) {
-      showNotification('error', error instanceof Error ? error.message : 'Failed to change password');
+      showNotification(
+        'error',
+        error instanceof Error ? error.message : 'Failed to change password'
+      );
       throw error;
     }
   };
@@ -277,7 +290,9 @@ export default function ProfilePage() {
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-[#001f3f] mb-2">My Profile</h1>
-          <p className="text-gray-600">Manage your information, notifications, and account settings</p>
+          <p className="text-gray-600">
+            Manage your information, notifications, and account settings
+          </p>
         </div>
 
         <Tabs defaultValue="view" className="space-y-6">
@@ -346,7 +361,9 @@ export default function ProfilePage() {
                 onSave={handleSaveProfile}
                 onCancel={() => {
                   // Switch back to view tab
-                  const viewTab = document.querySelector('[data-state="active"][value="view"]') as HTMLElement;
+                  const viewTab = document.querySelector(
+                    '[data-state="active"][value="view"]'
+                  ) as HTMLElement;
                   viewTab?.click();
                 }}
               />

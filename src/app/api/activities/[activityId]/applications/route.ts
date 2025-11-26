@@ -12,6 +12,7 @@ interface EnrollmentWithProfile {
   reviewed_at: string | null;
   rejection_reason: string | null;
   custom_message: string | null;
+  professor_notes: string | null;
   profiles: {
     id: string;
     first_name: string;
@@ -76,6 +77,7 @@ export async function GET(
         reviewed_at,
         rejection_reason,
         custom_message,
+        professor_notes,
         profiles!enrollments_user_id_fkey (
           id,
           first_name,
@@ -126,6 +128,7 @@ export async function GET(
           reviewed_at: app.reviewed_at,
           rejection_reason: app.rejection_reason,
           custom_message: app.custom_message,
+          professor_notes: app.professor_notes,
           student: {
             id: app.profiles.id,
             first_name: app.profiles.first_name,

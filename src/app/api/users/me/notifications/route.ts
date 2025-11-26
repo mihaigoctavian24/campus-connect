@@ -39,10 +39,7 @@ export async function GET() {
 
     if (profileError) {
       console.error('Error fetching notification preferences:', profileError);
-      return NextResponse.json(
-        { error: 'Eroare la preluarea preferințelor' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Eroare la preluarea preferințelor' }, { status: 500 });
     }
 
     // Return preferences or defaults if not set
@@ -107,10 +104,7 @@ export async function PUT(request: Request) {
 
     if (updateError) {
       console.error('Error updating notification preferences:', updateError);
-      return NextResponse.json(
-        { error: 'Eroare la actualizarea preferințelor' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Eroare la actualizarea preferințelor' }, { status: 500 });
     }
 
     return NextResponse.json({

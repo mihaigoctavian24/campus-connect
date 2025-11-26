@@ -27,11 +27,23 @@ export function MessageTemplateSelector({
   const getCategoryBadge = (category?: string) => {
     switch (category) {
       case 'professional':
-        return <Badge variant="outline" className="text-xs">Profesional</Badge>;
+        return (
+          <Badge variant="outline" className="text-xs">
+            Profesional
+          </Badge>
+        );
       case 'friendly':
-        return <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">Prietenos</Badge>;
+        return (
+          <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+            Prietenos
+          </Badge>
+        );
       case 'encouraging':
-        return <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">Încurajator</Badge>;
+        return (
+          <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+            Încurajator
+          </Badge>
+        );
       default:
         return null;
     }
@@ -90,9 +102,7 @@ export function MessageTemplateSelector({
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               Previzualizare mesaj selectat
             </p>
-            <p className="text-sm">
-              {templates.find((t) => t.id === selectedTemplateId)?.message}
-            </p>
+            <p className="text-sm">{templates.find((t) => t.id === selectedTemplateId)?.message}</p>
           </div>
         </Card>
       )}

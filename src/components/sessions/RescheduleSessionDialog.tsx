@@ -20,7 +20,7 @@ interface RescheduleSessionDialogProps {
 
 export function RescheduleSessionDialog({
   session,
-  activityId,
+  activityId: _activityId,
   onClose,
   onSave,
 }: RescheduleSessionDialogProps) {
@@ -138,9 +138,7 @@ export function RescheduleSessionDialog({
 
             {/* New Date */}
             <div>
-              <label className="mb-2 block text-sm font-medium text-[#001f3f]">
-                Noua Dată *
-              </label>
+              <label className="mb-2 block text-sm font-medium text-[#001f3f]">Noua Dată *</label>
               <input
                 type="date"
                 value={newDate}
@@ -213,7 +211,8 @@ export function RescheduleSessionDialog({
               <div className="flex-1">
                 <p className="text-sm font-medium text-amber-900">Atenție!</p>
                 <p className="mt-1 text-sm text-amber-800">
-                  Reprogramarea acestei sesiuni va notifica automat toți studenții înrolați. Asigură-te că noua dată și oră sunt definitive înainte de confirmare.
+                  Reprogramarea acestei sesiuni va notifica automat toți studenții înrolați.
+                  Asigură-te că noua dată și oră sunt definitive înainte de confirmare.
                 </p>
               </div>
             </div>

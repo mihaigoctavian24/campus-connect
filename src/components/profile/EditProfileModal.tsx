@@ -37,9 +37,7 @@ export function EditProfileModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-[#001f3f]">
-            Editare Profil
-          </DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-[#001f3f]">Editare Profil</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6 py-4">

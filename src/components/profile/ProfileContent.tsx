@@ -94,9 +94,7 @@ export function ProfileContent({
         }`}
       >
         {/* Profile Information - Merged with Stats */}
-        <div
-          className={`${profile.role === 'STUDENT' && showApplications ? 'lg:col-span-1' : ''}`}
-        >
+        <div className={`${profile.role === 'STUDENT' && showApplications ? 'lg:col-span-1' : ''}`}>
           <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
             {/* User Info Section */}
             <div className="flex flex-col items-center pb-6 border-b border-gray-200">
@@ -105,9 +103,9 @@ export function ProfileContent({
               </div>
               <h2 className="text-xl font-semibold text-[#001f3f] mb-1">
                 {profile.full_name ||
-                 (profile.first_name && profile.last_name
-                   ? `${profile.first_name} ${profile.last_name}`
-                   : profile.email.split('@')[0])}
+                  (profile.first_name && profile.last_name
+                    ? `${profile.first_name} ${profile.last_name}`
+                    : profile.email.split('@')[0])}
               </h2>
               <p className="text-gray-600 capitalize">{profile.role?.toLowerCase()}</p>
             </div>

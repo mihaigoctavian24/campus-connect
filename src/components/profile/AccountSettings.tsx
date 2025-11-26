@@ -78,9 +78,7 @@ export function AccountSettings({ onChangePassword }: AccountSettingsProps) {
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold text-[#001f3f] mb-2">Schimbă Parola</h3>
-        <p className="text-sm text-gray-600">
-          Asigură-te că parola nouă este puternică și sigură
-        </p>
+        <p className="text-sm text-gray-600">Asigură-te că parola nouă este puternică și sigură</p>
       </div>
 
       {error && (
@@ -115,11 +113,7 @@ export function AccountSettings({ onChangePassword }: AccountSettingsProps) {
               onClick={() => setShowCurrentPassword(!showCurrentPassword)}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
-              {showCurrentPassword ? (
-                <EyeOff className="w-5 h-5" />
-              ) : (
-                <Eye className="w-5 h-5" />
-              )}
+              {showCurrentPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
           </div>
           {errors.currentPassword && (
@@ -176,11 +170,7 @@ export function AccountSettings({ onChangePassword }: AccountSettingsProps) {
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
-              {showConfirmPassword ? (
-                <EyeOff className="w-5 h-5" />
-              ) : (
-                <Eye className="w-5 h-5" />
-              )}
+              {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
           </div>
           {errors.confirmPassword && (

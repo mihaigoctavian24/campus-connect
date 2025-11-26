@@ -97,9 +97,7 @@ export function SessionManagementTable({
       <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
         <Calendar className="mx-auto mb-4 size-12 text-gray-400" />
         <h3 className="mb-2 text-lg font-medium text-[#001f3f]">Nicio Sesiune</h3>
-        <p className="text-gray-600">
-          Nu există sesiuni create pentru această activitate.
-        </p>
+        <p className="text-gray-600">Nu există sesiuni create pentru această activitate.</p>
       </div>
     );
   }
@@ -145,9 +143,7 @@ export function SessionManagementTable({
                       <div className="flex items-start gap-3">
                         <Calendar className="size-5 text-gray-400 mt-0.5" />
                         <div>
-                          <p className="font-medium text-[#001f3f]">
-                            {formatDate(session.date)}
-                          </p>
+                          <p className="font-medium text-[#001f3f]">{formatDate(session.date)}</p>
                           <p className="flex items-center gap-1 text-sm text-gray-600">
                             <Clock className="size-3" />
                             {session.start_time} - {session.end_time}
@@ -165,7 +161,9 @@ export function SessionManagementTable({
                       <div className="flex items-center gap-2">
                         <Users className="size-4 text-gray-400" />
                         <span className="text-sm text-gray-900">
-                          {session.max_participants ? `Max ${session.max_participants}` : 'Nelimitat'}
+                          {session.max_participants
+                            ? `Max ${session.max_participants}`
+                            : 'Nelimitat'}
                         </span>
                       </div>
                     </td>

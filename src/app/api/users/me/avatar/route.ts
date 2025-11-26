@@ -60,12 +60,10 @@ export async function PUT(request: Request) {
     const filePath = `${user.id}/${fileName}`;
 
     // Upload to Supabase Storage
-    const { error: uploadError } = await supabase.storage
-      .from('avatars')
-      .upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: false,
-      });
+    const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: false,
+    });
 
     if (uploadError) {
       console.error('Error uploading avatar:', uploadError);

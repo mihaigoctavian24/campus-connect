@@ -265,11 +265,15 @@ export function OpportunityDetailPage({ activityId }: OpportunityDetailPageProps
       </Card>
 
       {/* Tabs for different sections */}
-      <Tabs defaultValue="applications" className="w-full" onValueChange={(value) => {
-        if (value === 'sessions' && sessions.length === 0) {
-          fetchSessions();
-        }
-      }}>
+      <Tabs
+        defaultValue="applications"
+        className="w-full"
+        onValueChange={(value) => {
+          if (value === 'sessions' && sessions.length === 0) {
+            fetchSessions();
+          }
+        }}
+      >
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="applications" className="gap-2">
             <Users className="h-4 w-4" />

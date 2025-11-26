@@ -12,7 +12,12 @@ interface AvatarUploadProps {
   userName: string;
 }
 
-export function AvatarUpload({ currentAvatarUrl, onUpload, onRemove, userName }: AvatarUploadProps) {
+export function AvatarUpload({
+  currentAvatarUrl,
+  onUpload,
+  onRemove,
+  userName,
+}: AvatarUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(currentAvatarUrl);
   const [error, setError] = useState<string | null>(null);
