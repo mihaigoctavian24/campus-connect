@@ -292,6 +292,7 @@ export function OpportunityDetailPage({ activityId }: OpportunityDetailPageProps
           <Card className="p-6">
             <SessionManagementTable
               sessions={sessions}
+              activityTitle={activity?.title || 'Activitate'}
               onEdit={handleEditSession}
               onCancel={handleCancelSession}
               onReschedule={handleRescheduleSession}

@@ -120,9 +120,7 @@ export function QRCodeGenerator({
     <div
       ref={containerRef}
       className={`${
-        isFullscreen
-          ? 'fixed inset-0 z-50 flex items-center justify-center bg-white p-8'
-          : 'w-full'
+        isFullscreen ? 'fixed inset-0 z-50 flex items-center justify-center bg-white p-8' : 'w-full'
       }`}
     >
       <Card className={isFullscreen ? 'w-full max-w-3xl' : 'w-full'}>
@@ -138,11 +136,7 @@ export function QRCodeGenerator({
               <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
               {!isFullscreen && <span className="ml-2">Reîmprospătează</span>}
             </Button>
-            <Button
-              variant="outline"
-              size={isFullscreen ? 'lg' : 'sm'}
-              onClick={toggleFullscreen}
-            >
+            <Button variant="outline" size={isFullscreen ? 'lg' : 'sm'} onClick={toggleFullscreen}>
               {isFullscreen ? (
                 <>
                   <Minimize2 className="h-4 w-4" />
@@ -198,9 +192,7 @@ export function QRCodeGenerator({
               <div className="space-y-3">
                 <div>
                   <p className="text-muted-foreground">Activitate:</p>
-                  <p className={`font-medium ${isFullscreen ? 'text-xl' : ''}`}>
-                    {activityTitle}
-                  </p>
+                  <p className={`font-medium ${isFullscreen ? 'text-xl' : ''}`}>{activityTitle}</p>
                 </div>
 
                 <div>

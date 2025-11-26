@@ -209,7 +209,9 @@ export function RejectModal({
                     <li key={index}>{name}</li>
                   ))}
                   {applicationIds.length > 5 && (
-                    <li className="font-medium">... și încă {applicationIds.length - 5} studenți</li>
+                    <li className="font-medium">
+                      ... și încă {applicationIds.length - 5} studenți
+                    </li>
                   )}
                 </ul>
               </div>

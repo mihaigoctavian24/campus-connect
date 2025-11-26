@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import crypto from 'crypto';
 
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
@@ -63,7 +63,9 @@ export async function POST(
 
     if (sessionDate.getTime() !== today.getTime() && session.status !== 'IN_PROGRESS') {
       return NextResponse.json(
-        { message: 'QR code-ul poate fi generat doar pentru sesiunile de astăzi sau în desfășurare' },
+        {
+          message: 'QR code-ul poate fi generat doar pentru sesiunile de astăzi sau în desfășurare',
+        },
         { status: 400 }
       );
     }
@@ -97,10 +99,7 @@ export async function POST(
 
     if (updateError) {
       console.error('Error updating session with QR data:', updateError);
-      return NextResponse.json(
-        { message: 'Eroare la generarea codului QR' },
-        { status: 500 }
-      );
+      return NextResponse.json({ message: 'Eroare la generarea codului QR' }, { status: 500 });
     }
 
     return NextResponse.json({

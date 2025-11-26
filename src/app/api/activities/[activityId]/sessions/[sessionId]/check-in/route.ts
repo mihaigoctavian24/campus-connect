@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 
 interface CheckInRequest {
-  qr_code?: string;
+  qr_code?: string; // Base64 encoded payload from QR generation
   gps_latitude?: number;
   gps_longitude?: number;
   gps_accuracy?: number;
@@ -51,8 +51,47 @@ export async function POST(
     }
 
     // Verify QR code if provided
-    if (body.qr_code && session.qr_code_data !== body.qr_code) {
-      return NextResponse.json({ error: 'Invalid QR code' }, { status: 400 });
+    if (body.qr_code) {
+      try {
+        // Decode base64 payload from QR generation
+        const decodedPayload = JSON.parse(Buffer.from(body.qr_code, 'base64').toString());
+
+        // Verify session ID matches
+        if (decodedPayload.sessionId !== sessionId) {
+          return NextResponse.json({ error: 'Invalid QR code for this session' }, { status: 400 });
+        }
+
+        // Verify activity ID matches
+        if (decodedPayload.activityId !== activityId) {
+          return NextResponse.json({ error: 'Invalid QR code for this activity' }, { status: 400 });
+        }
+
+        // Verify timestamp (30 second expiration)
+        const qrTimestamp = decodedPayload.timestamp;
+        const now = Date.now();
+        const ageInSeconds = (now - qrTimestamp) / 1000;
+
+        if (ageInSeconds > 30) {
+          return NextResponse.json(
+            {
+              error: 'QR code has expired',
+              message: 'Please ask your professor to refresh the QR code',
+            },
+            { status: 400 }
+          );
+        }
+
+        // Verify token exists (security check)
+        if (!decodedPayload.token) {
+          return NextResponse.json({ error: 'Invalid QR code format' }, { status: 400 });
+        }
+      } catch (error) {
+        console.error('QR code validation error:', error);
+        return NextResponse.json(
+          { error: 'Invalid QR code format', message: 'Please scan a valid QR code' },
+          { status: 400 }
+        );
+      }
     }
 
     // Check if session is happening now (±15 minutes window)

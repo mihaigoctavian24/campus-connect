@@ -47,11 +47,11 @@ export function QRScanner({
     setScanning(false);
 
     try {
-      // Parse QR code data
-      const parsedData = JSON.parse(qrData);
+      // Decode base64 payload from QR code
+      const decodedPayload = JSON.parse(atob(qrData));
 
       // Validate required fields
-      if (!parsedData.session_id || !parsedData.activity_id || !parsedData.timestamp) {
+      if (!decodedPayload.sessionId || !decodedPayload.activityId || !decodedPayload.timestamp) {
         setResult({
           status: 'error',
           message: 'Invalid QR code format. Please scan the QR code displayed by your professor.',
@@ -61,7 +61,7 @@ export function QRScanner({
       }
 
       // Verify activity ID matches
-      if (parsedData.activity_id !== activityId) {
+      if (decodedPayload.activityId !== activityId) {
         setResult({
           status: 'error',
           message: 'This QR code is for a different activity. Please scan the correct QR code.',
@@ -71,7 +71,7 @@ export function QRScanner({
       }
 
       // Check if QR code is expired (older than 30 seconds)
-      const qrTimestamp = new Date(parsedData.timestamp).getTime();
+      const qrTimestamp = decodedPayload.timestamp;
       const now = Date.now();
       const ageInSeconds = (now - qrTimestamp) / 1000;
 
@@ -84,16 +84,16 @@ export function QRScanner({
         return;
       }
 
-      // Call check-in API
+      // Call check-in API with base64 encoded QR code
       const response = await fetch(
-        `/api/activities/${parsedData.activity_id}/sessions/${parsedData.session_id}/check-in`,
+        `/api/activities/${decodedPayload.activityId}/sessions/${decodedPayload.sessionId}/check-in`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            qr_data: parsedData,
+            qr_code: qrData, // Send base64 string, not decoded object
           }),
         }
       );

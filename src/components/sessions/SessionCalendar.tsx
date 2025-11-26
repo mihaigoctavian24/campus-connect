@@ -11,7 +11,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Clock, MapPin, Users, Edit2, XCircle, ChevronLeft, ChevronRight, QrCode } from 'lucide-react';
+import {
+  Clock,
+  MapPin,
+  Users,
+  Edit2,
+  XCircle,
+  ChevronLeft,
+  ChevronRight,
+  QrCode,
+} from 'lucide-react';
 import { CheckInButton } from './CheckInButton';
 import { ManualCheckInNotice } from './ManualCheckInNotice';
 import { QRCodeGenerator } from './QRCodeGenerator';

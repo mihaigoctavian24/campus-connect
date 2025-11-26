@@ -172,7 +172,9 @@ export function AcceptModal({
                     <li key={index}>{name}</li>
                   ))}
                   {applicationIds.length > 5 && (
-                    <li className="font-medium">... și încă {applicationIds.length - 5} studenți</li>
+                    <li className="font-medium">
+                      ... și încă {applicationIds.length - 5} studenți
+                    </li>
                   )}
                 </ul>
               </div>
@@ -189,8 +191,9 @@ export function AcceptModal({
                   className="mt-1"
                 />
                 <label className="text-sm text-amber-900 cursor-pointer">
-                  Confirm că vreau să accept aceste <strong>{applicationIds.length} aplicații</strong>
-                  . Toți studenții vor primi email de acceptare și vor fi adăugați la activitate.
+                  Confirm că vreau să accept aceste{' '}
+                  <strong>{applicationIds.length} aplicații</strong>. Toți studenții vor primi email
+                  de acceptare și vor fi adăugați la activitate.
                 </label>
               </div>
             </Card>
