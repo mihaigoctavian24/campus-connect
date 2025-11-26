@@ -11,9 +11,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Clock, MapPin, Users, Edit2, XCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Clock, MapPin, Users, Edit2, XCircle, ChevronLeft, ChevronRight, QrCode } from 'lucide-react';
 import { CheckInButton } from './CheckInButton';
 import { ManualCheckInNotice } from './ManualCheckInNotice';
+import { QRCodeGenerator } from './QRCodeGenerator';
 import {
   format,
   parseISO,
@@ -78,6 +79,7 @@ export function SessionCalendar({
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isQrOpen, setIsQrOpen] = useState(false);
 
   useEffect(() => {
     if (propSessions) {
@@ -124,6 +126,19 @@ export function SessionCalendar({
       const sessionDate = parseISO(session.date);
       return isSameDay(sessionDate, date);
     });
+  };
+
+  // Check if QR code can be generated (today's sessions or in progress)
+  const canGenerateQR = (session: Session) => {
+    const sessionDate = new Date(session.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    sessionDate.setHours(0, 0, 0, 0);
+
+    return (
+      (sessionDate.getTime() === today.getTime() && session.status === 'SCHEDULED') ||
+      session.status === 'IN_PROGRESS'
+    );
   };
 
   function handleSessionClick(session: Session) {
@@ -421,20 +436,37 @@ export function SessionCalendar({
               )}
 
               {/* Actions */}
-              {viewMode === 'professor' && selectedSession.status === 'SCHEDULED' && (
-                <div className="flex gap-3 pt-2">
-                  <Button variant="outline" className="flex-1" disabled>
-                    <Edit2 className="h-4 w-4 mr-2" />
-                    Editează
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    className="flex-1"
-                    onClick={() => handleCancelSession(selectedSession)}
-                  >
-                    <XCircle className="h-4 w-4 mr-2" />
-                    Anulează
-                  </Button>
+              {viewMode === 'professor' && (
+                <div className="space-y-3 pt-2">
+                  {/* QR Code Button - Show for today's or in-progress sessions */}
+                  {canGenerateQR(selectedSession) && (
+                    <Button
+                      variant="default"
+                      className="w-full bg-green-600 hover:bg-green-700"
+                      onClick={() => setIsQrOpen(true)}
+                    >
+                      <QrCode className="h-4 w-4 mr-2" />
+                      Generează Cod QR Check-In
+                    </Button>
+                  )}
+
+                  {/* Edit and Cancel - Only for scheduled sessions */}
+                  {selectedSession.status === 'SCHEDULED' && (
+                    <div className="flex gap-3">
+                      <Button variant="outline" className="flex-1" disabled>
+                        <Edit2 className="h-4 w-4 mr-2" />
+                        Editează
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        className="flex-1"
+                        onClick={() => handleCancelSession(selectedSession)}
+                      >
+                        <XCircle className="h-4 w-4 mr-2" />
+                        Anulează
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -466,6 +498,28 @@ export function SessionCalendar({
                 </div>
               )}
             </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* QR Code Generator Dialog */}
+      <Dialog open={isQrOpen} onOpenChange={setIsQrOpen}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Cod QR Check-In</DialogTitle>
+            <DialogDescription>
+              Generează și afișează codul QR pentru check-in la sesiune
+            </DialogDescription>
+          </DialogHeader>
+          {selectedSession && (
+            <QRCodeGenerator
+              sessionId={selectedSession.id}
+              sessionDate={selectedSession.date}
+              startTime={selectedSession.start_time}
+              endTime={selectedSession.end_time}
+              location={selectedSession.location}
+              activityTitle={selectedSession.activity_title || 'Activitate'}
+            />
           )}
         </DialogContent>
       </Dialog>

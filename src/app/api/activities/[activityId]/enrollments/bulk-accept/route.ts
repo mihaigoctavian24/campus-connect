@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { sendApplicationAcceptedEmail } from '@/lib/email/service';
 
 export async function POST(
   request: NextRequest,
@@ -93,12 +94,60 @@ export async function POST(
       console.error('Error updating participant count:', counterError);
     }
 
-    // TODO: Send bulk email notifications to students (#185)
-    // await sendBulkEmails({
-    //   enrollment_ids,
-    //   template: 'application_accepted',
-    //   data: { custom_message, activity_title: activity.title }
-    // });
+    // Send email notifications to accepted students
+    // Fetch enrollment details with student profiles
+    const { data: enrollments } = await supabase
+      .from('enrollments')
+      .select(
+        `
+        id,
+        user_id,
+        profiles!enrollments_user_id_fkey (
+          email,
+          first_name,
+          last_name
+        )
+      `
+      )
+      .in('id', enrollment_ids);
+
+    // Get professor details for email
+    const { data: professorProfile } = await supabase
+      .from('profiles')
+      .select('first_name, last_name')
+      .eq('id', activity.created_by)
+      .single();
+
+    // Send individual acceptance emails
+    if (enrollments && professorProfile) {
+      const professorName = `${professorProfile.first_name} ${professorProfile.last_name}`;
+
+      for (const enrollment of enrollments) {
+        if (enrollment.profiles) {
+          const studentProfile = enrollment.profiles as {
+            email: string;
+            first_name: string;
+            last_name: string;
+          };
+
+          const emailResult = await sendApplicationAcceptedEmail({
+            studentEmail: studentProfile.email,
+            studentName: `${studentProfile.first_name} ${studentProfile.last_name}`,
+            activityTitle: activity.title,
+            professorName,
+            customMessage: custom_message || undefined,
+            activityId,
+          });
+
+          if (!emailResult.success) {
+            console.error(
+              `[Bulk Accept] Failed to send email to ${studentProfile.email}:`,
+              emailResult.error
+            );
+          }
+        }
+      }
+    }
 
     return NextResponse.json({
       message: `${enrollment_ids.length} aplicații acceptate cu succes`,

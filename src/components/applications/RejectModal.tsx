@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Card } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -27,6 +28,7 @@ interface RejectModalProps {
   onClose: () => void;
   activityId: string;
   applicationIds: string[];
+  studentNames?: string[];
   isBulk: boolean;
   onComplete: () => void;
 }
@@ -73,6 +75,7 @@ export function RejectModal({
   onClose,
   activityId,
   applicationIds,
+  studentNames = [],
   isBulk,
   onComplete,
 }: RejectModalProps) {
@@ -82,6 +85,7 @@ export function RejectModal({
   );
   const [rejectionReason, setRejectionReason] = useState('');
   const [addToWaitlist, setAddToWaitlist] = useState(false);
+  const [confirmBulkAction, setConfirmBulkAction] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleTemplateSelect = (templateId: string) => {
@@ -169,6 +173,7 @@ export function RejectModal({
     setCustomMessage(REJECT_MESSAGE_TEMPLATES[1].message);
     setRejectionReason('');
     setAddToWaitlist(false);
+    setConfirmBulkAction(false);
     onClose();
   };
 
@@ -188,6 +193,60 @@ export function RejectModal({
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Preview Section for Bulk Operations */}
+          {isBulk && studentNames.length > 0 && (
+            <Card className="p-4 bg-amber-50 border-amber-200">
+              <h4 className="font-medium text-sm text-amber-900 mb-2">
+                Aplicații Selectate ({applicationIds.length})
+              </h4>
+              <p className="text-xs text-amber-700 mb-3">
+                Vei {addToWaitlist ? 'adăuga în lista de așteptare' : 'respinge'} următorii{' '}
+                {applicationIds.length} studenți:
+              </p>
+              <div className="text-xs text-amber-800 space-y-1">
+                <ul className="list-disc list-inside space-y-1">
+                  {studentNames.slice(0, 5).map((name, index) => (
+                    <li key={index}>{name}</li>
+                  ))}
+                  {applicationIds.length > 5 && (
+                    <li className="font-medium">... și încă {applicationIds.length - 5} studenți</li>
+                  )}
+                </ul>
+              </div>
+            </Card>
+          )}
+
+          {/* Warning Banner for Bulk Reject */}
+          {isBulk && !addToWaitlist && (
+            <Card className="p-3 bg-red-50 border-red-200">
+              <p className="text-xs text-red-700">
+                ⚠️ <strong>Atenție:</strong> Toți studenții selectați vor primi email de respingere
+                și nu vor mai putea participa la această activitate.
+              </p>
+            </Card>
+          )}
+
+          {/* Confirmation Checkbox for Bulk > 5 */}
+          {isBulk && applicationIds.length > 5 && (
+            <Card className="p-4 bg-red-50 border-red-200">
+              <div className="flex items-start gap-3">
+                <Checkbox
+                  checked={confirmBulkAction}
+                  onCheckedChange={(checked) => setConfirmBulkAction(checked as boolean)}
+                  className="mt-1"
+                />
+                <label className="text-sm text-red-900 cursor-pointer">
+                  Confirm că vreau să{' '}
+                  <strong>
+                    {addToWaitlist ? 'adaug în lista de așteptare' : 'resping'} aceste{' '}
+                    {applicationIds.length} aplicații
+                  </strong>
+                  . Toți studenții vor primi email cu decizia.
+                </label>
+              </div>
+            </Card>
+          )}
+
           {/* Rejection Reason */}
           <div className="space-y-2">
             <label className="text-sm font-medium">
@@ -276,7 +335,8 @@ export function RejectModal({
             disabled={
               isSubmitting ||
               !rejectionReason ||
-              (selectedTemplateId === 'custom' && !customMessage.trim())
+              (selectedTemplateId === 'custom' && !customMessage.trim()) ||
+              (isBulk && applicationIds.length > 5 && !confirmBulkAction)
             }
             className="bg-destructive hover:bg-destructive/90"
           >

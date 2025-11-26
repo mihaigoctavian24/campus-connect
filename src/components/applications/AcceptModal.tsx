@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Card } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -19,6 +21,7 @@ interface AcceptModalProps {
   onClose: () => void;
   activityId: string;
   applicationIds: string[];
+  studentNames?: string[];
   isBulk: boolean;
   onComplete: () => void;
 }
@@ -56,11 +59,13 @@ export function AcceptModal({
   onClose,
   activityId,
   applicationIds,
+  studentNames = [],
   isBulk,
   onComplete,
 }: AcceptModalProps) {
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('standard');
   const [customMessage, setCustomMessage] = useState('');
+  const [confirmBulkAction, setConfirmBulkAction] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleTemplateSelect = (templateId: string) => {
@@ -132,6 +137,7 @@ export function AcceptModal({
   const handleClose = () => {
     setSelectedTemplateId('standard');
     setCustomMessage('');
+    setConfirmBulkAction(false);
     onClose();
   };
 
@@ -151,6 +157,45 @@ export function AcceptModal({
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Preview Section for Bulk Operations */}
+          {isBulk && studentNames.length > 0 && (
+            <Card className="p-4 bg-green-50 border-green-200">
+              <h4 className="font-medium text-sm text-green-900 mb-2">
+                Aplicații Selectate ({applicationIds.length})
+              </h4>
+              <p className="text-xs text-green-700 mb-3">
+                Vei accepta următorii {applicationIds.length} studenți în această activitate:
+              </p>
+              <div className="text-xs text-green-800 space-y-1">
+                <ul className="list-disc list-inside space-y-1">
+                  {studentNames.slice(0, 5).map((name, index) => (
+                    <li key={index}>{name}</li>
+                  ))}
+                  {applicationIds.length > 5 && (
+                    <li className="font-medium">... și încă {applicationIds.length - 5} studenți</li>
+                  )}
+                </ul>
+              </div>
+            </Card>
+          )}
+
+          {/* Confirmation Checkbox for Bulk > 5 */}
+          {isBulk && applicationIds.length > 5 && (
+            <Card className="p-4 bg-amber-50 border-amber-200">
+              <div className="flex items-start gap-3">
+                <Checkbox
+                  checked={confirmBulkAction}
+                  onCheckedChange={(checked) => setConfirmBulkAction(checked as boolean)}
+                  className="mt-1"
+                />
+                <label className="text-sm text-amber-900 cursor-pointer">
+                  Confirm că vreau să accept aceste <strong>{applicationIds.length} aplicații</strong>
+                  . Toți studenții vor primi email de acceptare și vor fi adăugați la activitate.
+                </label>
+              </div>
+            </Card>
+          )}
+
           {/* Template Selector */}
           <div className="space-y-3">
             <label className="text-sm font-medium">Alege un șablon de mesaj</label>
@@ -205,7 +250,11 @@ export function AcceptModal({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={isSubmitting || (selectedTemplateId === 'custom' && !customMessage.trim())}
+            disabled={
+              isSubmitting ||
+              (selectedTemplateId === 'custom' && !customMessage.trim()) ||
+              (isBulk && applicationIds.length > 5 && !confirmBulkAction)
+            }
             className="bg-green-600 hover:bg-green-700"
           >
             {isSubmitting ? 'Se procesează...' : 'Confirmă Acceptare'}

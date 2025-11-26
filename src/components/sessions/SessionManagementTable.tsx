@@ -2,9 +2,17 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Edit2, Trash2, Calendar, MapPin, Users, Clock } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Edit2, Trash2, Calendar, MapPin, Users, Clock, QrCode } from 'lucide-react';
 import { format } from 'date-fns';
 import { ro } from 'date-fns/locale';
+import { QRCodeGenerator } from './QRCodeGenerator';
 
 interface Session {
   id: string;
@@ -22,6 +30,7 @@ interface Session {
 
 interface SessionManagementTableProps {
   sessions: Session[];
+  activityTitle: string;
   onEdit: (session: Session) => void;
   onCancel: (sessionId: string) => void;
   onReschedule: (session: Session) => void;
@@ -30,12 +39,14 @@ interface SessionManagementTableProps {
 
 export function SessionManagementTable({
   sessions,
+  activityTitle,
   onEdit,
   onCancel,
   onReschedule,
   isLoading = false,
 }: SessionManagementTableProps) {
   const [selectedSession] = useState<string | null>(null);
+  const [qrSession, setQrSession] = useState<Session | null>(null);
 
   const getStatusBadge = (status: Session['status']) => {
     const statusConfig = {
@@ -79,6 +90,19 @@ export function SessionManagementTable({
   const isPastSession = (dateString: string, endTime: string) => {
     const sessionDateTime = new Date(`${dateString}T${endTime}`);
     return sessionDateTime < new Date();
+  };
+
+  const canGenerateQR = (session: Session) => {
+    // QR can be generated for today's sessions or sessions in progress
+    const sessionDate = new Date(session.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    sessionDate.setHours(0, 0, 0, 0);
+
+    return (
+      (sessionDate.getTime() === today.getTime() && session.status === 'SCHEDULED') ||
+      session.status === 'IN_PROGRESS'
+    );
   };
 
   if (isLoading) {
@@ -170,6 +194,17 @@ export function SessionManagementTable({
                     <td className="px-6 py-4">{getStatusBadge(session.status)}</td>
                     <td className="whitespace-nowrap px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
+                        {canGenerateQR(session) && (
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setQrSession(session)}
+                            className="text-green-600 hover:bg-green-50"
+                          >
+                            <QrCode className="size-4" />
+                          </Button>
+                        )}
                         {isEditable && (
                           <>
                             <Button
@@ -209,7 +244,7 @@ export function SessionManagementTable({
                             </Button>
                           </>
                         )}
-                        {!isEditable && (
+                        {!isEditable && !canGenerateQR(session) && (
                           <span className="text-xs text-gray-400">
                             {isPast ? 'Trecută' : 'Nu poate fi editată'}
                           </span>
@@ -255,52 +290,88 @@ export function SessionManagementTable({
                   </div>
                 </div>
 
-                {isEditable && (
-                  <div className="mt-4 flex gap-2">
+                <div className="mt-4 flex gap-2">
+                  {canGenerateQR(session) && (
                     <Button
                       type="button"
                       size="sm"
                       variant="outline"
-                      onClick={() => onEdit(session)}
-                      className="flex-1 text-blue-600 hover:bg-blue-50"
+                      onClick={() => setQrSession(session)}
+                      className="flex-1 text-green-600 hover:bg-green-50"
                     >
-                      <Edit2 className="mr-2 size-4" />
-                      Editează
+                      <QrCode className="mr-2 size-4" />
+                      Cod QR
                     </Button>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() => onReschedule(session)}
-                      className="flex-1 text-amber-600 hover:bg-amber-50"
-                    >
-                      <Calendar className="mr-2 size-4" />
-                      Reprogramează
-                    </Button>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        if (
-                          confirm(
-                            'Sigur vrei să anulezi această sesiune? Studenții înrolați vor fi notificați.'
-                          )
-                        ) {
-                          onCancel(session.id);
-                        }
-                      }}
-                      className="text-red-600 hover:bg-red-50"
-                    >
-                      <Trash2 className="size-4" />
-                    </Button>
-                  </div>
-                )}
+                  )}
+                  {isEditable && (
+                    <>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onEdit(session)}
+                        className="flex-1 text-blue-600 hover:bg-blue-50"
+                      >
+                        <Edit2 className="mr-2 size-4" />
+                        Editează
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onReschedule(session)}
+                        className="flex-1 text-amber-600 hover:bg-amber-50"
+                      >
+                        <Calendar className="mr-2 size-4" />
+                        Reprogramează
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          if (
+                            confirm(
+                              'Sigur vrei să anulezi această sesiune? Studenții înrolați vor fi notificați.'
+                            )
+                          ) {
+                            onCancel(session.id);
+                          }
+                        }}
+                        className="text-red-600 hover:bg-red-50"
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    </>
+                  )}
+                </div>
               </div>
             );
           })}
         </div>
       </div>
+
+      {/* QR Code Modal */}
+      <Dialog open={!!qrSession} onOpenChange={(open) => !open && setQrSession(null)}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Cod QR Check-In</DialogTitle>
+            <DialogDescription>
+              Generează și afișează codul QR pentru check-in la sesiune
+            </DialogDescription>
+          </DialogHeader>
+          {qrSession && (
+            <QRCodeGenerator
+              sessionId={qrSession.id}
+              sessionDate={qrSession.date}
+              startTime={qrSession.start_time}
+              endTime={qrSession.end_time}
+              location={qrSession.location}
+              activityTitle={activityTitle}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

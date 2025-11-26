@@ -557,6 +557,20 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
                 ? [selectedApplication.id]
                 : []
           }
+          studentNames={
+            selectedForBulk.size > 0
+              ? Array.from(selectedForBulk)
+                  .map((id) => {
+                    const app = applications.find((a) => a.id === id);
+                    return app
+                      ? `${app.student.first_name} ${app.student.last_name}`
+                      : '';
+                  })
+                  .filter(Boolean)
+              : selectedApplication
+                ? [`${selectedApplication.student.first_name} ${selectedApplication.student.last_name}`]
+                : []
+          }
           isBulk={selectedForBulk.size > 0}
           onComplete={handleActionComplete}
         />
@@ -573,6 +587,20 @@ export function ApplicationReview({ activityId }: ApplicationReviewProps) {
               ? Array.from(selectedForBulk)
               : selectedApplication
                 ? [selectedApplication.id]
+                : []
+          }
+          studentNames={
+            selectedForBulk.size > 0
+              ? Array.from(selectedForBulk)
+                  .map((id) => {
+                    const app = applications.find((a) => a.id === id);
+                    return app
+                      ? `${app.student.first_name} ${app.student.last_name}`
+                      : '';
+                  })
+                  .filter(Boolean)
+              : selectedApplication
+                ? [`${selectedApplication.student.first_name} ${selectedApplication.student.last_name}`]
                 : []
           }
           isBulk={selectedForBulk.size > 0}
