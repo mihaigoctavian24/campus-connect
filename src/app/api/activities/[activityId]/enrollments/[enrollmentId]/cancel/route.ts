@@ -7,7 +7,7 @@ import { sendApplicationAcceptedEmail } from '@/lib/email/service';
  * Decrements participant count and auto-promotes from waiting list if available
  */
 export async function PUT(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ activityId: string; enrollmentId: string }> }
 ) {
   try {
