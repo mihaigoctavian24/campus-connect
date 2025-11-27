@@ -12,6 +12,8 @@ import { ApplicationReview } from '@/components/applications/ApplicationReview';
 import { SessionManagementTable } from '@/components/sessions/SessionManagementTable';
 import { EditSessionDialog } from '@/components/sessions/EditSessionDialog';
 import { RescheduleSessionDialog } from '@/components/sessions/RescheduleSessionDialog';
+import { RealtimeCheckInFeed } from '@/components/attendance/RealtimeCheckInFeed';
+import { ManualAttendancePanel } from '@/components/attendance/ManualAttendancePanel';
 
 interface Activity {
   id: string;
@@ -56,6 +58,9 @@ export function OpportunityDetailPage({ activityId }: OpportunityDetailPageProps
   const [isLoadingSessions, setIsLoadingSessions] = useState(false);
   const [editingSession, setEditingSession] = useState<Session | null>(null);
   const [reschedulingSession, setReschedulingSession] = useState<Session | null>(null);
+  const [selectedSessionForAttendance, setSelectedSessionForAttendance] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     fetchActivity();
@@ -269,17 +274,18 @@ export function OpportunityDetailPage({ activityId }: OpportunityDetailPageProps
         defaultValue="applications"
         className="w-full"
         onValueChange={(value) => {
-          if (value === 'sessions' && sessions.length === 0) {
+          if ((value === 'sessions' || value === 'attendance') && sessions.length === 0) {
             fetchSessions();
           }
         }}
       >
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="applications" className="gap-2">
             <Users className="h-4 w-4" />
             Aplicații
           </TabsTrigger>
           <TabsTrigger value="sessions">Sesiuni</TabsTrigger>
+          <TabsTrigger value="attendance">Prezență</TabsTrigger>
           <TabsTrigger value="participants">Participanți</TabsTrigger>
           <TabsTrigger value="statistics">Statistici</TabsTrigger>
         </TabsList>
@@ -299,6 +305,63 @@ export function OpportunityDetailPage({ activityId }: OpportunityDetailPageProps
               isLoading={isLoadingSessions}
             />
           </Card>
+        </TabsContent>
+
+        <TabsContent value="attendance" className="mt-6">
+          {/* Session Selector */}
+          <Card className="p-6 mb-6">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Selectează Sesiunea</h3>
+              <select
+                className="w-full p-2 border rounded-md"
+                value={selectedSessionForAttendance || ''}
+                onChange={(e) => setSelectedSessionForAttendance(e.target.value || null)}
+              >
+                <option value="">Selectează o sesiune...</option>
+                {sessions.map((session) => (
+                  <option key={session.id} value={session.id}>
+                    {new Date(session.date).toLocaleDateString('ro-RO')} - {session.start_time} -{' '}
+                    {session.location}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </Card>
+
+          {selectedSessionForAttendance ? (
+            <Tabs defaultValue="live-checkin" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="live-checkin" className="gap-2">
+                  <Users className="h-4 w-4" />
+                  Live Check-In
+                </TabsTrigger>
+                <TabsTrigger value="manual" className="gap-2">
+                  <Clock className="h-4 w-4" />
+                  Management Manual
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="live-checkin" className="mt-6">
+                <RealtimeCheckInFeed
+                  sessionId={selectedSessionForAttendance}
+                  activityId={activityId}
+                />
+              </TabsContent>
+
+              <TabsContent value="manual" className="mt-6">
+                <ManualAttendancePanel
+                  sessionId={selectedSessionForAttendance}
+                  activityId={activityId}
+                />
+              </TabsContent>
+            </Tabs>
+          ) : (
+            <Card className="p-6">
+              <p className="text-muted-foreground text-center">
+                Selectează o sesiune pentru a gestiona prezența
+              </p>
+            </Card>
+          )}
         </TabsContent>
 
         <TabsContent value="participants" className="mt-6">
