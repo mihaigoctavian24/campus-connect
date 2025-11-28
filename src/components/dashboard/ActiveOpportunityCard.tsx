@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -7,6 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Calendar, MapPin, Eye, FileText } from 'lucide-react';
 import { CheckInButton } from '@/components/attendance/CheckInButton';
+import { LogHoursModal } from '@/components/hours/LogHoursModal';
 import type { ActiveOpportunity } from './ActiveOpportunities';
 
 interface ActiveOpportunityCardProps {
@@ -18,6 +20,8 @@ export function ActiveOpportunityCard({
   opportunity,
   onCheckInSuccess,
 }: ActiveOpportunityCardProps) {
+  const [isLogHoursModalOpen, setIsLogHoursModalOpen] = useState(false);
+
   return (
     <Card>
       <CardHeader>
@@ -57,7 +61,7 @@ export function ActiveOpportunityCard({
             <Eye className="mr-2 h-4 w-4" />
             View Details
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={() => setIsLogHoursModalOpen(true)}>
             <FileText className="mr-2 h-4 w-4" />
             Log Hours
           </Button>
@@ -68,6 +72,19 @@ export function ActiveOpportunityCard({
             onSuccess={onCheckInSuccess}
           />
         </div>
+
+        {/* Log Hours Modal */}
+        <LogHoursModal
+          isOpen={isLogHoursModalOpen}
+          onClose={() => setIsLogHoursModalOpen(false)}
+          enrollmentId={opportunity.id}
+          activityId={opportunity.activityId}
+          activityTitle={opportunity.title}
+          onSuccess={() => {
+            setIsLogHoursModalOpen(false);
+            onCheckInSuccess?.();
+          }}
+        />
       </CardContent>
     </Card>
   );

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/components/ui/utils';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, Calendar, FileText, Menu, X, User, Users } from 'lucide-react';
+import { LayoutDashboard, Calendar, FileText, Menu, X, User, Users, Clock } from 'lucide-react';
 import { useState } from 'react';
 
 interface DashboardLayoutProps {
@@ -23,6 +23,7 @@ export function DashboardLayout({ children, role = 'student' }: DashboardLayoutP
       { href: '/dashboard/student/profile', label: 'My Profile', icon: User },
       { href: '/dashboard/student/my-activities', label: 'My Activities', icon: Calendar },
       { href: '/dashboard/student/applications', label: 'Applications', icon: FileText },
+      { href: '/dashboard/student/hours', label: 'Hours', icon: Clock },
     ],
     professor: [
       { href: '/dashboard/professor', label: 'Overview', icon: LayoutDashboard },
