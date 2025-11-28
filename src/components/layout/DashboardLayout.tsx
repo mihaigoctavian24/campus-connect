@@ -4,7 +4,19 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/components/ui/utils';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, Calendar, FileText, Menu, X, User, Users, Clock } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Calendar,
+  FileText,
+  Menu,
+  X,
+  User,
+  Users,
+  Clock,
+  UserCheck,
+  Bell,
+  BarChart3,
+} from 'lucide-react';
 import { useState } from 'react';
 
 interface DashboardLayoutProps {
@@ -35,10 +47,11 @@ export function DashboardLayout({ children, role = 'student' }: DashboardLayoutP
     ],
     admin: [
       { href: '/dashboard/admin', label: 'Dashboard', icon: LayoutDashboard },
-      { href: '/dashboard/admin/profile', label: 'My Profile', icon: User },
-      { href: '/dashboard/admin/users', label: 'Users', icon: Users },
-      { href: '/dashboard/admin/opportunities', label: 'Opportunities', icon: Calendar },
-      { href: '/dashboard/admin/reports', label: 'Reports', icon: FileText },
+      { href: '/dashboard/admin/users', label: 'Utilizatori', icon: Users },
+      { href: '/dashboard/admin/professors', label: 'Aprobare Profesori', icon: UserCheck },
+      { href: '/dashboard/admin/notifications', label: 'Notificări', icon: Bell },
+      { href: '/dashboard/admin/analytics', label: 'Rapoarte', icon: BarChart3 },
+      { href: '/dashboard/admin/profile', label: 'Profilul Meu', icon: User },
     ],
   };
 

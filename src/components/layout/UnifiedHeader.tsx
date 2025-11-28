@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bell, User, Settings, LogOut } from 'lucide-react';
+import { User, Settings, LogOut } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { NotificationDropdown } from '@/components/notifications';
 
 interface UnifiedHeaderProps {
   showAuthElements?: boolean; // Show notifications + user menu for authenticated users
@@ -51,35 +51,20 @@ export function UnifiedHeader({
 
   const dashboardUrl = getDashboardUrl();
 
-  // Mock notifications - replace with real data later
-  const notifications = [
-    {
-      id: '1',
-      type: 'application_accepted',
-      title: 'Application Accepted',
-      message: 'Your application for STEM Mentorship Program has been accepted!',
-      time: '2 hours ago',
-      read: false,
-    },
-    {
-      id: '2',
-      type: 'session_reminder',
-      title: 'Upcoming Session',
-      message: 'Community Outreach session starts in 1 hour',
-      time: '3 hours ago',
-      read: false,
-    },
-    {
-      id: '3',
-      type: 'hours_approved',
-      title: 'Hours Approved',
-      message: '5 volunteer hours have been approved',
-      time: '1 day ago',
-      read: true,
-    },
-  ];
+  // Get notifications center URL based on role
+  const getNotificationCenterUrl = () => {
+    if (!userRole) return '/dashboard/student/notifications';
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+    switch (userRole.toUpperCase()) {
+      case 'PROFESSOR':
+        return '/dashboard/professor/notifications';
+      case 'ADMIN':
+        return '/dashboard/admin/notifications';
+      case 'STUDENT':
+      default:
+        return '/dashboard/student/notifications';
+    }
+  };
 
   // Get user initials for avatar fallback
   const userInitials = userName
@@ -137,72 +122,8 @@ export function UnifiedHeader({
             {/* Auth Elements (Notifications + User) - Only show if authenticated */}
             {showAuthElements && (
               <>
-                {/* Notifications */}
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="relative text-white/80 hover:bg-white/10 hover:text-white"
-                    >
-                      <Bell className="h-5 w-5" />
-                      {unreadCount > 0 && (
-                        <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[gold] text-xs font-medium text-[#001f3f]">
-                          {unreadCount}
-                        </span>
-                      )}
-                      <span className="sr-only">Notifications</span>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80" align="end">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium">Notifications</h4>
-                        {unreadCount > 0 && (
-                          <Button variant="ghost" size="sm" className="h-auto p-0 text-xs">
-                            Mark all as read
-                          </Button>
-                        )}
-                      </div>
-                      <div className="space-y-2">
-                        {notifications.length === 0 ? (
-                          <p className="py-4 text-center text-sm text-muted-foreground">
-                            No notifications
-                          </p>
-                        ) : (
-                          notifications.map((notification) => (
-                            <div
-                              key={notification.id}
-                              className={`rounded-lg border p-3 ${
-                                notification.read ? 'bg-background' : 'bg-muted/50'
-                              }`}
-                            >
-                              <div className="flex items-start justify-between gap-2">
-                                <div className="flex-1 space-y-1">
-                                  <p className="text-sm font-medium">{notification.title}</p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {notification.message}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {notification.time}
-                                  </p>
-                                </div>
-                                {!notification.read && (
-                                  <div className="h-2 w-2 rounded-full bg-[gold]" />
-                                )}
-                              </div>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                      {notifications.length > 0 && (
-                        <Button variant="ghost" className="w-full" size="sm">
-                          View all notifications
-                        </Button>
-                      )}
-                    </div>
-                  </PopoverContent>
-                </Popover>
+                {/* Notifications - Real data from database */}
+                <NotificationDropdown notificationCenterUrl={getNotificationCenterUrl()} />
 
                 {/* User Menu */}
                 <DropdownMenu>
