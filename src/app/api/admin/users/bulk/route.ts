@@ -1,15 +1,28 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { checkRateLimit, getClientIp, rateLimitErrorResponse } from '@/lib/security';
 
 const bulkActionSchema = z.object({
   action: z.enum(['change_role', 'deactivate']),
   user_ids: z.array(z.string().uuid()).min(1, 'Selectează cel puțin un utilizator'),
-  new_role: z.enum(['student', 'professor', 'admin']).optional(),
+  new_role: z.enum(['STUDENT', 'PROFESSOR', 'ADMIN']).optional(),
 });
 
 export async function POST(request: NextRequest) {
   try {
+    // Strict rate limiting for admin bulk operations - 5 per minute
+    const clientIp = getClientIp(request);
+    const rateLimitResult = checkRateLimit(clientIp, {
+      limit: 5,
+      windowMs: 60 * 1000,
+      identifier: 'admin-bulk',
+    });
+
+    if (!rateLimitResult.success) {
+      return rateLimitErrorResponse(rateLimitResult.resetAt);
+    }
+
     const supabase = await createClient();
 
     // Get current user
@@ -29,7 +42,7 @@ export async function POST(request: NextRequest) {
       .eq('id', user.id)
       .single();
 
-    if (adminError || adminProfile?.role !== 'admin') {
+    if (adminError || adminProfile?.role?.toUpperCase() !== 'ADMIN') {
       return NextResponse.json({ error: 'Acces interzis' }, { status: 403 });
     }
 
@@ -125,7 +138,7 @@ export async function POST(request: NextRequest) {
           const { error: deactivateError } = await supabase
             .from('profiles')
             .update({
-              role: 'student', // Reset to student role
+              role: 'STUDENT', // Reset to student role
               // If there's a status field, set it to 'deactivated'
             })
             .eq('id', userId);
@@ -150,7 +163,7 @@ export async function POST(request: NextRequest) {
 
           successCount++;
         }
-      } catch (err) {
+      } catch {
         failedCount++;
         errors.push(`Eroare neașteptată pentru utilizatorul ${userId}`);
       }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -62,13 +62,15 @@ export function RoleAssignmentModal({
   onClose,
   onRoleChanged,
 }: RoleAssignmentModalProps) {
-  const [selectedRole, setSelectedRole] = useState<string>(user?.role || 'student');
+  const [selectedRole, setSelectedRole] = useState<string>(user?.role || 'STUDENT');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Reset selected role when user changes
-  if (user && selectedRole !== user.role && !isLoading) {
-    setSelectedRole(user.role);
-  }
+  // Reset selected role when user changes (only when modal opens with new user)
+  useEffect(() => {
+    if (user && isOpen) {
+      setSelectedRole(user.role);
+    }
+  }, [user?.id, isOpen]);
 
   const handleSubmit = async () => {
     if (!user || selectedRole === user.role) {

@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 import { ro } from 'date-fns/locale';
 import { HoursActionButtons } from './HoursActionButtons';
 import type { HoursRequest } from './HoursValidation';
+import Image from 'next/image';
 
 interface HourRequestDetailModalProps {
   request: HoursRequest;
@@ -153,11 +154,14 @@ export function HourRequestDetailModal({
                     >
                       {isImage(url) ? (
                         <div className="space-y-2">
-                          <img
-                            src={url}
-                            alt={`Evidence ${index + 1}`}
-                            className="w-full h-40 object-cover rounded-md"
-                          />
+                          <div className="relative w-full h-40">
+                            <Image
+                              src={url}
+                              alt={`Evidence ${index + 1}`}
+                              fill
+                              className="object-cover rounded-md"
+                            />
+                          </div>
                           <Button
                             variant="outline"
                             size="sm"

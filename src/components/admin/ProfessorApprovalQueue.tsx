@@ -141,7 +141,7 @@ export function ProfessorApprovalQueue() {
 
       toast.success('Cererea a fost aprobată');
       fetchRequests();
-    } catch (err) {
+    } catch {
       toast.error('Eroare la aprobare');
     }
   };
@@ -163,7 +163,7 @@ export function ProfessorApprovalQueue() {
 
       toast.success('Cererea a fost respinsă');
       fetchRequests();
-    } catch (err) {
+    } catch {
       toast.error('Eroare la respingere');
     }
   };

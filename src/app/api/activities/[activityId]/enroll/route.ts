@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
+import {
+  checkRateLimit,
+  getClientIp,
+  RATE_LIMIT_PRESETS,
+  rateLimitErrorResponse,
+} from '@/lib/security';
 
 // Validation schema matching the frontend
 const enrollmentSchema = z.object({
@@ -14,6 +20,18 @@ export async function POST(
   { params }: { params: Promise<{ activityId: string }> }
 ) {
   try {
+    // Rate limiting - 10 enrollments per minute per IP
+    const clientIp = getClientIp(request);
+    const rateLimitResult = checkRateLimit(clientIp, {
+      ...RATE_LIMIT_PRESETS.apiStrict,
+      identifier: 'enroll',
+      limit: 10,
+    });
+
+    if (!rateLimitResult.success) {
+      return rateLimitErrorResponse(rateLimitResult.resetAt);
+    }
+
     const supabase = await createClient();
     const { activityId } = await params;
 

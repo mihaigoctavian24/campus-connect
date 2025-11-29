@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { format } from 'date-fns';
 import { ro } from 'date-fns/locale';
 import { User, Mail, Calendar, GraduationCap, Building, Clock, Shield } from 'lucide-react';
+import Image from 'next/image';
 
 interface UserData {
   id: string;
@@ -81,12 +82,13 @@ export function UserDetailModal({ user, isOpen, onClose }: UserDetailModalProps)
         <div className="space-y-6">
           {/* Profile Header */}
           <div className="flex items-center gap-4">
-            <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+            <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden relative">
               {user.profile_picture_url ? (
-                <img
+                <Image
                   src={user.profile_picture_url}
                   alt={fullName}
-                  className="h-16 w-16 rounded-full object-cover"
+                  fill
+                  className="rounded-full object-cover"
                 />
               ) : (
                 <User className="h-8 w-8 text-gray-500" />

@@ -93,7 +93,7 @@ export async function PATCH(
     if (status === 'APPROVED') {
       const { error: roleUpdateError } = await supabase
         .from('profiles')
-        .update({ role: 'professor' })
+        .update({ role: 'PROFESSOR' })
         .eq('id', professorRequest.user_id);
 
       if (roleUpdateError) {
@@ -177,7 +177,7 @@ export async function GET(
       .eq('id', user.id)
       .single();
 
-    if (profileError || profile?.role !== 'admin') {
+    if (profileError || profile?.role?.toUpperCase() !== 'ADMIN') {
       return NextResponse.json({ error: 'Acces interzis' }, { status: 403 });
     }
 

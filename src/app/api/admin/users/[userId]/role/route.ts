@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 const roleSchema = z.object({
-  role: z.enum(['student', 'professor', 'admin']),
+  role: z.enum(['STUDENT', 'PROFESSOR', 'ADMIN']),
 });
 
 export async function PATCH(
@@ -60,7 +60,7 @@ export async function PATCH(
     }
 
     // Prevent self-demotion from admin
-    if (userId === user.id && targetUser.role === 'admin' && role !== 'admin') {
+    if (userId === user.id && targetUser.role?.toUpperCase() === 'ADMIN' && role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Nu îți poți elimina propriul rol de administrator' },
         { status: 400 }

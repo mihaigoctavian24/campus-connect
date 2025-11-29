@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -66,6 +67,7 @@ interface PlatformStats {
 }
 
 export default function AdminAnalyticsPage() {
+  const router = useRouter();
   const [stats, setStats] = useState<PlatformStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -206,7 +208,7 @@ export default function AdminAnalyticsPage() {
             <RefreshCw className="mr-2 h-4 w-4" />
             Reîmprospătează
           </Button>
-          <Button>
+          <Button onClick={() => router.push('/dashboard/admin/reports')}>
             <Download className="mr-2 h-4 w-4" />
             Exportă Raport
           </Button>

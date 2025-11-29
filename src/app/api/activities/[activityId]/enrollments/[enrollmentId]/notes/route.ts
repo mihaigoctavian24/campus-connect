@@ -35,7 +35,7 @@ export async function PUT(
     }
 
     // Only professors can add notes
-    if (profile.role !== 'professor') {
+    if (profile.role?.toUpperCase() !== 'PROFESSOR') {
       return NextResponse.json({ message: 'Nu ai permisiunea să adaugi notițe' }, { status: 403 });
     }
 

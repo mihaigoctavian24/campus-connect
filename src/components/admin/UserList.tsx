@@ -49,6 +49,7 @@ import { UserDetailModal } from './UserDetailModal';
 import { RoleAssignmentModal } from './RoleAssignmentModal';
 import { BulkUserActionsModal } from './BulkUserActionsModal';
 import { toast } from 'sonner';
+import Image from 'next/image';
 
 interface User {
   id: string;
@@ -487,12 +488,13 @@ export function UserList() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                          <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center relative">
                             {user.profile_picture_url ? (
-                              <img
+                              <Image
                                 src={user.profile_picture_url}
                                 alt=""
-                                className="h-8 w-8 rounded-full object-cover"
+                                fill
+                                className="rounded-full object-cover"
                               />
                             ) : (
                               <span className="text-sm font-medium text-gray-600">

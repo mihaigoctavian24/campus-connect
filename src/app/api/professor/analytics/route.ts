@@ -22,7 +22,7 @@ export async function GET() {
       .eq('id', user.id)
       .single();
 
-    if (profileError || profile?.role !== 'professor') {
+    if (profileError || profile?.role?.toUpperCase() !== 'PROFESSOR') {
       return NextResponse.json({ error: 'Acces interzis' }, { status: 403 });
     }
 

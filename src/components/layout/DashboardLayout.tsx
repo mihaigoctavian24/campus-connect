@@ -16,6 +16,9 @@ import {
   UserCheck,
   Bell,
   BarChart3,
+  Settings,
+  ScrollText,
+  Award,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -36,6 +39,8 @@ export function DashboardLayout({ children, role = 'student' }: DashboardLayoutP
       { href: '/dashboard/student/my-activities', label: 'My Activities', icon: Calendar },
       { href: '/dashboard/student/applications', label: 'Applications', icon: FileText },
       { href: '/dashboard/student/hours', label: 'Hours', icon: Clock },
+      { href: '/dashboard/student/analytics', label: 'Statistici', icon: BarChart3 },
+      { href: '/dashboard/student/certificates', label: 'Certificate', icon: Award },
     ],
     professor: [
       { href: '/dashboard/professor', label: 'Overview', icon: LayoutDashboard },
@@ -51,6 +56,8 @@ export function DashboardLayout({ children, role = 'student' }: DashboardLayoutP
       { href: '/dashboard/admin/professors', label: 'Aprobare Profesori', icon: UserCheck },
       { href: '/dashboard/admin/notifications', label: 'Notificări', icon: Bell },
       { href: '/dashboard/admin/analytics', label: 'Rapoarte', icon: BarChart3 },
+      { href: '/dashboard/admin/audit-logs', label: 'Jurnal Audit', icon: ScrollText },
+      { href: '/dashboard/admin/settings', label: 'Setări Platformă', icon: Settings },
       { href: '/dashboard/admin/profile', label: 'Profilul Meu', icon: User },
     ],
   };

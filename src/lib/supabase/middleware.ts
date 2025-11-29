@@ -50,6 +50,32 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Role-based route protection for dashboard routes
+  // Note: Primary role protection is now in layout.tsx files for admin and professor
+  // This middleware handles the /dashboard redirect to role-specific dashboard
+  if (user && isDashboardPage) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single<{ role: string }>();
+
+    const userRole = (profile?.role || 'STUDENT').toUpperCase();
+
+    // Redirect /dashboard to role-specific dashboard
+    if (pathname === '/dashboard') {
+      const url = request.nextUrl.clone();
+      if (userRole === 'ADMIN') {
+        url.pathname = '/dashboard/admin';
+      } else if (userRole === 'PROFESSOR') {
+        url.pathname = '/dashboard/professor';
+      } else {
+        url.pathname = '/dashboard/student';
+      }
+      return NextResponse.redirect(url);
+    }
+  }
+
   // If user is logged in and trying to access auth pages, redirect to dashboard
   if (user && isAuthPage && pathname !== '/auth/callback') {
     // Get user role from profile
