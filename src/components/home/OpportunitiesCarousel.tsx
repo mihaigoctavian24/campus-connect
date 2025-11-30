@@ -5,12 +5,38 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { OpportunityCard } from '@/components/OpportunityCard';
 import { getOpportunities, type Opportunity } from '@/lib/services/opportunities.service';
 
+// Hook to get responsive items per page
+function useItemsPerPage() {
+  const [itemsPerPage, setItemsPerPage] = useState(3);
+
+  useEffect(() => {
+    function handleResize() {
+      if (window.innerWidth < 768) {
+        setItemsPerPage(1); // Mobile: 1 card
+      } else if (window.innerWidth < 1024) {
+        setItemsPerPage(2); // Tablet: 2 cards
+      } else {
+        setItemsPerPage(3); // Desktop: 3 cards
+      }
+    }
+
+    // Set initial value
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return itemsPerPage;
+}
+
 export function OpportunitiesCarousel() {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
+  const itemsPerPage = useItemsPerPage();
 
   useEffect(() => {
     async function loadOpportunities() {
@@ -26,8 +52,14 @@ export function OpportunitiesCarousel() {
     loadOpportunities();
   }, []);
 
-  const itemsPerPage = 3;
   const totalPages = Math.ceil(opportunities.length / itemsPerPage);
+
+  // Reset currentIndex when itemsPerPage changes to avoid out-of-bounds
+  useEffect(() => {
+    if (currentIndex >= totalPages && totalPages > 0) {
+      setCurrentIndex(0);
+    }
+  }, [itemsPerPage, totalPages, currentIndex]);
 
   const goToNext = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % totalPages);
@@ -51,9 +83,12 @@ export function OpportunitiesCarousel() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto px-4 md:px-0">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-[420px] rounded-2xl bg-gray-200 animate-pulse" />
+          <div
+            key={i}
+            className={`h-[420px] rounded-2xl bg-gray-200 animate-pulse ${i === 2 ? 'hidden md:block' : ''} ${i === 3 ? 'hidden lg:block' : ''}`}
+          />
         ))}
       </div>
     );
@@ -67,18 +102,25 @@ export function OpportunitiesCarousel() {
     );
   }
 
-  // Calculate card width percentage (3 cards visible = 33.333% each)
-  const cardWidth = 100 / itemsPerPage;
-  const gap = 24; // gap-6 = 24px
+  // Calculate card width - on mobile (1 item) use 100%, otherwise calculate based on itemsPerPage
+  const gap = itemsPerPage === 1 ? 0 : 24; // No gap needed for single card on mobile
+  const cardWidthCalc =
+    itemsPerPage === 1
+      ? '100%'
+      : `calc(${100 / itemsPerPage}% - ${(gap * (itemsPerPage - 1)) / itemsPerPage}px)`;
 
   return (
-    <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <div
+      className="relative px-4 md:px-0"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       {/* Navigation Buttons */}
       {totalPages > 1 && (
         <>
           <button
             onClick={goToPrev}
-            className="absolute left-2 md:left-4 top-1/2 z-10 -translate-y-1/2 flex size-10 items-center justify-center rounded-full border border-gray-200 bg-white/90 shadow-md backdrop-blur-sm transition-all hover:bg-white hover:shadow-lg hover:scale-110"
+            className="absolute left-0 md:left-4 top-1/2 z-10 -translate-y-1/2 flex size-10 items-center justify-center rounded-full border border-gray-200 bg-white/90 shadow-md backdrop-blur-sm transition-all hover:bg-white hover:shadow-lg hover:scale-110"
             aria-label="Previous opportunities"
           >
             <ChevronLeft className="size-5 text-[#001f3f]" />
@@ -86,7 +128,7 @@ export function OpportunitiesCarousel() {
 
           <button
             onClick={goToNext}
-            className="absolute right-2 md:right-4 top-1/2 z-10 -translate-y-1/2 flex size-10 items-center justify-center rounded-full border border-gray-200 bg-white/90 shadow-md backdrop-blur-sm transition-all hover:bg-white hover:shadow-lg hover:scale-110"
+            className="absolute right-0 md:right-4 top-1/2 z-10 -translate-y-1/2 flex size-10 items-center justify-center rounded-full border border-gray-200 bg-white/90 shadow-md backdrop-blur-sm transition-all hover:bg-white hover:shadow-lg hover:scale-110"
             aria-label="Next opportunities"
           >
             <ChevronRight className="size-5 text-[#001f3f]" />
@@ -95,12 +137,15 @@ export function OpportunitiesCarousel() {
       )}
 
       {/* Sliding Cards Container */}
-      <div className="overflow-hidden mx-auto max-w-5xl" ref={containerRef}>
+      <div className="overflow-hidden mx-auto max-w-5xl px-6 md:px-0" ref={containerRef}>
         <div
           className="flex"
           style={{
-            transform: `translateX(calc(-${currentIndex * 100}% - ${currentIndex * gap}px))`,
-            gap: `${gap}px`,
+            transform:
+              itemsPerPage === 1
+                ? `translateX(-${currentIndex * 100}%)`
+                : `translateX(calc(-${currentIndex * 100}% - ${currentIndex * gap}px))`,
+            gap: gap > 0 ? `${gap}px` : undefined,
             transition: 'transform 700ms cubic-bezier(0.34, 1.56, 0.64, 1)',
           }}
         >
@@ -108,9 +153,7 @@ export function OpportunitiesCarousel() {
             <div
               key={opportunity.id}
               className="h-[420px] flex-shrink-0"
-              style={{
-                width: `calc(${cardWidth}% - ${(gap * (itemsPerPage - 1)) / itemsPerPage}px)`,
-              }}
+              style={{ width: cardWidthCalc }}
             >
               <OpportunityCard
                 activityId={opportunity.id}

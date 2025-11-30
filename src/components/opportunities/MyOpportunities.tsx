@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, MapPin, Calendar, Users, Eye, Edit, Archive, TrendingUp, Clock } from 'lucide-react';
+import { EditOpportunityModal } from '@/components/opportunities/EditOpportunityModal';
 
 interface OpportunityStats {
   enrolled: number;
@@ -35,6 +36,7 @@ export function MyOpportunities() {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'OPEN' | 'CLOSED' | 'DRAFT'>('all');
+  const [editingOpportunityId, setEditingOpportunityId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchOpportunities();
@@ -213,7 +215,7 @@ export function MyOpportunities() {
                   variant="outline"
                   size="sm"
                   className="gap-2"
-                  onClick={() => router.push(`/dashboard/professor/opportunities/${opp.id}/edit`)}
+                  onClick={() => setEditingOpportunityId(opp.id)}
                 >
                   <Edit className="h-4 w-4" />
                   Editează
@@ -227,6 +229,17 @@ export function MyOpportunities() {
           ))}
         </div>
       )}
+
+      {/* Edit Opportunity Modal */}
+      <EditOpportunityModal
+        opportunityId={editingOpportunityId}
+        isOpen={!!editingOpportunityId}
+        onClose={() => setEditingOpportunityId(null)}
+        onSuccess={() => {
+          setEditingOpportunityId(null);
+          fetchOpportunities();
+        }}
+      />
     </div>
   );
 }
