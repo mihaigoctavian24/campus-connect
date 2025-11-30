@@ -1,194 +1,190 @@
-import { ArrowRight, Users, Clock, Building2 } from 'lucide-react';
+import { Users, Clock, Building2, Sparkles, Heart, GraduationCap } from 'lucide-react';
 import Link from 'next/link';
-import { OpportunityCard } from '@/components/OpportunityCard';
+import { HeroSection } from '@/components/home/HeroSection';
+import { AnimatedCounter } from '@/components/home/AnimatedCounter';
+import { OpportunitiesCarousel } from '@/components/home/OpportunitiesCarousel';
+import { FadeInSection } from '@/components/home/FadeInSection';
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header is now in root layout */}
-
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-b from-[#001f3f] via-[#001f3f] via-50% to-[#800020] py-24">
-        <div className="mx-auto max-w-7xl px-8">
-          <div className="max-w-3xl">
-            {/* Badge */}
-            <div className="mb-6 flex items-center gap-3">
-              <div className="flex size-12 items-center justify-center rounded-lg bg-[gold]">
-                <svg className="size-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-                  />
-                </svg>
-              </div>
-              <span className="text-[gold]">Excellence Through Service</span>
-            </div>
-
-            {/* Heading */}
-            <h1 className="mb-6 text-6xl font-normal leading-tight text-white">
-              Your Module of Impact Starts Here.
-            </h1>
-
-            {/* Description */}
-            <p className="mb-10 text-xl leading-relaxed text-white/90">
-              Connect with meaningful volunteer opportunities that complement your academic journey
-              and build the leadership skills that define tomorrow&apos;s changemakers.
-            </p>
-
-            {/* CTA Button */}
-            <Link
-              href="/explore"
-              className="inline-flex items-center gap-2 rounded-lg bg-[gold] px-8 py-4 font-medium text-[#001f3f] shadow-lg transition hover:bg-[gold]/90"
-            >
-              Explore Opportunities
-              <ArrowRight className="size-5" />
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* Hero Section with Video Background */}
+      <HeroSection />
 
       {/* Statistics Widget */}
-      <section className="relative -mt-12 px-8">
-        <div className="mx-auto grid max-w-7xl grid-cols-3 gap-6">
-          {/* Active Projects */}
-          <div className="flex items-center gap-4 rounded-lg border border-gray-200 bg-white p-6">
-            <div className="flex size-14 items-center justify-center rounded-lg bg-[#001f3f]">
-              <Users className="size-7 text-white" />
+      <section className="relative -mt-16 z-20 px-8">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-3 gap-6">
+          <FadeInSection delay={0}>
+            <div className="group flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-6 shadow-lg transition-all hover:shadow-xl hover:-translate-y-1">
+              <div className="flex size-14 items-center justify-center rounded-xl bg-gradient-to-br from-[#001f3f] to-[#003366] shadow-lg shadow-[#001f3f]/20">
+                <Users className="size-7 text-white" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-[#001f3f]">
+                  <AnimatedCounter end={50} suffix="+" duration={2000} />
+                </p>
+                <p className="text-gray-500">Active Projects</p>
+              </div>
             </div>
-            <div>
-              <p className="text-xl font-medium text-[#001f3f]">50+</p>
-              <p className="text-gray-500">Active Projects</p>
-            </div>
-          </div>
+          </FadeInSection>
 
-          {/* Volunteer Hours */}
-          <div className="flex items-center gap-4 rounded-lg border border-gray-200 bg-white p-6">
-            <div className="flex size-14 items-center justify-center rounded-lg bg-[#001f3f]">
-              <Clock className="size-7 text-white" />
+          <FadeInSection delay={150}>
+            <div className="group flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-6 shadow-lg transition-all hover:shadow-xl hover:-translate-y-1">
+              <div className="flex size-14 items-center justify-center rounded-xl bg-gradient-to-br from-[#800020] to-[#a00030] shadow-lg shadow-[#800020]/20">
+                <Clock className="size-7 text-white" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-[#001f3f]">
+                  <AnimatedCounter end={1500} suffix="+" duration={2500} />
+                </p>
+                <p className="text-gray-500">Volunteer Hours</p>
+              </div>
             </div>
-            <div>
-              <p className="text-xl font-medium text-[#001f3f]">1,500+</p>
-              <p className="text-gray-500">Volunteer Hours</p>
-            </div>
-          </div>
+          </FadeInSection>
 
-          {/* Partner Organizations */}
-          <div className="flex items-center gap-4 rounded-lg border border-gray-200 bg-white p-6">
-            <div className="flex size-14 items-center justify-center rounded-lg bg-[#001f3f]">
-              <Building2 className="size-7 text-white" />
+          <FadeInSection delay={300}>
+            <div className="group flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-6 shadow-lg transition-all hover:shadow-xl hover:-translate-y-1">
+              <div className="flex size-14 items-center justify-center rounded-xl bg-gradient-to-br from-[gold] to-yellow-500 shadow-lg shadow-[gold]/20">
+                <Building2 className="size-7 text-[#001f3f]" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-[#001f3f]">
+                  <AnimatedCounter end={30} suffix="+" duration={1800} />
+                </p>
+                <p className="text-gray-500">Partner Organizations</p>
+              </div>
             </div>
-            <div>
-              <p className="text-xl font-medium text-[#001f3f]">30</p>
-              <p className="text-gray-500">Partner Organizations</p>
-            </div>
-          </div>
+          </FadeInSection>
         </div>
       </section>
 
       {/* Mission Statement */}
-      <section className="px-8 py-16">
-        <div className="mx-auto max-w-7xl rounded-lg border border-gray-200 bg-white px-48 py-12 text-center">
-          <h2 className="mb-4 text-xl font-medium text-[#001f3f]">Empowering Student Leaders</h2>
-          <p className="text-center text-gray-500">
-            CampusConnect bridges academic excellence with community engagement. Our platform
-            connects ambitious students with volunteer opportunities that align with their field of
-            study, career goals, and passion for making a difference. Join a community of scholars
-            dedicated to service.
-          </p>
-        </div>
-      </section>
+      <section className="px-8 py-20">
+        <FadeInSection>
+          <div className="mx-auto max-w-7xl">
+            <div className="relative rounded-2xl border border-gray-200 bg-white px-8 md:px-24 py-16 text-center overflow-hidden">
+              {/* Decorative elements */}
+              <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-[#001f3f]/5 to-transparent rounded-br-full" />
+              <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-[#800020]/5 to-transparent rounded-tl-full" />
 
-      {/* Featured Opportunities */}
-      <section className="px-8 py-16">
-        <div className="mx-auto max-w-7xl">
-          {/* Section Header */}
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-lg font-medium text-[#001f3f]">Featured Opportunities</h2>
-            <div className="flex gap-2">
-              <button className="flex size-10 items-center justify-center rounded-full border border-gray-200 bg-white opacity-40">
-                <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-              </button>
-              <button className="flex size-10 items-center justify-center rounded-full border border-gray-200 bg-white opacity-40">
-                <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
+              <div className="relative">
+                <div className="inline-flex items-center gap-2 rounded-full bg-[#001f3f]/5 px-4 py-2 mb-6">
+                  <Sparkles className="size-4 text-[#001f3f]" />
+                  <span className="text-sm font-medium text-[#001f3f]">Our Mission</span>
+                </div>
+
+                <h2 className="mb-6 text-3xl font-bold text-[#001f3f]">
+                  Empowering Student Leaders
+                </h2>
+                <p className="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto">
+                  CampusConnect bridges academic excellence with community engagement. Our platform
+                  connects ambitious students with volunteer opportunities that align with their field of
+                  study, career goals, and passion for making a difference. Join a community of scholars
+                  dedicated to service.
+                </p>
+
+                {/* Feature highlights */}
+                <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="flex flex-col items-center">
+                    <div className="flex size-12 items-center justify-center rounded-full bg-[#001f3f]/10 mb-4">
+                      <GraduationCap className="size-6 text-[#001f3f]" />
+                    </div>
+                    <h3 className="font-semibold text-[#001f3f] mb-2">Academic Growth</h3>
+                    <p className="text-sm text-gray-500">Complement your studies with real-world experience</p>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="flex size-12 items-center justify-center rounded-full bg-[#800020]/10 mb-4">
+                      <Heart className="size-6 text-[#800020]" />
+                    </div>
+                    <h3 className="font-semibold text-[#001f3f] mb-2">Community Impact</h3>
+                    <p className="text-sm text-gray-500">Make a meaningful difference in your community</p>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="flex size-12 items-center justify-center rounded-full bg-[gold]/20 mb-4">
+                      <Sparkles className="size-6 text-yellow-600" />
+                    </div>
+                    <h3 className="font-semibold text-[#001f3f] mb-2">Leadership Skills</h3>
+                    <p className="text-sm text-gray-500">Develop skills that define tomorrow&apos;s leaders</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+        </FadeInSection>
+      </section>
 
-          {/* Opportunity Cards */}
-          <div className="grid grid-cols-3 gap-6">
-            {/* Card 1 */}
-            <OpportunityCard
-              activityId="demo-1"
-              title="STEM Mentorship Program"
-              department="ES"
-              description="Guide first-year engineering students through their academic journey and help them develop essential skills."
-              category="STEM"
-              location="On-Campus"
-              hours="5-8 hrs/week"
-              duration="Long-term"
-              featured
-            />
+      {/* Featured Opportunities Carousel */}
+      <section className="px-8 py-16 bg-gradient-to-b from-gray-50 to-white">
+        <div className="mx-auto max-w-7xl">
+          <FadeInSection>
+            <div className="mb-10 text-center">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#800020]/10 px-4 py-2 mb-4">
+                <Sparkles className="size-4 text-[#800020]" />
+                <span className="text-sm font-medium text-[#800020]">Discover</span>
+              </div>
+              <h2 className="text-3xl font-bold text-[#001f3f] mb-4">Featured Opportunities</h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Browse our curated selection of volunteer opportunities and find the perfect match for your skills and interests.
+              </p>
+            </div>
+          </FadeInSection>
 
-            {/* Card 2 */}
-            <OpportunityCard
-              activityId="demo-2"
-              title="Community Outreach Coordinator"
-              department="SVC"
-              description="Coordinate volunteer events and connect students with local community organizations."
-              category="Social Sciences"
-              location="Hybrid"
-              hours="10-12 hrs/week"
-              duration="Long-term"
-              featured
-            />
-
-            {/* Card 3 */}
-            <OpportunityCard
-              activityId="demo-3"
-              title="Research Assistant - Psychology Lab"
-              department="DP"
-              description="Support cutting-edge research in cognitive psychology and gain hands-on research experience."
-              category="STEM"
-              location="On-Campus"
-              hours="8-10 hrs/week"
-              duration="Long-term"
-              featured
-            />
-          </div>
+          <FadeInSection delay={200}>
+            <OpportunitiesCarousel />
+          </FadeInSection>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="px-8 py-16">
-        <div className="mx-auto max-w-7xl rounded-lg bg-gradient-to-b from-[#800020] to-[#001f3f] px-12 py-12 text-center shadow-xl">
-          <h2 className="mb-4 text-lg font-medium text-white">Ready to Make an Impact?</h2>
-          <p className="mx-auto mb-8 max-w-2xl text-white/90">
-            Browse our full catalog of volunteer opportunities and find the perfect match for your
-            skills, interests, and schedule.
-          </p>
-          <Link
-            href="/explore"
-            className="inline-flex items-center gap-2 rounded-lg bg-[gold] px-8 py-4 font-medium text-[#001f3f] shadow-lg transition hover:bg-[gold]/90"
-          >
-            View All Opportunities
-          </Link>
-        </div>
+      <section className="px-8 py-20">
+        <FadeInSection>
+          <div className="mx-auto max-w-7xl">
+            <div className="relative rounded-2xl overflow-hidden">
+              {/* Background with gradient and pattern */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#001f3f] via-[#002a52] to-[#800020]" />
+              <div className="absolute inset-0 opacity-10" style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+              }} />
+
+              <div className="relative px-12 py-16 text-center">
+                <h2 className="mb-4 text-3xl font-bold text-white">
+                  Ready to Make an Impact?
+                </h2>
+                <p className="mx-auto mb-8 max-w-2xl text-lg text-white/90">
+                  Browse our full catalog of volunteer opportunities and find the perfect match for your
+                  skills, interests, and schedule.
+                </p>
+                <div className="flex flex-wrap justify-center gap-4">
+                  <Link
+                    href="/explore"
+                    className="group inline-flex items-center gap-2 rounded-lg bg-[gold] px-8 py-4 font-medium text-[#001f3f] shadow-lg shadow-[gold]/30 transition-all hover:bg-yellow-400 hover:shadow-xl hover:scale-105"
+                  >
+                    View All Opportunities
+                    <svg
+                      className="size-5 transition-transform group-hover:translate-x-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                      />
+                    </svg>
+                  </Link>
+                  <Link
+                    href="/auth/signup"
+                    className="inline-flex items-center gap-2 rounded-lg border-2 border-white/30 bg-white/10 px-8 py-4 font-medium text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50"
+                  >
+                    Create Account
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </FadeInSection>
       </section>
     </div>
   );
