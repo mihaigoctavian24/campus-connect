@@ -134,9 +134,7 @@ export function OpportunityImageUpload({
 
   return (
     <div className="space-y-3">
-      <label className="text-sm font-medium text-gray-700">
-        Imagine de copertă (opțional)
-      </label>
+      <label className="text-sm font-medium text-gray-700">Imagine de copertă (opțional)</label>
 
       {value ? (
         // Preview uploaded image
@@ -164,9 +162,7 @@ export function OpportunityImageUpload({
         // Upload area
         <div
           className={`relative flex min-h-[200px] cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors ${
-            dragActive
-              ? 'border-[#001f3f] bg-[#001f3f]/5'
-              : 'border-gray-300 hover:border-gray-400'
+            dragActive ? 'border-[#001f3f] bg-[#001f3f]/5' : 'border-gray-300 hover:border-gray-400'
           } ${disabled || isUploading ? 'cursor-not-allowed opacity-50' : ''}`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
@@ -195,12 +191,9 @@ export function OpportunityImageUpload({
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-700">
-                  <span className="text-[#001f3f]">Click pentru a încărca</span> sau
-                  drag & drop
+                  <span className="text-[#001f3f]">Click pentru a încărca</span> sau drag & drop
                 </p>
-                <p className="mt-1 text-xs text-gray-500">
-                  PNG, JPG, WebP sau GIF (max. 5MB)
-                </p>
+                <p className="mt-1 text-xs text-gray-500">PNG, JPG, WebP sau GIF (max. 5MB)</p>
               </div>
               <Button
                 type="button"
@@ -223,8 +216,8 @@ export function OpportunityImageUpload({
       {error && <p className="text-sm text-red-600">{error}</p>}
 
       <p className="text-xs text-gray-500">
-        Imaginea va apărea pe card-ul oportunității și pe pagina de detalii. Recomandăm
-        dimensiunea de 1200x630 pixeli pentru rezultate optime.
+        Imaginea va apărea pe card-ul oportunității și pe pagina de detalii. Recomandăm dimensiunea
+        de 1200x630 pixeli pentru rezultate optime.
       </p>
     </div>
   );

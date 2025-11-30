@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { User, Settings, LogOut } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,32 @@ export function UnifiedHeader({
   onLogout,
 }: UnifiedHeaderProps) {
   const pathname = usePathname();
+  const [isOverVideo, setIsOverVideo] = useState(false);
+
+  // Track scroll position and detect if header is over video section
+  useEffect(() => {
+    const handleScroll = () => {
+      // Check if header overlaps the hero video section
+      const heroSection = document.getElementById('hero-video-section');
+      if (heroSection) {
+        const heroRect = heroSection.getBoundingClientRect();
+        const headerHeight = 72; // Approximate header height
+        // Header is over video when:
+        // - The video section's top edge is above or at the header's bottom (heroRect.top < headerHeight)
+        // - The video section's bottom edge is below the top of viewport (heroRect.bottom > 0)
+        const isOverlapping = heroRect.top < headerHeight && heroRect.bottom > headerHeight;
+        setIsOverVideo(isOverlapping);
+      } else {
+        setIsOverVideo(false);
+      }
+    };
+
+    // Initial check
+    handleScroll();
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Determine dashboard URL based on role
   const getDashboardUrl = () => {
@@ -74,47 +101,76 @@ export function UnifiedHeader({
     .toUpperCase()
     .slice(0, 2);
 
+  // Dynamic color classes based on whether header is over video
+  const textColor = isOverVideo ? 'text-[gold]' : 'text-[#001f3f]';
+  const logoBg = 'bg-[gold]';
+  const logoText = 'text-[#001f3f]';
+
   return (
-    <nav className="sticky top-0 z-50 bg-[#001f3f] shadow-lg">
+    <nav
+      className="sticky top-0 z-50 transition-all duration-300 border-b border-white/20"
+      style={{
+        background: isOverVideo ? 'rgba(0, 31, 63, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+      }}
+    >
       <div className="mx-auto max-w-7xl px-8 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-lg bg-[gold]">
-              <span className="font-medium text-[#001f3f]">CC</span>
+          <Link href="/" className="flex items-center gap-3 transition-colors duration-300">
+            <div
+              className={`flex size-10 items-center justify-center rounded-lg transition-colors duration-300 ${logoBg}`}
+            >
+              <span className={`font-medium transition-colors duration-300 ${logoText}`}>CC</span>
             </div>
-            <span className="text-2xl font-medium text-white">CampusConnect</span>
+            <span className={`text-2xl font-medium transition-colors duration-300 ${textColor}`}>
+              CampusConnect
+            </span>
           </Link>
 
           {/* Navigation Links */}
           <div className="flex items-center gap-8">
             <Link
               href="/"
-              className={
+              className={`transition-colors duration-300 ${
                 pathname === '/'
-                  ? 'font-medium text-[gold]'
-                  : 'text-white/80 transition hover:text-white'
-              }
+                  ? isOverVideo
+                    ? 'font-medium text-white'
+                    : 'font-medium text-[#800020]'
+                  : isOverVideo
+                    ? 'text-[gold]/80 hover:text-[gold]'
+                    : 'text-[#001f3f]/80 hover:text-[#001f3f]'
+              }`}
             >
               Home
             </Link>
             <Link
               href="/explore"
-              className={
+              className={`transition-colors duration-300 ${
                 pathname === '/explore' || pathname.startsWith('/opportunities')
-                  ? 'font-medium text-[gold]'
-                  : 'text-white/80 transition hover:text-white'
-              }
+                  ? isOverVideo
+                    ? 'font-medium text-white'
+                    : 'font-medium text-[#800020]'
+                  : isOverVideo
+                    ? 'text-[gold]/80 hover:text-[gold]'
+                    : 'text-[#001f3f]/80 hover:text-[#001f3f]'
+              }`}
             >
               Explore
             </Link>
             <Link
               href={dashboardUrl}
-              className={
+              className={`transition-colors duration-300 ${
                 pathname.startsWith('/dashboard')
-                  ? 'font-medium text-[gold]'
-                  : 'text-white/80 transition hover:text-white'
-              }
+                  ? isOverVideo
+                    ? 'font-medium text-white'
+                    : 'font-medium text-[#800020]'
+                  : isOverVideo
+                    ? 'text-[gold]/80 hover:text-[gold]'
+                    : 'text-[#001f3f]/80 hover:text-[#001f3f]'
+              }`}
             >
               Dashboard
             </Link>
@@ -123,14 +179,17 @@ export function UnifiedHeader({
             {showAuthElements && (
               <>
                 {/* Notifications - Real data from database */}
-                <NotificationDropdown notificationCenterUrl={getNotificationCenterUrl()} />
+                <NotificationDropdown
+                  notificationCenterUrl={getNotificationCenterUrl()}
+                  isOverVideo={isOverVideo}
+                />
 
                 {/* User Menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="relative h-10 w-10 rounded-full hover:bg-white/10"
+                      className="relative h-10 w-10 rounded-full hover:bg-[#001f3f]/10"
                     >
                       <Avatar className="h-10 w-10 border-2 border-[gold]">
                         <AvatarImage src={userAvatar} alt={userName} />
@@ -162,7 +221,7 @@ export function UnifiedHeader({
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      className="cursor-pointer text-red-600 focus:text-red-600"
+                      className="cursor-pointer text-[#800020] focus:bg-[#800020] focus:text-white"
                       onClick={onLogout}
                     >
                       <LogOut className="mr-2 h-4 w-4" />
@@ -176,12 +235,19 @@ export function UnifiedHeader({
             {/* Login/Signup buttons for non-authenticated users */}
             {!showAuthElements && (
               <div className="flex items-center gap-4">
-                <Link href="/auth/login" className="text-white/80 transition hover:text-white">
+                <Link
+                  href="/auth/login"
+                  className={`transition-colors duration-300 ${
+                    isOverVideo
+                      ? 'text-[gold]/80 hover:text-[gold]'
+                      : 'text-[#001f3f]/80 hover:text-[#001f3f]'
+                  }`}
+                >
                   Login
                 </Link>
                 <Link
                   href="/auth/signup"
-                  className="rounded-lg bg-[gold] px-6 py-2 font-medium text-[#001f3f] transition hover:bg-[gold]/90"
+                  className="rounded-lg px-6 py-2 font-medium transition-all duration-300 bg-[gold] text-[#001f3f] hover:bg-yellow-400"
                 >
                   Sign Up
                 </Link>

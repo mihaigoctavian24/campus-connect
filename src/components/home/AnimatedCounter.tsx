@@ -13,7 +13,7 @@ export function AnimatedCounter({
   end,
   duration = 2000,
   suffix = '',
-  prefix = ''
+  prefix = '',
 }: AnimatedCounterProps) {
   const [count, setCount] = useState(0);
   const [hasAnimated, setHasAnimated] = useState(false);
@@ -70,7 +70,9 @@ export function AnimatedCounter({
 
   return (
     <span ref={ref} className="tabular-nums">
-      {prefix}{formatNumber(count)}{suffix}
+      {prefix}
+      {formatNumber(count)}
+      {suffix}
     </span>
   );
 }

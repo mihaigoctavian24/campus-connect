@@ -39,6 +39,8 @@ const COLOR_MAP: Record<NotificationType, string> = {
 interface NotificationDropdownProps {
   /** URL to the full notification center page */
   notificationCenterUrl?: string;
+  /** Whether the header is over video section (for color inversion) */
+  isOverVideo?: boolean;
 }
 
 /**
@@ -234,6 +236,7 @@ function NotificationDropdownContent({
 
 export function NotificationDropdown({
   notificationCenterUrl = '/dashboard/student/notifications',
+  isOverVideo = false,
 }: NotificationDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   // Key changes each time we open, forcing the content component to remount
@@ -250,13 +253,18 @@ export function NotificationDropdown({
     setIsOpen(open);
   };
 
+  // Dynamic colors based on header position
+  const bellColorClass = isOverVideo
+    ? 'text-[gold]/80 hover:bg-white/10 hover:text-[gold]'
+    : 'text-[#001f3f]/80 hover:bg-[#001f3f]/10 hover:text-[#001f3f]';
+
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
-          className="relative text-white/80 hover:bg-white/10 hover:text-white"
+          className={`relative transition-colors duration-300 ${bellColorClass}`}
         >
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (

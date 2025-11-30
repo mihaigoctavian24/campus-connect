@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { OpportunityCard } from '@/components/OpportunityCard';
 import { getOpportunities, type Opportunity } from '@/lib/services/opportunities.service';
@@ -10,6 +10,7 @@ export function OpportunitiesCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function loadOpportunities() {
@@ -25,23 +26,24 @@ export function OpportunitiesCarousel() {
     loadOpportunities();
   }, []);
 
-  const maxIndex = Math.max(0, opportunities.length - 3);
+  const itemsPerPage = 3;
+  const totalPages = Math.ceil(opportunities.length / itemsPerPage);
 
   const goToNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
-  }, [maxIndex]);
+    setCurrentIndex((prev) => (prev + 1) % totalPages);
+  }, [totalPages]);
 
   const goToPrev = useCallback(() => {
-    setCurrentIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
-  }, [maxIndex]);
+    setCurrentIndex((prev) => (prev - 1 + totalPages) % totalPages);
+  }, [totalPages]);
 
   // Auto-play carousel
   useEffect(() => {
-    if (!isAutoPlaying || opportunities.length <= 3) return;
+    if (!isAutoPlaying || totalPages <= 1) return;
 
-    const interval = setInterval(goToNext, 4000);
+    const interval = setInterval(goToNext, 5000);
     return () => clearInterval(interval);
-  }, [isAutoPlaying, goToNext, opportunities.length]);
+  }, [isAutoPlaying, goToNext, totalPages]);
 
   // Pause on hover
   const handleMouseEnter = () => setIsAutoPlaying(false);
@@ -49,9 +51,9 @@ export function OpportunitiesCarousel() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-80 rounded-lg bg-gray-200 animate-pulse" />
+          <div key={i} className="h-[420px] rounded-2xl bg-gray-200 animate-pulse" />
         ))}
       </div>
     );
@@ -59,63 +61,56 @@ export function OpportunitiesCarousel() {
 
   if (opportunities.length === 0) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-white p-12 text-center">
+      <div className="rounded-2xl border border-gray-200 bg-white p-12 text-center max-w-2xl mx-auto">
         <p className="text-gray-500">No opportunities available yet.</p>
       </div>
     );
   }
 
-  const visibleOpportunities = opportunities.slice(currentIndex, currentIndex + 3);
-  // If we need more cards to fill 3 slots, wrap around
-  while (visibleOpportunities.length < 3 && opportunities.length > 0) {
-    const wrapIndex = visibleOpportunities.length - 3 + currentIndex;
-    if (wrapIndex >= 0 && wrapIndex < opportunities.length) {
-      break;
-    }
-    visibleOpportunities.push(opportunities[visibleOpportunities.length - 3 + currentIndex + opportunities.length] || opportunities[0]);
-  }
+  // Calculate card width percentage (3 cards visible = 33.333% each)
+  const cardWidth = 100 / itemsPerPage;
+  const gap = 24; // gap-6 = 24px
 
   return (
-    <div
-      className="relative"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+    <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       {/* Navigation Buttons */}
-      <div className="absolute -left-4 top-1/2 z-10 -translate-y-1/2">
-        <button
-          onClick={goToPrev}
-          className="flex size-12 items-center justify-center rounded-full border border-gray-200 bg-white shadow-lg transition-all hover:bg-gray-50 hover:shadow-xl"
-          aria-label="Previous opportunities"
-        >
-          <ChevronLeft className="size-6 text-[#001f3f]" />
-        </button>
-      </div>
+      {totalPages > 1 && (
+        <>
+          <button
+            onClick={goToPrev}
+            className="absolute left-2 md:left-4 top-1/2 z-10 -translate-y-1/2 flex size-10 items-center justify-center rounded-full border border-gray-200 bg-white/90 shadow-md backdrop-blur-sm transition-all hover:bg-white hover:shadow-lg hover:scale-110"
+            aria-label="Previous opportunities"
+          >
+            <ChevronLeft className="size-5 text-[#001f3f]" />
+          </button>
 
-      <div className="absolute -right-4 top-1/2 z-10 -translate-y-1/2">
-        <button
-          onClick={goToNext}
-          className="flex size-12 items-center justify-center rounded-full border border-gray-200 bg-white shadow-lg transition-all hover:bg-gray-50 hover:shadow-xl"
-          aria-label="Next opportunities"
-        >
-          <ChevronRight className="size-6 text-[#001f3f]" />
-        </button>
-      </div>
+          <button
+            onClick={goToNext}
+            className="absolute right-2 md:right-4 top-1/2 z-10 -translate-y-1/2 flex size-10 items-center justify-center rounded-full border border-gray-200 bg-white/90 shadow-md backdrop-blur-sm transition-all hover:bg-white hover:shadow-lg hover:scale-110"
+            aria-label="Next opportunities"
+          >
+            <ChevronRight className="size-5 text-[#001f3f]" />
+          </button>
+        </>
+      )}
 
-      {/* Cards Container */}
-      <div className="overflow-hidden">
+      {/* Sliding Cards Container */}
+      <div className="overflow-hidden mx-auto max-w-5xl" ref={containerRef}>
         <div
-          className="flex gap-6 transition-transform duration-500 ease-out"
+          className="flex"
           style={{
-            transform: `translateX(-${currentIndex * (100 / 3 + 2)}%)`,
-            width: `${(opportunities.length / 3) * 100}%`,
+            transform: `translateX(calc(-${currentIndex * 100}% - ${currentIndex * gap}px))`,
+            gap: `${gap}px`,
+            transition: 'transform 700ms cubic-bezier(0.34, 1.56, 0.64, 1)',
           }}
         >
-          {opportunities.map((opportunity, index) => (
+          {opportunities.map((opportunity) => (
             <div
               key={opportunity.id}
-              className="w-1/3 flex-shrink-0 px-1"
-              style={{ opacity: index >= currentIndex && index < currentIndex + 3 ? 1 : 0.5 }}
+              className="h-[420px] flex-shrink-0"
+              style={{
+                width: `calc(${cardWidth}% - ${(gap * (itemsPerPage - 1)) / itemsPerPage}px)`,
+              }}
             >
               <OpportunityCard
                 activityId={opportunity.id}
@@ -136,18 +131,16 @@ export function OpportunitiesCarousel() {
       </div>
 
       {/* Dots Indicator */}
-      {opportunities.length > 3 && (
-        <div className="mt-6 flex justify-center gap-2">
-          {Array.from({ length: Math.ceil(opportunities.length / 3) }).map((_, i) => (
+      {totalPages > 1 && (
+        <div className="mt-8 flex justify-center gap-3">
+          {Array.from({ length: totalPages }).map((_, i) => (
             <button
               key={i}
-              onClick={() => setCurrentIndex(i * 3 > maxIndex ? maxIndex : i * 3)}
-              className={`h-2 rounded-full transition-all ${
-                Math.floor(currentIndex / 3) === i
-                  ? 'w-8 bg-[#001f3f]'
-                  : 'w-2 bg-gray-300 hover:bg-gray-400'
+              onClick={() => setCurrentIndex(i)}
+              className={`h-3 rounded-full transition-all duration-300 ${
+                currentIndex === i ? 'w-10 bg-[#001f3f]' : 'w-3 bg-gray-300 hover:bg-gray-400'
               }`}
-              aria-label={`Go to slide ${i + 1}`}
+              aria-label={`Go to page ${i + 1}`}
             />
           ))}
         </div>

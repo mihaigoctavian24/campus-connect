@@ -1,11 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ArrowRight, Play, Pause } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 export function HeroSection() {
-  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -13,7 +12,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative min-h-[600px] overflow-hidden">
+    <section id="hero-video-section" className="relative min-h-[600px] overflow-hidden">
       {/* Video Background */}
       <div className="absolute inset-0 z-0">
         <video
@@ -36,7 +35,9 @@ export function HeroSection() {
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-7xl px-8 py-32">
-        <div className={`max-w-3xl transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+        <div
+          className={`max-w-3xl transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+        >
           {/* Badge with animation */}
           <div className="mb-6 flex items-center gap-3">
             <div className="flex size-12 items-center justify-center rounded-lg bg-[gold] shadow-lg shadow-[gold]/30 animate-pulse">
@@ -97,27 +98,10 @@ export function HeroSection() {
             </Link>
           </div>
         </div>
-
-        {/* Floating Stats Preview */}
-        <div
-          className={`absolute bottom-8 right-8 hidden lg:flex items-center gap-6 transition-all duration-1000 delay-800 ${
-            isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'
-          }`}
-        >
-          <div className="text-right">
-            <p className="text-3xl font-bold text-[gold]">50+</p>
-            <p className="text-sm text-white/70">Active Projects</p>
-          </div>
-          <div className="h-12 w-px bg-white/30" />
-          <div className="text-right">
-            <p className="text-3xl font-bold text-[gold]">1,500+</p>
-            <p className="text-sm text-white/70">Hours Contributed</p>
-          </div>
-        </div>
       </div>
 
       {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10">
         <div className="flex flex-col items-center gap-2 animate-bounce">
           <span className="text-white/50 text-xs uppercase tracking-widest">Scroll</span>
           <svg

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import '@/styles/globals.css';
 import { HeaderWrapper } from '@/components/layout/HeaderWrapper';
+import { Footer } from '@/components/layout/Footer';
 import { NotificationProvider } from '@/lib/contexts/NotificationContext';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -18,10 +19,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ro">
-      <body className={inter.className}>
+      <body className={`${inter.className} flex min-h-screen flex-col`}>
         <NotificationProvider>
           <HeaderWrapper />
-          {children}
+          <main className="flex-1">{children}</main>
+          <Footer />
         </NotificationProvider>
       </body>
     </html>
