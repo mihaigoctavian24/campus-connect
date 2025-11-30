@@ -178,6 +178,7 @@ export default function ExplorePage() {
                     duration="Long-term"
                     slug={opportunity.slug}
                     initialSaved={false}
+                    imageUrl={opportunity.imageUrl}
                   />
                 ))}
               </div>

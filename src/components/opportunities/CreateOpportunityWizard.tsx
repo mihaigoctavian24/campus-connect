@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,6 +17,7 @@ import {
 } from 'lucide-react';
 import { TimePicker } from '@/components/ui/time-picker';
 import { SessionSetupWizard } from '@/components/sessions/SessionSetupWizard';
+import { OpportunityImageUpload } from '@/components/opportunities/OpportunityImageUpload';
 
 // Validation schemas for each step
 const step1Schema = z.object({
@@ -91,6 +93,9 @@ export function CreateOpportunityWizard({ onSuccess }: CreateOpportunityWizardPr
     required_hours: undefined,
   });
 
+  // Image URL (separate from steps, optional)
+  const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
+
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Fetch categories and departments on mount
@@ -161,6 +166,7 @@ export function CreateOpportunityWizard({ onSuccess }: CreateOpportunityWizardPr
         ...step1Data,
         ...step2Data,
         ...step3Data,
+        image_url: imageUrl || null,
         status: 'OPEN',
       };
 
@@ -321,6 +327,9 @@ export function CreateOpportunityWizard({ onSuccess }: CreateOpportunityWizardPr
                 {step1Data.description.length}/2000 caractere (minimum 50)
               </p>
             </div>
+
+            {/* Cover Image Upload */}
+            <OpportunityImageUpload value={imageUrl} onChange={setImageUrl} />
 
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -597,6 +606,20 @@ export function CreateOpportunityWizard({ onSuccess }: CreateOpportunityWizardPr
                     <strong>Departament:</strong>{' '}
                     {departments.find((d) => d.id === step1Data.department_id)?.name}
                   </p>
+                  {imageUrl && (
+                    <div className="mt-3">
+                      <strong>Imagine de copertă:</strong>
+                      <div className="relative mt-2 aspect-video w-full max-w-sm overflow-hidden rounded-lg">
+                        <Image
+                          src={imageUrl}
+                          alt="Preview imagine"
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 384px"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

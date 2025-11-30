@@ -16,6 +16,7 @@ const activitySchema = z.object({
   start_time: z.string().min(1),
   end_time: z.string().min(1),
   status: z.string().optional(),
+  image_url: z.string().url().nullable().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -66,6 +67,7 @@ export async function POST(request: NextRequest) {
       status: validatedData.status || 'OPEN',
       created_by: user.id,
       current_participants: 0,
+      image_url: validatedData.image_url || null,
     };
 
     const { data: activity, error: createError } = await supabase

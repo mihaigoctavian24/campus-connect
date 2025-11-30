@@ -1,4 +1,5 @@
 import { ArrowLeft, MapPin, Clock, Calendar, Users } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
@@ -180,7 +181,16 @@ export default async function OpportunityDetailsPage({ params }: OpportunityDeta
 
       {/* Hero Image */}
       <div className="relative h-64 bg-gradient-to-br from-gray-300 to-gray-400">
-        {/* Hero background */}
+        {opportunity.imageUrl && (
+          <Image
+            src={opportunity.imageUrl}
+            alt={opportunity.title}
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
+          />
+        )}
       </div>
 
       <Navigation />

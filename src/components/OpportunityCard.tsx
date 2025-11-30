@@ -15,6 +15,7 @@ interface OpportunityCardProps {
   duration: string;
   featured?: boolean;
   hasImage?: boolean;
+  imageUrl?: string | null;
   slug?: string;
   activityId: string;
   initialSaved?: boolean;
@@ -30,6 +31,7 @@ export function OpportunityCard({
   duration,
   featured,
   hasImage,
+  imageUrl,
   slug = 'stem-mentorship-program',
   activityId,
   initialSaved = false,
@@ -41,9 +43,17 @@ export function OpportunityCard({
     >
       {/* Image Placeholder or Real Image */}
       <div className="relative h-48 bg-gradient-to-br from-gray-200 to-gray-300">
-        {hasImage && (
+        {imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt={title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+        ) : hasImage ? (
           <Image src="/placeholder-activity.jpg" alt={title} fill className="object-cover" />
-        )}
+        ) : null}
         {/* Top badges */}
         <div className="absolute right-3 top-3 flex gap-2">
           {featured && (

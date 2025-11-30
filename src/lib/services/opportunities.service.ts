@@ -19,6 +19,7 @@ export interface Opportunity {
   departmentName: string;
   createdById: string;
   createdByName: string;
+  imageUrl?: string | null;
 }
 
 interface GetOpportunitiesOptions {
@@ -56,6 +57,7 @@ export async function getOpportunities(
       category_id,
       department_id,
       created_by,
+      image_url,
       categories (
         id,
         name
@@ -135,6 +137,7 @@ export async function getOpportunities(
       departmentName: activity.departments?.name || 'Campus Connect',
       createdById: activity.created_by,
       createdByName: 'Professor',
+      imageUrl: activity.image_url || null,
     };
   });
 
