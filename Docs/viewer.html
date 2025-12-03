@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusConnect Docs - Viewer</title>
+    
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- Mermaid for diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    
+    <!-- Highlight.js for code syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f8f9fa;
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            color: white;
+            padding: 18px 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .navbar a:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        .navbar h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .content {
+            background: white;
+            border-radius: 12px;
+            padding: 50px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            min-height: 500px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 100px 20px;
+            color: #1e40af;
+            font-size: 1.2rem;
+        }
+
+        .error {
+            text-align: center;
+            padding: 100px 20px;
+            color: #e53e3e;
+        }
+
+        /* Markdown styling */
+        .markdown-body h1 {
+            color: #1e293b;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3b82f6;
+            padding-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .markdown-body h2 {
+            color: #1e293b;
+            font-size: 2rem;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .markdown-body h3 {
+            color: #334155;
+            font-size: 1.5rem;
+            margin-top: 30px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .markdown-body h4 {
+            color: #475569;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .markdown-body p {
+            margin: 15px 0;
+            color: #2d3748;
+        }
+
+        .markdown-body a {
+            color: #2563eb;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+
+        .markdown-body a:hover {
+            border-bottom-color: #2563eb;
+        }
+
+        .markdown-body ul, .markdown-body ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        .markdown-body li {
+            margin: 8px 0;
+        }
+
+        .markdown-body code {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #dc2626;
+        }
+
+        .markdown-body pre {
+            background: #1a202c;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .markdown-body pre code {
+            background: transparent;
+            border: none;
+            padding: 0;
+            color: #f7fafc;
+        }
+
+        .markdown-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .markdown-body table th {
+            background: #1e40af;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .markdown-body table td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .markdown-body table tr:hover {
+            background: #f7fafc;
+        }
+
+        .markdown-body blockquote {
+            border-left: 4px solid #3b82f6;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #475569;
+            font-style: italic;
+            background: #f8fafc;
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .markdown-body hr {
+            border: none;
+            border-top: 2px solid #e2e8f0;
+            margin: 40px 0;
+        }
+
+        .markdown-body img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* Mermaid diagrams */
+        .mermaid {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+
+        .toc {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #3b82f6;
+            border: 1px solid #e5e7eb;
+        }
+
+        .toc h2 {
+            color: #1e40af;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc li {
+            margin: 5px 0;
+        }
+
+        .toc a {
+            color: #475569;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            color: #1e40af;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+            
+            .markdown-body h1 {
+                font-size: 2rem;
+            }
+            
+            .markdown-body h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🎓 CampusConnect Docs</h1>
+        <a href="index.html">← Înapoi la Index</a>
+    </div>
+
+    <div class="container">
+        <div class="content">
+            <div id="loading" class="loading">
+                <p>📄 Se încarcă documentația...</p>
+            </div>
+            <div id="error" class="error" style="display: none;">
+                <p>❌ Eroare la încărcarea fișierului!</p>
+            </div>
+            <div id="markdown-content" class="markdown-body" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose'
+        });
+
+        // Get the document parameter from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const docPath = urlParams.get('doc');
+
+        if (!docPath) {
+            showError('Nu a fost specificat niciun document!');
+        } else {
+            loadMarkdown(docPath);
+        }
+
+        async function loadMarkdown(path) {
+            try {
+                // Try to fetch the markdown file
+                const response = await fetch(path, {
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Document not found');
+                }
+                
+                let markdown = await response.text();
+                
+                // Fix relative links in markdown to point to viewer
+                markdown = markdown.replace(/\[([^\]]+)\]\((?!http)([^)]+\.md)\)/g, (match, text, link) => {
+                    // Convert relative .md links to viewer.html links
+                    return `[${text}](viewer.html?doc=${link.replace('../', '').replace('./', '')})`;
+                });
+                
+                // Configure marked options
+                marked.setOptions({
+                    breaks: true,
+                    gfm: true,
+                    highlight: function(code, lang) {
+                        if (lang && hljs.getLanguage(lang)) {
+                            return hljs.highlight(code, { language: lang }).value;
+                        }
+                        return hljs.highlightAuto(code).value;
+                    }
+                });
+
+                // Convert markdown to HTML
+                let html = marked.parse(markdown);
+                
+                // Display the content
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('markdown-content').innerHTML = html;
+                document.getElementById('markdown-content').style.display = 'block';
+                
+                // Update page title
+                const firstHeading = document.querySelector('.markdown-body h1');
+                if (firstHeading) {
+                    document.title = firstHeading.textContent + ' - CampusConnect Docs';
+                }
+                
+                // Initialize Mermaid for diagrams
+                mermaid.run({
+                    querySelector: '.language-mermaid'
+                });
+                
+                // Highlight code blocks
+                document.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightElement(block);
+                });
+                
+            } catch (error) {
+                showError('Nu s-a putut încărca documentul: ' + error.message);
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('error').innerHTML = '<p>❌ ' + message + '</p>';
+        }
+    </script>
+</body>
+</html>

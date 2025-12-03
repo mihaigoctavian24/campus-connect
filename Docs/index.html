@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusConnect - Documentație Completă</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            color: white;
+            padding: 60px 20px;
+            margin-bottom: 60px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        header .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .stat-card h3 {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            color: #1e40af;
+            font-weight: 700;
+        }
+
+        .stat-card p {
+            color: #6b7280;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .doc-section {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+        }
+
+        .doc-section:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.1);
+            border-color: #3b82f6;
+        }
+
+        .doc-section h2 {
+            color: #1e293b;
+            margin-bottom: 18px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 12px;
+        }
+
+        .doc-section ul {
+            list-style: none;
+        }
+
+        .doc-section li {
+            margin: 10px 0;
+        }
+
+        .doc-section a {
+            color: #475569;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        .doc-section a:hover {
+            background: #f8fafc;
+            color: #1e40af;
+            padding-left: 16px;
+        }
+
+        .doc-section a::before {
+            content: "📄";
+            font-size: 1.2rem;
+        }
+
+        footer {
+            text-align: center;
+            color: #6b7280;
+            margin-top: 80px;
+            padding: 40px 20px;
+            border-top: 1px solid #e5e7eb;
+            background: white;
+        }
+
+        footer p {
+            margin: 5px 0;
+        }
+
+        .search-box {
+            background: white;
+            padding: 0;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid #e5e7eb;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .search-box input:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .docs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>🎓 CampusConnect</h1>
+            <p>Documentație Completă - Hub de Voluntariat Universitar</p>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>27+</h3>
+                <p>Documente</p>
+            </div>
+            <div class="stat-card">
+                <h3>15,820+</h3>
+                <p>Linii de Cod</p>
+            </div>
+            <div class="stat-card">
+                <h3>40+</h3>
+                <p>Diagrame Mermaid</p>
+            </div>
+            <div class="stat-card">
+                <h3>500+</h3>
+                <p>Exemple de Cod</p>
+            </div>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Caută în documentație...">
+        </div>
+
+        <div class="docs-grid">
+            <!-- Quick Start -->
+            <div class="doc-section">
+                <h2>🚀 Quick Start</h2>
+                <ul>
+                    <li><a href="viewer.html?doc=README.md">README - Index Principal</a></li>
+                    <li><a href="viewer.html?doc=STATUS.md">Status Documentație</a></li>
+                </ul>
+            </div>
+
+            <!-- Prezentare Generală -->
+            <div class="doc-section">
+                <h2>📋 Prezentare Generală</h2>
+                <ul>
+                    <li><a href="viewer.html?doc=01-Prezentare-Generala/PRD.md">PRD - Product Requirements</a></li>
+                    <li><a href="viewer.html?doc=01-Prezentare-Generala/Arhitectura-Tehnica.md">Arhitectură Tehnică</a></li>
+                    <li><a href="viewer.html?doc=01-Prezentare-Generala/Fluxuri-Utilizatori.md">Fluxuri Utilizatori</a></li>
+                </ul>
+            </div>
+
+            <!-- Roluri -->
+            <div class="doc-section">
+                <h2>👥 Roluri și Funcționalități</h2>
+                <ul>
+                    <li><a href="viewer.html?doc=02-Roluri/Student.md">Ghid Student</a></li>
+                    <li><a href="viewer.html?doc=02-Roluri/Profesor.md">Ghid Profesor</a></li>
+                    <li><a href="viewer.html?doc=02-Roluri/Administrator.md">Ghid Administrator</a></li>
+                </ul>
+            </div>
+
+            <!-- Baza de Date -->
+            <div class="doc-section">
+                <h2>🗄️ Baza de Date</h2>
+                <ul>
+                    <li><a href="viewer.html?doc=03-Baza-de-Date/Diagrama-ER.md">Diagramă ER</a></li>
+                    <li><a href="viewer.html?doc=03-Baza-de-Date/Schema-DB.md">Schema Database</a></li>
+                    <li><a href="viewer.html?doc=03-Baza-de-Date/Politici-RLS.md">Politici RLS</a></li>
+                </ul>
+            </div>
+
+            <!-- Design -->
+            <div class="doc-section">
+                <h2>🎨 Design și UX</h2>
+                <ul>
+                    <li><a href="viewer.html?doc=04-Design/Sistem-Design.md">Sistem Design</a></li>
+                    <li><a href="viewer.html?doc=04-Design/Ghid-Stil.md">Ghid de Stil</a></li>
+                    <li><a href="viewer.html?doc=04-Design/Componente-UI.md">Componente UI</a></li>
+                </ul>
+            </div>
+
+            <!-- Comunicare -->
+            <div class="doc-section">
+                <h2>📧 Comunicare</h2>
+                <ul>
+                    <li><a href="viewer.html?doc=05-Comunicare/Template-Email.md">Template-uri Email</a></li>
+                    <li><a href="viewer.html?doc=05-Comunicare/Sistem-Notificari.md">Sistem Notificări</a></li>
+                </ul>
+            </div>
+
+            <!-- Securitate -->
+            <div class="doc-section">
+                <h2>🔐 Securitate</h2>
+                <ul>
+                    <li><a href="viewer.html?doc=06-Securitate/Autentificare.md">Autentificare</a></li>
+                    <li><a href="viewer.html?doc=06-Securitate/Politici-Acces.md">Politici de Acces</a></li>
+                    <li><a href="viewer.html?doc=06-Securitate/Validare-Date.md">Validare Date</a></li>
+                </ul>
+            </div>
+
+            <!-- Deployment -->
+            <div class="doc-section">
+                <h2>🚀 Deployment</h2>
+                <ul>
+                    <li><a href="viewer.html?doc=07-Deployment/Ghid-Deployment.md">Ghid Deployment</a></li>
+                    <li><a href="viewer.html?doc=07-Deployment/Configurare-Medii.md">Configurare Medii</a></li>
+                    <li><a href="viewer.html?doc=07-Deployment/Monitorizare.md">Monitorizare</a></li>
+                </ul>
+            </div>
+
+            <!-- Testing -->
+            <div class="doc-section">
+                <h2>🧪 Testing</h2>
+                <ul>
+                    <li><a href="viewer.html?doc=08-Testing/Strategie-Testing.md">Strategie Testing</a></li>
+                    <li><a href="viewer.html?doc=08-Testing/Test-Cases.md">Test Cases</a></li>
+                </ul>
+            </div>
+
+            <!-- API -->
+            <div class="doc-section">
+                <h2>📱 API</h2>
+                <ul>
+                    <li><a href="viewer.html?doc=09-API/Documentatie-API.md">Documentație API</a></li>
+                    <li><a href="viewer.html?doc=09-API/Endpoints.md">Endpoints</a></li>
+                </ul>
+            </div>
+
+            <!-- Ghiduri -->
+            <div class="doc-section">
+                <h2>📚 Ghiduri Utilizare</h2>
+                <ul>
+                    <li><a href="viewer.html?doc=10-Ghiduri/Ghid-Student.md">Tutorial Student</a></li>
+                    <li><a href="viewer.html?doc=10-Ghiduri/Ghid-Profesor.md">Tutorial Profesor</a></li>
+                    <li><a href="viewer.html?doc=10-Ghiduri/Ghid-Administrator.md">Tutorial Administrator</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2024 CampusConnect - Mihai Octavian & Abbasi Pazeyazd Bianca-Maria</p>
+            <p>Built with ❤️ for GitHub Pages</p>
+        </footer>
+    </div>
+
+    <script>
+        // Simple search functionality
+        const searchInput = document.getElementById('searchInput');
+        const docSections = document.querySelectorAll('.doc-section');
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            docSections.forEach(section => {
+                const text = section.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
