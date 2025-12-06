@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CampusConnect - Documentație Completă</title>
+    <title>CampusConnect - Documentație</title>
     <style>
         * {
             margin: 0;
@@ -15,185 +15,418 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
             background: #f8f9fa;
             min-height: 100vh;
-            padding: 0;
+            padding-top: 90px; /* Space for fixed header */
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
+        /* Header - Fixed at top */
         header {
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #001f3f 0%, #003566 100%);
             color: white;
-            padding: 60px 20px;
-            margin-bottom: 60px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
         }
 
-        header .header-content {
-            max-width: 1200px;
+        .header-content {
+            max-width: 1400px;
             margin: 0 auto;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
         }
 
-        header h1 {
-            font-size: 3rem;
-            margin-bottom: 15px;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .home-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: none; /* Hidden by default */
+            align-items: center;
+            gap: 6px;
+        }
+
+        .home-btn.visible {
+            display: inline-flex; /* Show when viewing a document */
+        }
+
+        .home-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: gold;
+        }
+
+        .github-btn {
+            background: transparent;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .github-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+        }
+
+        .github-btn svg {
+            transition: all 0.2s;
+        }
+
+        .github-btn:hover svg {
+            fill: gold;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: gold;
+            color: #001f3f;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .header-text h1 {
+            font-size: 1.4rem;
             font-weight: 700;
-            letter-spacing: -0.5px;
+            margin-bottom: 2px;
         }
 
-        header p {
-            font-size: 1.3rem;
-            opacity: 0.95;
-            font-weight: 300;
+        .header-text p {
+            font-size: 0.85rem;
+            opacity: 0.9;
         }
 
-        .stats {
+        /* Main Layout */
+        .main-layout {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 40px;
+            padding: 40px 20px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: sticky;
+            top: 20px;
+            height: calc(100vh - 130px); /* Full height minus header and padding */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-scroll {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 8px;
+        }
+
+        /* Custom scrollbar for sidebar */
+        .sidebar-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .sidebar-scroll::-webkit-scrollbar-thumb {
+            background: #001f3f;
+            border-radius: 3px;
+        }
+
+        .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+            background: #800020;
+        }
+
+        .search-box {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            transition: border-color 0.2s;
+            flex-shrink: 0; /* Don't shrink when sidebar scrolls */
+        }
+
+        .search-box:focus-within {
+            border-color: #001f3f;
+        }
+
+        .search-box input {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 0.95rem;
+            color: #1f2937;
+        }
+
+        .search-box input::placeholder {
+            color: #9ca3af;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6b7280;
+            margin-bottom: 12px;
+            padding: 0 12px;
+        }
+
+        .nav-links {
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-bottom: 2px;
+        }
+
+        .nav-links a {
+            display: block;
+            padding: 10px 12px;
+            color: #4b5563;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-links a:hover {
+            background: #f3f4f6;
+            color: #001f3f;
+            border-left-color: gold;
+        }
+
+        .nav-links a.active {
+            background: #001f3f;
+            color: white;
+            border-left-color: gold;
+        }
+
+        /* Content Area */
+        .content {
+            min-width: 0;
+            max-height: calc(100vh - 130px); /* Full viewport height minus header and padding */
+            overflow-y: auto;
+        }
+
+        /* Document Viewer Frame */
+        #docViewer {
+            display: none;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            width: 100%;
+            min-height: calc(100vh - 150px);
+            overflow: hidden;
+        }
+
+        #docViewer.active {
+            display: block;
+        }
+
+        #docViewer iframe {
+            width: 100%;
+            height: calc(100vh - 150px);
+            border: none;
+        }
+
+        /* Home content - hide when viewing doc */
+        .home-content.hidden {
+            display: none;
+        }
+
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            gap: 16px;
             margin-bottom: 40px;
         }
 
         .stat-card {
             background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 25px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 24px;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            transition: all 0.3s ease;
+            transition: all 0.2s;
         }
 
         .stat-card:hover {
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            border-color: gold;
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .stat-card h3 {
+        .stat-number {
             font-size: 2.5rem;
-            margin-bottom: 8px;
-            color: #1e40af;
             font-weight: 700;
+            color: #001f3f;
+            margin-bottom: 8px;
         }
 
-        .stat-card p {
-            color: #6b7280;
-            font-size: 0.95rem;
-            font-weight: 500;
+        .stat-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #800020;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .docs-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .doc-section {
+        .content-section {
             background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 28px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            transition: all 0.3s ease;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 32px;
+            margin-bottom: 24px;
         }
 
-        .doc-section:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 28px rgba(0,0,0,0.1);
-            border-color: #3b82f6;
-        }
-
-        .doc-section h2 {
-            color: #1e293b;
-            margin-bottom: 18px;
-            font-size: 1.4rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 2px solid #f1f5f9;
+        .content-section h2 {
+            font-size: 1.5rem;
+            color: #001f3f;
+            margin-bottom: 24px;
             padding-bottom: 12px;
+            border-bottom: 2px solid gold;
         }
 
-        .doc-section ul {
-            list-style: none;
+        .content-section p {
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 16px;
         }
 
-        .doc-section li {
-            margin: 10px 0;
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px;
         }
 
-        .doc-section a {
-            color: #475569;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 12px;
+        .quick-link {
+            padding: 16px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
             border-radius: 6px;
-            transition: all 0.2s ease;
-            font-size: 0.95rem;
+            color: #1f2937;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: block;
         }
 
-        .doc-section a:hover {
-            background: #f8fafc;
-            color: #1e40af;
-            padding-left: 16px;
+        .quick-link:hover {
+            background: white;
+            border-color: #001f3f;
+            transform: translateX(4px);
         }
 
-        .doc-section a::before {
-            content: "📄";
-            font-size: 1.2rem;
+        .quick-link strong {
+            color: #001f3f;
+            display: block;
+            margin-bottom: 4px;
         }
 
+        .quick-link span {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        /* Footer */
         footer {
             text-align: center;
-            color: #6b7280;
-            margin-top: 80px;
             padding: 40px 20px;
-            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            border-top: 2px solid #e5e7eb;
             background: white;
+            margin-top: 60px;
         }
 
         footer p {
             margin: 5px 0;
+            font-size: 0.9rem;
         }
 
-        .search-box {
-            background: white;
-            padding: 0;
-            border-radius: 12px;
-            margin-bottom: 40px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            border: 1px solid #e5e7eb;
+        .love {
+            color: #800020;
         }
 
-        .search-box input {
-            width: 100%;
-            padding: 16px 20px;
-            border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            outline: none;
-            transition: box-shadow 0.3s ease;
-        }
-
-        .search-box input:focus {
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 2rem;
-            }
-            
-            .docs-grid {
+        /* Mobile */
+        @media (max-width: 1024px) {
+            .main-layout {
                 grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+                display: none;
+            }
+
+            .mobile-nav-toggle {
+                display: block;
+                background: #001f3f;
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 6px;
+                font-size: 0.9rem;
+                font-weight: 600;
+                cursor: pointer;
+                margin-bottom: 20px;
+            }
+
+            .sidebar.active {
+                display: block;
+            }
+        }
+
+        .mobile-nav-toggle {
+            display: none;
+        }
+
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-links {
+                grid-template-columns: 1fr;
+            }
+
+            .header-text h1 {
+                font-size: 1.4rem;
             }
         }
     </style>
@@ -201,167 +434,276 @@
 <body>
     <header>
         <div class="header-content">
-            <h1>🎓 CampusConnect</h1>
-            <p>Documentație Completă - Hub de Voluntariat Universitar</p>
+            <div class="header-left">
+                <div class="logo">CC</div>
+                <div class="header-text">
+                    <h1>CampusConnect</h1>
+                    <p>Documentație Tehnică - Hub de Voluntariat Universitar</p>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <button class="home-btn" id="homeBtn" onclick="showHome()">
+                    <span>←</span> Acasă
+                </button>
+                <a href="https://github.com/mihaigoctavian24/campus-connect" target="_blank" class="github-btn" title="GitHub Repository">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                    </svg>
+                </a>
+            </div>
         </div>
     </header>
 
-    <div class="container">
-
-        <div class="stats">
-            <div class="stat-card">
-                <h3>27+</h3>
-                <p>Documente</p>
-            </div>
-            <div class="stat-card">
-                <h3>15,820+</h3>
-                <p>Linii de Cod</p>
-            </div>
-            <div class="stat-card">
-                <h3>40+</h3>
-                <p>Diagrame Mermaid</p>
-            </div>
-            <div class="stat-card">
-                <h3>500+</h3>
-                <p>Exemple de Cod</p>
-            </div>
-        </div>
-
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="🔍 Caută în documentație...">
-        </div>
-
-        <div class="docs-grid">
-            <!-- Quick Start -->
-            <div class="doc-section">
-                <h2>🚀 Quick Start</h2>
-                <ul>
-                    <li><a href="viewer.html?doc=README.md">README - Index Principal</a></li>
-                    <li><a href="viewer.html?doc=STATUS.md">Status Documentație</a></li>
-                </ul>
+    <div class="main-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Caută în documentație...">
             </div>
 
-            <!-- Prezentare Generală -->
-            <div class="doc-section">
-                <h2>📋 Prezentare Generală</h2>
-                <ul>
-                    <li><a href="viewer.html?doc=01-Prezentare-Generala/PRD.md">PRD - Product Requirements</a></li>
-                    <li><a href="viewer.html?doc=01-Prezentare-Generala/Arhitectura-Tehnica.md">Arhitectură Tehnică</a></li>
-                    <li><a href="viewer.html?doc=01-Prezentare-Generala/Fluxuri-Utilizatori.md">Fluxuri Utilizatori</a></li>
-                </ul>
+            <div class="sidebar-scroll">
+            <nav>
+                <div class="nav-section">
+                    <div class="nav-section-title">Început</div>
+                    <ul class="nav-links">
+                        <li><a href="viewer.html?doc=README.md">Index Principal</a></li>
+                        <li><a href="viewer.html?doc=STATUS.md">Status Documentație</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Prezentare Generală</div>
+                    <ul class="nav-links">
+                        <li><a href="viewer.html?doc=01-Prezentare-Generala/PRD.md">Product Requirements</a></li>
+                        <li><a href="viewer.html?doc=01-Prezentare-Generala/Arhitectura-Tehnica.md">Arhitectură Tehnică</a></li>
+                        <li><a href="viewer.html?doc=01-Prezentare-Generala/Fluxuri-Utilizatori.md">Fluxuri Utilizatori</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Roluri</div>
+                    <ul class="nav-links">
+                        <li><a href="viewer.html?doc=02-Roluri/Student.md">Ghid Student</a></li>
+                        <li><a href="viewer.html?doc=02-Roluri/Profesor.md">Ghid Profesor</a></li>
+                        <li><a href="viewer.html?doc=02-Roluri/Administrator.md">Ghid Administrator</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Baza de Date</div>
+                    <ul class="nav-links">
+                        <li><a href="viewer.html?doc=03-Baza-de-Date/Diagrama-ER.md">Diagramă ER</a></li>
+                        <li><a href="viewer.html?doc=03-Baza-de-Date/Schema-DB.md">Schema Database</a></li>
+                        <li><a href="viewer.html?doc=03-Baza-de-Date/Politici-RLS.md">Politici RLS</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Design</div>
+                    <ul class="nav-links">
+                        <li><a href="viewer.html?doc=04-Design/Sistem-Design.md">Sistem Design</a></li>
+                        <li><a href="viewer.html?doc=04-Design/Ghid-Stil.md">Ghid de Stil</a></li>
+                        <li><a href="viewer.html?doc=04-Design/Componente-UI.md">Componente UI</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Comunicare</div>
+                    <ul class="nav-links">
+                        <li><a href="viewer.html?doc=05-Comunicare/Template-Email.md">Template-uri Email</a></li>
+                        <li><a href="viewer.html?doc=05-Comunicare/Sistem-Notificari.md">Sistem Notificări</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Securitate</div>
+                    <ul class="nav-links">
+                        <li><a href="viewer.html?doc=06-Securitate/Autentificare.md">Autentificare</a></li>
+                        <li><a href="viewer.html?doc=06-Securitate/Politici-Acces.md">Politici de Acces</a></li>
+                        <li><a href="viewer.html?doc=06-Securitate/Validare-Date.md">Validare Date</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Deployment</div>
+                    <ul class="nav-links">
+                        <li><a href="viewer.html?doc=07-Deployment/Ghid-Deployment.md">Ghid Deployment</a></li>
+                        <li><a href="viewer.html?doc=07-Deployment/Configurare-Medii.md">Configurare Medii</a></li>
+                        <li><a href="viewer.html?doc=07-Deployment/Monitorizare.md">Monitorizare</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Testing</div>
+                    <ul class="nav-links">
+                        <li><a href="viewer.html?doc=08-Testing/Strategie-Testing.md">Strategie Testing</a></li>
+                        <li><a href="viewer.html?doc=08-Testing/Test-Cases.md">Test Cases</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">API</div>
+                    <ul class="nav-links">
+                        <li><a href="viewer.html?doc=09-API/Documentatie-API.md">Documentație API</a></li>
+                        <li><a href="viewer.html?doc=09-API/Endpoints.md">Endpoints</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Ghiduri</div>
+                    <ul class="nav-links">
+                        <li><a href="viewer.html?doc=10-Ghiduri/Ghid-Student.md">Tutorial Student</a></li>
+                        <li><a href="viewer.html?doc=10-Ghiduri/Ghid-Profesor.md">Tutorial Profesor</a></li>
+                        <li><a href="viewer.html?doc=10-Ghiduri/Ghid-Administrator.md">Tutorial Administrator</a></li>
+                    </ul>
+                </div>
+            </nav>
+            </div> <!-- End sidebar-scroll -->
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content">
+            <button class="mobile-nav-toggle" onclick="toggleNav()">☰ Meniu Navigare</button>
+
+            <!-- Document Viewer Container -->
+            <div id="docViewer">
+                <iframe id="docFrame"></iframe>
             </div>
 
-            <!-- Roluri -->
-            <div class="doc-section">
-                <h2>👥 Roluri și Funcționalități</h2>
-                <ul>
-                    <li><a href="viewer.html?doc=02-Roluri/Student.md">Ghid Student</a></li>
-                    <li><a href="viewer.html?doc=02-Roluri/Profesor.md">Ghid Profesor</a></li>
-                    <li><a href="viewer.html?doc=02-Roluri/Administrator.md">Ghid Administrator</a></li>
-                </ul>
+            <!-- Home Content -->
+            <div class="home-content">
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">27+</div>
+                    <div class="stat-label">Documente</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">15,820+</div>
+                    <div class="stat-label">Linii de Cod</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">40+</div>
+                    <div class="stat-label">Diagrame</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Exemple</div>
+                </div>
             </div>
 
-            <!-- Baza de Date -->
-            <div class="doc-section">
-                <h2>🗄️ Baza de Date</h2>
-                <ul>
-                    <li><a href="viewer.html?doc=03-Baza-de-Date/Diagrama-ER.md">Diagramă ER</a></li>
-                    <li><a href="viewer.html?doc=03-Baza-de-Date/Schema-DB.md">Schema Database</a></li>
-                    <li><a href="viewer.html?doc=03-Baza-de-Date/Politici-RLS.md">Politici RLS</a></li>
-                </ul>
+            <!-- Welcome Section -->
+            <div class="content-section">
+                <h2>Bine ai venit</h2>
+                <p>
+                    Documentația CampusConnect oferă informații complete despre arhitectura, funcționalitățile
+                    și procesele platformei Hub de Voluntariat Universitar. Această documentație este destinată
+                    dezvoltatorilor, administratorilor și tuturor celor care doresc să înțeleagă sistemul în detaliu.
+                </p>
+                <p>
+                    Folosește meniul lateral pentru a naviga prin diferitele secțiuni ale documentației sau
+                    caută informații specifice folosind bara de căutare.
+                </p>
             </div>
 
-            <!-- Design -->
-            <div class="doc-section">
-                <h2>🎨 Design și UX</h2>
-                <ul>
-                    <li><a href="viewer.html?doc=04-Design/Sistem-Design.md">Sistem Design</a></li>
-                    <li><a href="viewer.html?doc=04-Design/Ghid-Stil.md">Ghid de Stil</a></li>
-                    <li><a href="viewer.html?doc=04-Design/Componente-UI.md">Componente UI</a></li>
-                </ul>
+            <!-- Quick Links -->
+            <div class="content-section">
+                <h2>Acces Rapid</h2>
+                <div class="quick-links">
+                    <a href="viewer.html?doc=01-Prezentare-Generala/PRD.md" class="quick-link">
+                        <strong>Product Requirements</strong>
+                        <span>Cerințe complete și specificații funcționale</span>
+                    </a>
+                    <a href="viewer.html?doc=01-Prezentare-Generala/Arhitectura-Tehnica.md" class="quick-link">
+                        <strong>Arhitectură Tehnică</strong>
+                        <span>Stack tehnic și structura aplicației</span>
+                    </a>
+                    <a href="viewer.html?doc=03-Baza-de-Date/Schema-DB.md" class="quick-link">
+                        <strong>Schema Database</strong>
+                        <span>Structura bazei de date și relații</span>
+                    </a>
+                    <a href="viewer.html?doc=09-API/Documentatie-API.md" class="quick-link">
+                        <strong>Documentație API</strong>
+                        <span>Endpoints și exemple de utilizare</span>
+                    </a>
+                </div>
             </div>
-
-            <!-- Comunicare -->
-            <div class="doc-section">
-                <h2>📧 Comunicare</h2>
-                <ul>
-                    <li><a href="viewer.html?doc=05-Comunicare/Template-Email.md">Template-uri Email</a></li>
-                    <li><a href="viewer.html?doc=05-Comunicare/Sistem-Notificari.md">Sistem Notificări</a></li>
-                </ul>
-            </div>
-
-            <!-- Securitate -->
-            <div class="doc-section">
-                <h2>🔐 Securitate</h2>
-                <ul>
-                    <li><a href="viewer.html?doc=06-Securitate/Autentificare.md">Autentificare</a></li>
-                    <li><a href="viewer.html?doc=06-Securitate/Politici-Acces.md">Politici de Acces</a></li>
-                    <li><a href="viewer.html?doc=06-Securitate/Validare-Date.md">Validare Date</a></li>
-                </ul>
-            </div>
-
-            <!-- Deployment -->
-            <div class="doc-section">
-                <h2>🚀 Deployment</h2>
-                <ul>
-                    <li><a href="viewer.html?doc=07-Deployment/Ghid-Deployment.md">Ghid Deployment</a></li>
-                    <li><a href="viewer.html?doc=07-Deployment/Configurare-Medii.md">Configurare Medii</a></li>
-                    <li><a href="viewer.html?doc=07-Deployment/Monitorizare.md">Monitorizare</a></li>
-                </ul>
-            </div>
-
-            <!-- Testing -->
-            <div class="doc-section">
-                <h2>🧪 Testing</h2>
-                <ul>
-                    <li><a href="viewer.html?doc=08-Testing/Strategie-Testing.md">Strategie Testing</a></li>
-                    <li><a href="viewer.html?doc=08-Testing/Test-Cases.md">Test Cases</a></li>
-                </ul>
-            </div>
-
-            <!-- API -->
-            <div class="doc-section">
-                <h2>📱 API</h2>
-                <ul>
-                    <li><a href="viewer.html?doc=09-API/Documentatie-API.md">Documentație API</a></li>
-                    <li><a href="viewer.html?doc=09-API/Endpoints.md">Endpoints</a></li>
-                </ul>
-            </div>
-
-            <!-- Ghiduri -->
-            <div class="doc-section">
-                <h2>📚 Ghiduri Utilizare</h2>
-                <ul>
-                    <li><a href="viewer.html?doc=10-Ghiduri/Ghid-Student.md">Tutorial Student</a></li>
-                    <li><a href="viewer.html?doc=10-Ghiduri/Ghid-Profesor.md">Tutorial Profesor</a></li>
-                    <li><a href="viewer.html?doc=10-Ghiduri/Ghid-Administrator.md">Tutorial Administrator</a></li>
-                </ul>
-            </div>
-        </div>
-
-        <footer>
-            <p>© 2024 CampusConnect - Mihai Octavian & Abbasi Pazeyazd Bianca-Maria</p>
-            <p>Built with ❤️ for GitHub Pages</p>
-        </footer>
+            </div> <!-- End home-content -->
+        </main>
     </div>
 
+    <footer>
+        <p>© 2025 CampusConnect - Universitatea Romano-Americana</p>
+        <p>Built with <span class="love">❤️</span> by Bubu & Dudu Dev Team</p>
+    </footer>
+
     <script>
-        // Simple search functionality
+        // Search functionality
         const searchInput = document.getElementById('searchInput');
-        const docSections = document.querySelectorAll('.doc-section');
+        const navLinks = document.querySelectorAll('.nav-links a');
+        const docViewer = document.getElementById('docViewer');
+        const docFrame = document.getElementById('docFrame');
+        const homeContent = document.querySelector('.home-content');
+        const homeBtn = document.getElementById('homeBtn');
 
         searchInput.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
-            
-            docSections.forEach(section => {
-                const text = section.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    section.style.display = 'block';
+
+            navLinks.forEach(link => {
+                const text = link.textContent.toLowerCase();
+                const listItem = link.parentElement;
+
+                if (text.includes(searchTerm) || searchTerm === '') {
+                    listItem.style.display = 'block';
                 } else {
-                    section.style.display = 'none';
+                    listItem.style.display = 'none';
                 }
             });
+
+            // Show/hide sections based on visible links
+            document.querySelectorAll('.nav-section').forEach(section => {
+                const visibleLinks = section.querySelectorAll('.nav-links li[style="display: block"], .nav-links li:not([style*="display"])');
+                section.style.display = visibleLinks.length > 0 ? 'block' : 'none';
+            });
         });
+
+        // Document loading in iframe
+        function loadDocument(url) {
+            docFrame.src = url;
+            docViewer.classList.add('active');
+            homeContent.classList.add('hidden');
+            homeBtn.classList.add('visible'); // Show home button
+
+            // Update active state in nav
+            navLinks.forEach(link => link.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Show home content
+        function showHome() {
+            docViewer.classList.remove('active');
+            homeContent.classList.remove('hidden');
+            homeBtn.classList.remove('visible'); // Hide home button
+            docFrame.src = '';
+
+            // Remove active states
+            navLinks.forEach(link => link.classList.remove('active'));
+        }
+
+        // Intercept navigation clicks
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const href = link.getAttribute('href');
+                loadDocument(href);
+            });
+        });
+
+        // Mobile navigation toggle
+        function toggleNav() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
     </script>
 </body>
 </html>
