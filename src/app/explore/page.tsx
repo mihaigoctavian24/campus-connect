@@ -134,13 +134,23 @@ export default function ExplorePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Section */}
-      <section className="border-b border-gray-200 bg-white px-4 py-6 sm:px-8 sm:py-12">
-        <div className="mx-auto max-w-7xl">
-          <h1 className="mb-2 text-lg font-medium text-[#001f3f] sm:text-xl">
-            Explore Opportunities
-          </h1>
-          <p className="text-sm text-gray-500 sm:text-base">
+      {/* Header Section with Animated Gradient Background */}
+      <section
+        id="hero-video-section"
+        className="relative overflow-hidden px-4 py-8 sm:px-8 sm:py-16"
+      >
+        {/* Animated Gradient Background */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-br from-[#001f3f] via-[#800020] via-30% to-[#001f3f] animate-gradient-shift bg-[length:400%_400%]" />
+
+        {/* Animated Gold Accent Overlay */}
+        <div className="absolute inset-0 z-0 opacity-20">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,215,0,0.4),transparent_70%)] animate-pulse-slow" />
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 mx-auto max-w-7xl">
+          <h1 className="mb-3 text-2xl font-bold text-white sm:text-3xl">Explore Opportunities</h1>
+          <p className="text-base text-white/90 sm:text-lg">
             Discover volunteer positions that align with your academic goals and interests
           </p>
         </div>
