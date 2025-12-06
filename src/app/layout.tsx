@@ -4,6 +4,9 @@ import '@/styles/globals.css';
 import { HeaderWrapper } from '@/components/layout/HeaderWrapper';
 import { Footer } from '@/components/layout/Footer';
 import { NotificationProvider } from '@/lib/contexts/NotificationContext';
+import { CookieConsentProvider } from '@/contexts/CookieConsentContext';
+import { CookieBanner } from '@/components/cookies/CookieBanner';
+import { CookieSettings } from '@/components/cookies/CookieSettings';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,11 +23,15 @@ export default function RootLayout({
   return (
     <html lang="ro">
       <body className={`${inter.className} flex min-h-screen flex-col`}>
-        <NotificationProvider>
-          <HeaderWrapper />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </NotificationProvider>
+        <CookieConsentProvider>
+          <NotificationProvider>
+            <HeaderWrapper />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <CookieBanner />
+            <CookieSettings />
+          </NotificationProvider>
+        </CookieConsentProvider>
       </body>
     </html>
   );
