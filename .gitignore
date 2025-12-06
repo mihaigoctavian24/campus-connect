@@ -156,3 +156,4 @@ vite.config.ts.timestamp-*
 figma_template/
 .docs/
 scripts/
+.qoder/
